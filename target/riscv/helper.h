@@ -1280,3 +1280,13 @@ DEF_HELPER_4(vgmul_vv, void, ptr, ptr, env, i32)
 DEF_HELPER_5(vsm4k_vi, void, ptr, ptr, i32, env, i32)
 DEF_HELPER_4(vsm4r_vv, void, ptr, ptr, env, i32)
 DEF_HELPER_4(vsm4r_vs, void, ptr, ptr, env, i32)
+
+/*
+ * Variable precision related instructions:
+ * Since we are calling mpfr functions in which the result is generaly
+ * the first argument, the helper does not return any meaningful value.
+ */
+DEF_HELPER_FLAGS_4(ldu,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(gadd,    TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(mov_x2g, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(mov_g2x, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
