@@ -62,7 +62,16 @@ const char * const riscv_fpr_regnames[] = {
   "f30/ft10", "f31/ft11"
 };
 
-static const char * const riscv_excp_names[] = {
+const char * const riscv_vpr_regnames[] = {
+  "v0/vp0",   "v1/vp1",  "v2/vp2",   "v3/vp3",   "v4/vp4",  "v5/vp5",
+  "v6/vp6",   "v7/vp7",  "v8/vp8",   "v9/vp9",   "v10/vp10", "v11/vp11",
+  "v12/vp12",  "v13/vp13", "v14/vp14",  "v15/vp15",  "v16/vp16", "v17/vp17",
+  "v18/vp18",  "v19/vp19", "v20/vp20",  "v21/vp21",  "v22/vp22", "v23/vp23",
+  "v24/vp24",  "v25/vp25", "v26/vp26", "v27/vp27", "v28/vp28", "v29/vp29",
+  "v30/vp30", "v31/vp31"
+};
+
+const char * const riscv_excp_names[] = {
     "misaligned_fetch",
     "fault_fetch",
     "illegal_instruction",
@@ -264,7 +273,7 @@ static void riscv_cpu_dump_state(CPUState *cs, FILE *f, int flags)
 {
     RISCVCPU *cpu = RISCV_CPU(cs);
     CPURISCVState *env = &cpu->env;
-    int i;
+    int i, j;
 
 #if !defined(CONFIG_USER_ONLY)
     if (riscv_has_ext(env, RVH)) {
@@ -343,6 +352,14 @@ static void riscv_cpu_dump_state(CPUState *cs, FILE *f, int flags)
                 qemu_fprintf(f, "\n");
             }
         }
+    }
+    /* Will probably print out good only on 4k line length terminals! */
+    for (i = 0; i < 32; i++) {
+        qemu_fprintf(f, " %s ", riscv_vpr_regnames[i]);
+        for (j = 0; j < 32; j++) {
+            qemu_fprintf(f, TARGET_FMT_lx, env->vpr[i][j]);
+        }
+        qemu_fprintf(f, "\n");
     }
 }
 

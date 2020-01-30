@@ -126,6 +126,11 @@ struct CPUArchState {
     target_ulong vstart;
     target_ulong vtype;
     bool vill;
+    /* Variable precision coprocessor state, a big array of xlen chunks of registers */
+    /* Should use the mpfr types later on */
+    target_ulong vpr[32][32];
+    /* TODO: add vp control and status registers
+     * Note that I would put them in the csr if ROCC wasn't involved */
 
     target_ulong pc;
     target_ulong load_res;
@@ -428,6 +433,9 @@ static inline void riscv_set_feature(CPURISCVState *env, int feature)
 extern const char * const riscv_int_regnames[];
 extern const char * const riscv_int_regnamesh[];
 extern const char * const riscv_fpr_regnames[];
+extern const char * const riscv_vpr_regnames[]; /* vp support */
+extern const char * const riscv_excp_names[];
+extern const char * const riscv_intr_names[];
 
 const char *riscv_cpu_get_trap_name(target_ulong cause, bool async);
 void riscv_cpu_do_interrupt(CPUState *cpu);

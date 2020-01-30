@@ -1,0 +1,174 @@
+# Decoding variable precision extensions accessed through the ROCC interface
+#
+# Copyright (c) 2020-2020 Frédéric Pétrot 
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2 or later, as published by the Free Software Foundation.
+# 
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+# 
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# https://qemu.weilnetz.de/doc/devel/decodetree.html
+
+# Rocc register numbers: (beware, syntax is lsb:length)
+%rgs2     20:5
+%rgs1     15:5
+%rgd      7:5
+
+# Rocc immediates:
+%rtimm    15:10
+%rfimm    15:5
+%rfimx    20:5
+#
+# Rocc argument sets:
+&rr   rgd rgs1 rgs2
+&rt   imm rgd
+&rf   imm rgs2 rgd
+&rx   imm rgs1 rgd
+
+
+# Rocc formats:
+@rr       .......   ..... ..... ... ..... ....... &rr                %rgs2 %rgs1 %rgd
+@rt       .......   ..........  ... ..... ....... &rt     imm=%rtimm             %rgd
+@rf       .......   ..... ..... ... ..... ....... &rf     imm=%rfimm %rgs2       %rgd
+@rx       .......   ..... ..... ... ..... ....... &rx     imm=%rfimx       %rgs1 %rgd
+
+## *** Variable precision environment setting instruction ***
+## Please Andrea enlight me, I don't get why we have that many insns
+## Note also that the doc is incoherent => Xs1 appears on the register drawing
+## while Xs2 appears on the text. I assume Xs2 which is riscv-consistent
+susr          0000000 ..... ..... 010 ..... 0001011 @rf
+susr_rnd      0011011 ..... ..... 010 ..... 0001011 @rf
+susr_due_ess  0010011 ..... ..... 010 ..... 0001011 @rf
+susr_due_fss  0010101 ..... ..... 010 ..... 0001011 @rf
+susr_sue_ess  0010111 ..... ..... 010 ..... 0001011 @rf
+susr_sue_fss  0011000 ..... ..... 010 ..... 0001011 @rf
+susr_wgp      0011001 ..... ..... 010 ..... 0001011 @rf
+susr_mbb      0011010 ..... ..... 010 ..... 0001011 @rf
+
+lusr          0000000 ..... ..... 100 ..... 0001011 @rf
+lusr_rnd      0001000 ..... ..... 100 ..... 0001011 @rf
+lusr_due_ess  0000010 ..... ..... 100 ..... 0001011 @rf
+lusr_due_fss  0000011 ..... ..... 100 ..... 0001011 @rf
+lusr_sue_ess  0000100 ..... ..... 100 ..... 0001011 @rf
+lusr_sue_fss  0000101 ..... ..... 100 ..... 0001011 @rf
+lusr_wgp      0000110 ..... ..... 100 ..... 0001011 @rf
+lusr_mbb      0000111 ..... ..... 100 ..... 0001011 @rf
+
+# *** VP moves
+mov_g2g       0000000 ..... ..... 000 ..... 0001011 @rx
+movll_g2g     0000001 ..... ..... 000 ..... 0001011 @rx
+movlr_g2g     0000010 ..... ..... 000 ..... 0001011 @rx
+movrl_g2g     0000011 ..... ..... 000 ..... 0001011 @rx
+movrr_g2g     0000100 ..... ..... 000 ..... 0001011 @rx
+mov_x2g       0000001 ..... ..... 010 ..... 0001011 @rx
+mov_g2x       0000001 ..... ..... 100 ..... 0001011 @rx
+mov_c2g       0000101 ..... ..... 000 ..... 0001011 @rt
+
+# *** VP load and stores
+
+ldu           0000010 ..... ..... 010 ..... 0001011 @rr
+ldul          0000011 ..... ..... 010 ..... 0001011 @rr
+ldur          0000100 ..... ..... 010 ..... 0001011 @rr
+ldub          0000101 ..... ..... 010 ..... 0001011 @rr
+stul          0000110 ..... ..... 010 ..... 0001011 @rr
+stur          0000111 ..... ..... 010 ..... 0001011 @rr
+stub          0001000 ..... ..... 010 ..... 0001011 @rr
+ldu_next      0000000 ..... ..... 110 ..... 0001011 @rr
+ldul_next     0000001 ..... ..... 110 ..... 0001011 @rr
+ldur_next     0000010 ..... ..... 110 ..... 0001011 @rr
+ldub_next     0000011 ..... ..... 110 ..... 0001011 @rr
+stul_next     0000100 ..... ..... 110 ..... 0001011 @rr
+stur_next     0000101 ..... ..... 110 ..... 0001011 @rr
+stub_next     0000110 ..... ..... 110 ..... 0001011 @rr
+ldu_s         0001001 ..... ..... 010 ..... 0001011 @rr
+ldul_s        0001010 ..... ..... 010 ..... 0001011 @rr
+ldur_s        0001011 ..... ..... 010 ..... 0001011 @rr
+ldub_s        0001100 ..... ..... 010 ..... 0001011 @rr
+stul_s        0001101 ..... ..... 010 ..... 0001011 @rr
+stur_s        0001110 ..... ..... 010 ..... 0001011 @rr
+stub_s        0001111 ..... ..... 010 ..... 0001011 @rr
+ldu_next_s    0000111 ..... ..... 110 ..... 0001011 @rr
+ldul_next_s   0001000 ..... ..... 110 ..... 0001011 @rr
+ldur_next_s   0001001 ..... ..... 110 ..... 0001011 @rr
+ldub_next_s   0001010 ..... ..... 110 ..... 0001011 @rr
+stul_next_s   0001011 ..... ..... 110 ..... 0001011 @rr
+stur_next_s   0001100 ..... ..... 110 ..... 0001011 @rr
+stub_next_s   0001101 ..... ..... 110 ..... 0001011 @rr
+ldg           0010000 ..... ..... 010 ..... 0001011 @rr
+stg           0010001 ..... ..... 010 ..... 0001011 @rr
+
+# *** VP arithmetic operations
+
+gadd          0000110 ..... ..... 000 ..... 0001011 @rr
+gsub          0000111 ..... ..... 000 ..... 0001011 @rr
+gguess        0001000 ..... ..... 000 ..... 0001011 @rr
+gradius       0010110 ..... ..... 000 ..... 0001011 @rr
+gaddu         0001001 ..... ..... 000 ..... 0001011 @rr
+gsubu         0001010 ..... ..... 000 ..... 0001011 @rr
+gmul          0001011 ..... ..... 000 ..... 0001011 @rr
+gmulu         0001100 ..... ..... 000 ..... 0001011 @rr
+gdiv          0001111 ..... ..... 000 ..... 0001011 @rr
+gdivu         0010010 ..... ..... 000 ..... 0001011 @rr
+
+# Overlap, was commented in Opcodes.vhd
+#gneg          0001101 ..... ..... 000 ..... 0001011 @rx
+gabs          0001101 ..... ..... 000 ..... 0001011 @rx
+gsqrt         0010000 ..... ..... 000 ..... 0001011 @rx
+gisqrt        0010001 ..... ..... 000 ..... 0001011 @rx
+gsqrtu        0010011 ..... ..... 000 ..... 0001011 @rx
+gisqrtu       0010100 ..... ..... 000 ..... 0001011 @rx
+
+gcmp          1000000 ..... ..... 000 ..... 0001011 @rr
+gcmp_eq       1000001 ..... ..... 000 ..... 0001011 @rr
+gcmp_neq      1000010 ..... ..... 000 ..... 0001011 @rr
+gcmp_nneq     1000011 ..... ..... 000 ..... 0001011 @rr
+gcmp_gt       1000100 ..... ..... 000 ..... 0001011 @rr
+gcmp_lt       1000101 ..... ..... 000 ..... 0001011 @rr
+gcmp_geq      1000110 ..... ..... 000 ..... 0001011 @rr
+gcmp_leq      1000111 ..... ..... 000 ..... 0001011 @rr
+gcmp_gnneq    1001000 ..... ..... 000 ..... 0001011 @rr
+gcmp_lnneq    1001001 ..... ..... 000 ..... 0001011 @rr
+gcmp_ll_eq    1001010 ..... ..... 000 ..... 0001011 @rr
+gcmp_ll_neq   1001011 ..... ..... 000 ..... 0001011 @rr
+gcmp_ll_gt    1001100 ..... ..... 000 ..... 0001011 @rr
+gcmp_ll_lt    1001101 ..... ..... 000 ..... 0001011 @rr
+gcmp_ll_geq   1001110 ..... ..... 000 ..... 0001011 @rr
+gcmp_ll_leq   1001111 ..... ..... 000 ..... 0001011 @rr
+gcmp_lr_eq    1010000 ..... ..... 000 ..... 0001011 @rr
+gcmp_lr_neq   1010001 ..... ..... 000 ..... 0001011 @rr
+gcmp_lr_gt    1010010 ..... ..... 000 ..... 0001011 @rr
+gcmp_lr_lt    1010011 ..... ..... 000 ..... 0001011 @rr
+gcmp_lr_geq   1010100 ..... ..... 000 ..... 0001011 @rr
+gcmp_lr_leq   1010101 ..... ..... 000 ..... 0001011 @rr
+gcmp_rl_eq    1010110 ..... ..... 000 ..... 0001011 @rr
+gcmp_rl_neq   1010111 ..... ..... 000 ..... 0001011 @rr
+gcmp_rl_gt    1011000 ..... ..... 000 ..... 0001011 @rr
+gcmp_rl_lt    1011001 ..... ..... 000 ..... 0001011 @rr
+gcmp_rl_geq   1011010 ..... ..... 000 ..... 0001011 @rr
+gcmp_rl_leq   1011011 ..... ..... 000 ..... 0001011 @rr
+gcmp_rr_eq    1011100 ..... ..... 000 ..... 0001011 @rr
+gcmp_rr_neq   1011101 ..... ..... 000 ..... 0001011 @rr
+gcmp_rr_gt    1011110 ..... ..... 000 ..... 0001011 @rr
+gcmp_rr_lt    1011111 ..... ..... 000 ..... 0001011 @rr
+gcmp_rr_geq   1100000 ..... ..... 000 ..... 0001011 @rr
+gcmp_rr_leq   1100001 ..... ..... 000 ..... 0001011 @rr
+
+# *** VP conversions
+# Not specified in the document yet
+#
+#gfloat_d2g    0010010
+#gfloat_gl2d   0010011
+#gfloat_gr2d   0010100
+#gfloat_f2g    0010100
+#gfloat_gl2f   0010101
+#gfloat_gr2f   0010110
+#gfloat_h2g    0010110
+#gfloat_gl2h   0010111
+#gfloat_gr2h   0011000

@@ -1110,3 +1110,13 @@ DEF_HELPER_5(divu_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(divs_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(remu_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(rems_i128, tl, env, tl, tl, tl, tl)
+
+/*
+ * Variable precision related instructions:
+ * Since we are calling mpfr functions in which the result is generaly
+ * the first argument, the helper does not return any meaningful value.
+ */
+DEF_HELPER_FLAGS_4(ldu,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(gadd,    TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(mov_x2g, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(mov_g2x, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
