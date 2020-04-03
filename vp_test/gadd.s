@@ -6,6 +6,10 @@ again:
 	la x28, unum1
 	li x29, 1234
 	li x30, 4321
+	li t0, 0xffffffff
+	csrw    mtval, t0
+	csrrci  t0, mtval, 0x15
+	csrrsi  t0, mtval, 0x7
 
 	/*
 	   Patterns as I understand them, and implemented as such in
@@ -13,16 +17,17 @@ again:
 	   gadd 0000110 ..... ..... 000 ..... 0001011
 	   x2g  0000001 ..... ..... 010 ..... 0001011
 	   g2x  0000001 ..... ..... 100 ..... 0001011
-	   0x33ea08b = movx2g ux1, x29, 19
-	   0x27f210b = movx2g ux2, x30, 7
-	   0xc20818b = gadd   ux3, ux1, ux2
-	   0x2d1cf8b = movg2x x31, u3,  13
+	   0x33ea08b = movx2g bf1, x29, 19   # bf1[19] <= 1234
+	   0x27f210b = movx2g bf2, x30, 7    # bf2[7]  <= 4321
+	   0xc20818b = gadd   bf3, bf1, bf2  # bf3     <= bf1 + bf2
+	   0x2d1cf8b = movg2x x31, bf3, 13   # x31     <= bf3[13]
+	   0x40e200b = ldu    bf0, x28       # bf0     <= mem[*x28 ...*x28+32]
 	*/
 	.word 0x33ea08b
 	.word 0x27f210b
 	.word 0xc20818b
 	.word 0x2d1cf8b
-	.word 0x40e200b # ldu ux0, x28
+	.word 0x40e200b # ldu bf0, x28
 	# Result is now in x31
 	j again
 
