@@ -273,7 +273,7 @@ static void riscv_cpu_dump_state(CPUState *cs, FILE *f, int flags)
 {
     RISCVCPU *cpu = RISCV_CPU(cs);
     CPURISCVState *env = &cpu->env;
-    int i, j;
+    int i;
 
 #if !defined(CONFIG_USER_ONLY)
     if (riscv_has_ext(env, RVH)) {
@@ -354,6 +354,7 @@ static void riscv_cpu_dump_state(CPUState *cs, FILE *f, int flags)
         }
     }
     /* Will probably print out good only on 4k line length terminals! */
+    /*
     for (i = 0; i < 32; i++) {
         qemu_fprintf(f, " %s ", riscv_vpr_regnames[i]);
         for (j = 0; j < 32; j++) {
@@ -361,6 +362,7 @@ static void riscv_cpu_dump_state(CPUState *cs, FILE *f, int flags)
         }
         qemu_fprintf(f, "\n");
     }
+    */
 }
 
 static void riscv_cpu_set_pc(CPUState *cs, vaddr value)

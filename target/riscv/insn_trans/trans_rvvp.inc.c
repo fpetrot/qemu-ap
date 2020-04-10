@@ -363,6 +363,19 @@ static bool trans_gadd(DisasContext *ctx, arg_gadd *a)
 
 static bool trans_gsub(DisasContext *ctx, arg_gsub *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(src2, a->rgs2);
+
+    gen_helper_gsub(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
     return true;
 }
 
@@ -388,6 +401,19 @@ static bool trans_gsubu(DisasContext *ctx, arg_gsubu *a)
 
 static bool trans_gmul(DisasContext *ctx, arg_gmul *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(src2, a->rgs2);
+
+    gen_helper_gmul(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
     return true;
 }
 
@@ -398,6 +424,19 @@ static bool trans_gmulu(DisasContext *ctx, arg_gmulu *a)
 
 static bool trans_gdiv(DisasContext *ctx, arg_gdiv *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(src2, a->rgs2);
+
+    gen_helper_gdiv(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
     return true;
 }
 
@@ -598,5 +637,23 @@ static bool trans_gcmp_rr_geq(DisasContext *ctx, arg_gcmp_rr_geq *a)
 
 static bool trans_gcmp_rr_leq(DisasContext *ctx, arg_gcmp_rr_leq *a)
 {
+    return true;
+}
+
+static bool trans_fcvt_d_b(DisasContext *ctx, arg_fcvt_d_b *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv imm  = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(imm, a->imm);
+
+    gen_helper_fcvt_d_b(cpu_env, dest, src1, imm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(imm);
     return true;
 }
