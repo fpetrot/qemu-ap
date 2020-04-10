@@ -101,6 +101,8 @@ typedef enum {
 #include "debug.h"
 #endif
 
+#include "mpfr.h"
+
 #define RV_VLEN_MAX 1024
 #define RV_MAX_MHPMEVENTS 32
 #define RV_MAX_MHPMCOUNTERS 32
@@ -140,9 +142,10 @@ struct CPUArchState {
     bool vill;
     /* Variable precision coprocessor state, a big array of xlen chunks of registers */
     /* Should use the mpfr types later on */
-    target_ulong vpr[32][32];
     /* TODO: add vp control and status registers
      * Note that I would put them in the csr if ROCC wasn't involved */
+
+    mpfr_t vpr[32];
 
     target_ulong pc;
     target_ulong load_res;
