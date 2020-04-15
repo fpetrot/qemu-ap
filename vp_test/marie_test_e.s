@@ -36,7 +36,6 @@ loop:
 	addi	t1, t1, 1
 	ble	t1, t2, loop
 	la	t0, room_for_vpr
-	.word 0x0200ef8b # stg	gx1, t0. On fait un appel a mov_g2x a la place pour pouvoir afficher le resultat. TODO : modifier
 	ret
 
 	.data

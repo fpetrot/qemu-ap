@@ -23,6 +23,40 @@
 #include "exec/helper-proto.h"
 #include <string.h>
 #include <math.h>
+#include <stdlib.h>
+
+struct FloatIEEE
+{
+    int8_t sign;
+    uint64_t frac;
+    int64_t exp;
+};
+
+static struct FloatIEEE *unpack_float(target_ulong num)
+{
+    struct FloatIEEE *f = malloc(sizeof(struct FloatIEEE));
+
+#if defined(TARGET_RISCV64)
+    f->sign = (num >> 63) == 0?1:-1;
+
+    f->exp = (num & 0x7ff0000000000000) >> 52;
+    f->exp -= 1023;
+
+    f->frac = (num & 0x000fffffffffffff);
+#endif
+
+#if defined(TARGET_RISCV32)
+    f->sign = (num >> 31) == 0?1:-1;
+
+    f->exp = (num & 0x7f800000) >> 23;
+    f->exp -= 127;
+
+    f->frac = (num & 0x007fffff);
+#endif
+    return f;
+}
+
+/* Helpers */
 
 void helper_ldu(CPURISCVState *env, target_ulong dest, target_ulong idx, target_ulong data)
 {
@@ -88,7 +122,7 @@ void helper_gdiv(CPURISCVState *env, target_ulong dest, target_ulong src1, targe
 void helper_mov_x2g(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
 {
     printf("TEST MOV_X2G \n");
-
+    // TODO : Modify
     mpfr_t x;
     mpfr_init2(x, 200);
     mpfr_set_ui(x, env->gpr[src1], MPFR_RNDD);
@@ -102,6 +136,7 @@ void helper_mov_g2x(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
 {
     /* Copy back into the general purpose register the partial value in the unum reg,
      * but only if it is not zero (and we hope so!) */
+    // TODO : Modify
     if (dest != 0) {
         printf("TEST MOV_G2X \n");
         mpfr_printf("%.128Rf\n", env->vpr[src1]);
@@ -110,27 +145,46 @@ void helper_mov_g2x(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
 }
 
 
-void helper_fcvt_d_b(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_fcvt_b_d(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
 {
-    printf("TEST FCVT_D_B \n");
+    printf("TEST FCVT_B_D \n");
 
-    /* We assume for the moment that we are in 64 bits */
-    // Signe
-    int64_t signe = (env->gpr[src1] >> 63) == 0?1:-1;
-
-    // Exponant
-    int64_t exponant = (env->gpr[src1] & 0x7ff0000000000000) >> 52;
-    exponant -= 1023;
-
-    // Mantissa
-    uint64_t mantissa = (env->gpr[src1] & 0x000fffffffffffff);
+    struct FloatIEEE *f = unpack_float(env->gpr[src1]);
     double m = 1.0;
+
+#if defined(TARGET_RISCV64)
     for (int i = 1; i < 53; i++) {
-        m += powl(2.0, -(double)i) * ((mantissa >> (52-i)) & 1);
+        m += powl(2.0, -(double)i) * ((f->frac >> (52-i)) & 1);
     }
+#endif
 
     // Result
-    double res = signe * m * pow(2, exponant);
+    double res = f->sign * m * pow(2, f->exp);
+
+    mpfr_t x;
+    mpfr_init2(x, 200);
+    mpfr_set_d(x, res, MPFR_RNDD);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);  
+}
+
+
+void helper_fcvt_b_dfpr(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+{
+    printf("TEST FCVT_B_DFPR \n");
+
+    struct FloatIEEE *f = unpack_float(env->fpr[src1]);
+    double m = 1.0;
+
+#if defined(TARGET_RISCV64)
+    for (int i = 1; i < 53; i++) {
+        m += powl(2.0, -(double)i) * ((f->frac >> (52-i)) & 1);
+    }
+#endif
+
+    // Result
+    double res = f->sign * m * pow(2, f->exp);
 
     mpfr_t x;
     mpfr_init2(x, 200);
