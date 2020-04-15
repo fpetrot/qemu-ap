@@ -163,7 +163,9 @@ gcmp_rr_leq   1100001 ..... ..... 000 ..... 0001011 @rr
 # *** VP conversions
 # Not specified in the document yet
 #
-fcvt_d_b    0010010 ..... ..... 010 ..... 0001011 @rx
+fcvt_b_d    0010010 ..... ..... 010 ..... 0001011 @rx
+fcvt_b_dfpr    0010111 ..... ..... 000 ..... 0001011 @rx
+
 # fcvt_b_d    0010011 ..... ..... 100 ..... 0001011 @rx
 #gfloat_d2g    0010010
 #gfloat_g2d    0010011
