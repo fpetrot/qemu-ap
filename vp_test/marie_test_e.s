@@ -2,6 +2,8 @@
  * vim:list:ts=4:sw=4:noet:
  */
 	.equiv  MPFR_RNDD, 3
+	.equiv  MSTATUS_FS, 0x00006000
+
 	.text
 	.align	1
 	.globl	e_approx
@@ -9,6 +11,9 @@
 
 e_approx:
    
+	# Indique que l'on veut utiliser la FPU
+	li	t0, MSTATUS_FS
+	csrs	mstatus, t0
 	# Spécifie l'arrondi pour les opérations suivantes
 	li	t0, MPFR_RNDD
 	# srnd	t0
