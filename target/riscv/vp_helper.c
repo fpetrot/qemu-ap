@@ -162,7 +162,7 @@ void helper_fcvt_b_d(CPURISCVState *env, target_ulong dest, target_ulong src1, t
     double res = f->sign * m * pow(2, f->exp);
 
     mpfr_t x;
-    mpfr_init2(x, 200);
+    mpfr_init2(x, env->precision);
     mpfr_set_d(x, res, MPFR_RNDD);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -187,9 +187,23 @@ void helper_fcvt_b_dfpr(CPURISCVState *env, target_ulong dest, target_ulong src1
     double res = f->sign * m * pow(2, f->exp);
 
     mpfr_t x;
-    mpfr_init2(x, 200);
+    mpfr_init2(x, env->precision);
     mpfr_set_d(x, res, MPFR_RNDD);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
+void helper_lp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+{
+    printf("TEST LOAD PRECISION : %ld\n", env->precision);
+    env->gpr[dest] = env->precision;
+}
+
+
+void helper_sp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+{
+    printf("TEST STORE PRECISION : %ld\n", env->gpr[src1]);
+    env->precision = env->gpr[src1];
 }

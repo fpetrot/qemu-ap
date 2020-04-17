@@ -134,6 +134,7 @@ struct CPUArchState {
      * Note that I would put them in the csr if ROCC wasn't involved */
 
     mpfr_t vpr[32];
+    target_ulong precision;
 
     target_ulong pc;
     target_ulong load_res;
