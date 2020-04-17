@@ -1,8 +1,13 @@
 /*
  * vim:list:ts=4:sw=4:noet:
  */
+	.equiv  MSTATUS_FS, 0x00006000
 	.text
 again:
+	# Indique que l'on veut utiliser la FPU
+	li	t0, MSTATUS_FS
+	csrs	mstatus, t0
+
     li   x29, 8
 	li   x30, 4
 	li   x28, 1023

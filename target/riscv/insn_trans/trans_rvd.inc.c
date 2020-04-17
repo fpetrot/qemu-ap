@@ -388,7 +388,7 @@ static bool trans_fcvt_lu_d(DisasContext *ctx, arg_fcvt_lu_d *a)
 
 static bool trans_fmv_x_d(DisasContext *ctx, arg_fmv_x_d *a)
 {
-    //REQUIRE_FPU;
+    REQUIRE_FPU;
     REQUIRE_EXT(ctx, RVD);
 
     gen_set_gpr(a->rd, cpu_fpr[a->rs1]);
@@ -412,7 +412,7 @@ static bool trans_fcvt_d_l(DisasContext *ctx, arg_fcvt_d_l *a)
 
 static bool trans_fcvt_d_lu(DisasContext *ctx, arg_fcvt_d_lu *a)
 {
-    //REQUIRE_FPU;
+    REQUIRE_FPU;
     REQUIRE_EXT(ctx, RVD);
 
     TCGv t0 = tcg_temp_new();
