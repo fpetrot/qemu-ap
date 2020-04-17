@@ -26,8 +26,21 @@ static bool trans_susr(DisasContext *ctx, arg_susr *a)
     return true;
 }
 
-static bool trans_susr_rnd(DisasContext *ctx, arg_susr_rnd *a)
+static bool trans_srnd(DisasContext *ctx, arg_srnd *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv imm  = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(imm, a->imm);
+
+    gen_helper_srnd(cpu_env, dest, src1, imm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(imm);
     return true;
 }
 
@@ -79,8 +92,21 @@ static bool trans_lusr(DisasContext *ctx, arg_lusr *a)
     return true;
 }
 
-static bool trans_lusr_rnd(DisasContext *ctx, arg_lusr_rnd *a)
+static bool trans_lrnd(DisasContext *ctx, arg_lrnd *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv imm  = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(imm, a->imm);
+
+    gen_helper_lrnd(cpu_env, dest, src1, imm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(imm);
     return true;
 }
 

@@ -44,7 +44,7 @@
 ## Note also that the doc is incoherent => Xs1 appears on the register drawing
 ## while Xs2 appears on the text. I assume Xs2 which is riscv-consistent
 susr          0000000 ..... ..... 010 ..... 0001011 @rf
-susr_rnd      0011011 ..... ..... 010 ..... 0001011 @rf
+# susr_rnd      0011011 ..... ..... 010 ..... 0001011 @rf
 susr_due_ess  0010011 ..... ..... 010 ..... 0001011 @rf
 susr_due_fss  0010101 ..... ..... 010 ..... 0001011 @rf
 susr_sue_ess  0010111 ..... ..... 010 ..... 0001011 @rf
@@ -53,7 +53,7 @@ susr_sue_fss  0011000 ..... ..... 010 ..... 0001011 @rf
 susr_mbb      0011010 ..... ..... 010 ..... 0001011 @rf
 
 lusr          0000000 ..... ..... 100 ..... 0001011 @rf
-lusr_rnd      0001000 ..... ..... 100 ..... 0001011 @rf
+# lusr_rnd      0001000 ..... ..... 100 ..... 0001011 @rf
 lusr_due_ess  0000010 ..... ..... 100 ..... 0001011 @rf
 lusr_due_fss  0000011 ..... ..... 100 ..... 0001011 @rf
 lusr_sue_ess  0000100 ..... ..... 100 ..... 0001011 @rf
@@ -64,6 +64,10 @@ lusr_mbb      0000111 ..... ..... 100 ..... 0001011 @rf
 # *** VP load and store the precision
 lp      0000110 ..... ..... 100 ..... 0001011 @rx
 sp      0011001 ..... ..... 010 ..... 0001011 @rx
+
+# *** VP load and store rounding mode
+lrnd      0001000 ..... ..... 100 ..... 0001011 @rx
+srnd      0011011 ..... ..... 010 ..... 0001011 @rx
 
 # *** VP moves
 mov_g2g       0000000 ..... ..... 000 ..... 0001011 @rx

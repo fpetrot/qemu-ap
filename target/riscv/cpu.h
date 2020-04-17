@@ -135,6 +135,7 @@ struct CPUArchState {
 
     mpfr_t vpr[32];
     target_ulong precision;
+    target_ulong rounding_mode;
 
     target_ulong pc;
     target_ulong load_res;
