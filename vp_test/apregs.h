@@ -1,0 +1,34 @@
+#define  gx0  x0
+#define  gx1  x1
+#define  gx2  x2
+#define  gx3  x3
+#define  gx4  x4
+#define  gx5  x5
+#define  gx6  x6
+#define  gx7  x7
+#define  gx8  x8
+#define  gx9  x9
+#define gx10 x10
+#define gx11 x11
+#define gx12 x12
+#define gx13 x13
+#define gx14 x14
+#define gx15 x15
+#define gx16 x16
+#define gx17 x17
+#define gx18 x18
+#define gx19 x19
+#define gx20 x20
+#define gx21 x21
+#define gx22 x22
+#define gx23 x23
+#define gx24 x24
+#define gx25 x25
+#define gx26 x26
+#define gx27 x27
+#define gx28 x28
+#define gx29 x29
+#define gx30 x30
+#define gx31 x31
+
+
