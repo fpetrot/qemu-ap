@@ -1,12 +1,25 @@
 /*
  * vim:list:ts=4:sw=4:noet:
  */
+	.equiv  MPFR_RNDN, 0
+    .equiv  MPFR_RNDZ, 1
+    .equiv  MPFR_RNDU, 2
+    .equiv  MPFR_RNDD, 3
+    .equiv  MPFR_RNDA, 4
+    .equiv  MPFR_RNDF, 5
+    .equiv  MPFR_RNDNA, -1
 	.equiv  MSTATUS_FS, 0x00006000
 	.text
 again:
 	# Indique que l'on veut utiliser la FPU
 	li	t0, MSTATUS_FS
 	csrs	mstatus, t0
+
+	# Precision et rounding mode
+    li   x28, 200
+    .word 0x320e200b # sp x28 : store the precision into the status register precision
+    li  x5, MPFR_RNDD
+    .word 0x3602a00b # srnd x5 : store the rounding mode in the rounding mode register
 
     li   x29, 8
 	li   x30, 4
