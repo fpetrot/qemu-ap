@@ -72,8 +72,8 @@ void helper_gadd(CPURISCVState *env, target_ulong dest, target_ulong src1, targe
     printf("TEST ADD \n");
 
     mpfr_t x;
-    mpfr_init2(x, 200);
-    mpfr_add(x, env->vpr[src1], env->vpr[src2], MPFR_RNDD);
+    mpfr_init2(x, env->precision);
+    mpfr_add(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
@@ -85,8 +85,8 @@ void helper_gsub(CPURISCVState *env, target_ulong dest, target_ulong src1, targe
     printf("TEST SUB \n");
 
     mpfr_t x;
-    mpfr_init2(x, 200);
-    mpfr_sub(x, env->vpr[src1], env->vpr[src2], MPFR_RNDD);
+    mpfr_init2(x, env->precision);
+    mpfr_sub(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
@@ -98,8 +98,8 @@ void helper_gmul(CPURISCVState *env, target_ulong dest, target_ulong src1, targe
     printf("TEST MUL \n");
 
     mpfr_t x;
-    mpfr_init2(x, 200);
-    mpfr_mul(x, env->vpr[src1], env->vpr[src2], MPFR_RNDD);
+    mpfr_init2(x, env->precision);
+    mpfr_mul(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
@@ -111,8 +111,8 @@ void helper_gdiv(CPURISCVState *env, target_ulong dest, target_ulong src1, targe
     printf("TEST DIV \n");
 
     mpfr_t x;
-    mpfr_init2(x, 200);
-    mpfr_div(x, env->vpr[src1], env->vpr[src2], MPFR_RNDD);
+    mpfr_init2(x, env->precision);
+    mpfr_div(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
