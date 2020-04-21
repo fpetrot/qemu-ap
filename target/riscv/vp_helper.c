@@ -221,3 +221,29 @@ void helper_srnd(CPURISCVState *env, target_ulong dest, target_ulong src1, targe
     printf("TEST STORE ROUNDING MODE : %ld\n", env->gpr[src1]);
     env->rounding_mode = env->gpr[src1];
 }
+
+
+void helper_fcvt_d_b(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+{
+    printf("TEST FCVT_D_B \n");
+
+#if defined(TARGET_RISCV64)
+    target_ulong res;
+    double nb_double = mpfr_get_d(env->vpr[src1], env->rounding_mode);
+    memcpy(&res, &nb_double, sizeof(target_ulong));
+    env->gpr[dest] = res;
+#endif
+}
+
+
+void helper_fcvt_dfpr_b(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+{
+    printf("TEST FCVT_DFPR_B \n");
+
+#if defined(TARGET_RISCV64)
+    target_ulong res;
+    double nb_double = mpfr_get_d(env->vpr[src1], env->rounding_mode);
+    memcpy(&res, &nb_double, sizeof(target_ulong));
+    env->fpr[dest] = res;
+#endif
+}

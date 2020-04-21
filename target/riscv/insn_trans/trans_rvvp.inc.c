@@ -727,3 +727,39 @@ static bool trans_fcvt_b_dfpr(DisasContext *ctx, arg_fcvt_b_dfpr *a)
     tcg_temp_free(imm);
     return true;
 }
+
+static bool trans_fcvt_d_b(DisasContext *ctx, arg_fcvt_d_b *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv imm  = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(imm, a->imm);
+
+    gen_helper_fcvt_d_b(cpu_env, dest, src1, imm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(imm);
+    return true;
+}
+
+static bool trans_fcvt_dfpr_b(DisasContext *ctx, arg_fcvt_dfpr_b *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv imm  = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(imm, a->imm);
+
+    gen_helper_fcvt_dfpr_b(cpu_env, dest, src1, imm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(imm);
+    return true;
+}
