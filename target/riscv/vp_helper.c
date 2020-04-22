@@ -121,27 +121,13 @@ void helper_gdiv(CPURISCVState *env, target_ulong dest, target_ulong src1, targe
 
 void helper_mov_x2g(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
 {
-    printf("TEST MOV_X2G \n");
-    // TODO : Modify
-    mpfr_t x;
-    mpfr_init2(x, 200);
-    mpfr_set_ui(x, env->gpr[src1], MPFR_RNDD);
-    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->vpr[dest]);
+    // TODO : Delete
 }
 
 
 void helper_mov_g2x(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
 {
-    /* Copy back into the general purpose register the partial value in the unum reg,
-     * but only if it is not zero (and we hope so!) */
-    // TODO : Modify
-    if (dest != 0) {
-        printf("TEST MOV_G2X \n");
-        mpfr_printf("%.128Rf\n", env->vpr[src1]);
-        env->gpr[dest] = mpfr_get_ui(env->vpr[src1], MPFR_RNDD);
-    }
+    // TODO : Delete
 }
 
 
@@ -195,14 +181,14 @@ void helper_fcvt_b_dfpr(CPURISCVState *env, target_ulong dest, target_ulong src1
 }
 
 
-void helper_lp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_lpre(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
 {
     printf("TEST LOAD PRECISION : %ld\n", env->precision);
     env->gpr[dest] = env->precision;
 }
 
 
-void helper_sp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_spre(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
 {
     printf("TEST STORE PRECISION : %ld\n", env->gpr[src1]);
     env->precision = env->gpr[src1];
