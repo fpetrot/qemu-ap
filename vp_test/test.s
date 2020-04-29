@@ -17,7 +17,7 @@ again:
 
 	# Precision et rounding mode
     li   x7, 200
-    .word 0x3203a00b # sp x7 : store the precision into the status register precision
+    .word 0x3203a00b # sprec x7 : store the precision into the status register precision
     li  x5, MPFR_RNDD
     .word 0x3602a00b # srnd x5 : store the rounding mode in the rounding mode register
 
@@ -49,4 +49,17 @@ again:
 
 	# Test conversion mpfr -> fpr
 	.word 0x3002060b # fcvt_dfpr_b fa2, ux4
-    j again
+
+	la	t0, room_for_vpr
+	.word 0x2201a28b # sap ux3, 0(t0)
+	.word 0x2002a00b # lap ux0, 0(t0)
+
+	# Test load after precision modification
+	li   x7, 300
+	.word 0x3203a00b # sprec x7
+	.word 0x2002a08b # lap ux1, 0(t0)
+
+	ret
+
+	.data
+room_for_vpr: .space 1024

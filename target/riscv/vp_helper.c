@@ -16,6 +16,7 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "mpfr-impl.h"
 #include "qemu/osdep.h"
 #include "cpu.h"
 #include "qemu/host-utils.h"
@@ -232,4 +233,74 @@ void helper_fcvt_dfpr_b(CPURISCVState *env, target_ulong dest, target_ulong src1
     memcpy(&res, &nb_double, sizeof(target_ulong));
     env->fpr[dest] = res;
 #endif
+}
+
+
+uint64_t helper_lap(CPURISCVState *env, target_ulong dest, target_ulong idx, uint64_t data)
+{
+    printf("TEST LOAD %lu\n", idx);
+    uint64_t res;
+    uint64_t nb_limb;
+    switch(idx)
+    {
+        case 0:
+            // On regarde si la précision a changé
+            if (env->precision != (env->vpr[dest])->_mpfr_prec) {
+                mpfr_prec_round(env->vpr[dest], env->precision, env->rounding_mode);
+            }
+            mpfr_printf("%.128Rf\n", env->vpr[dest]);
+            res = 1;
+            break;
+        case 1:
+            mpfr_init2(env->vpr[dest], data);
+            res = 1;
+            break;
+        case 2:
+            (env->vpr[dest])->_mpfr_sign = data;
+            res = 1;
+            break;
+        case 3:
+            (env->vpr[dest])->_mpfr_exp = data;
+            res = 1;
+            break;
+        case 4:
+            // On doit calculer le nombre de limb
+            nb_limb = ceil((double)((env->vpr[dest])->_mpfr_prec) / (double)mp_bits_per_limb);
+            (env->vpr[dest])->_mpfr_d = (mp_limb_t *) malloc(sizeof(mp_limb_t) * nb_limb);
+            res = nb_limb;
+            break;
+        default:
+            // On charge chaque limb
+            ((env->vpr[dest])->_mpfr_d)[idx - 5] = data;
+            res = 1;
+            break;
+    }
+    return res;
+}
+
+
+uint64_t helper_sap(CPURISCVState *env, target_ulong src1, uint64_t idx)
+{
+    printf("TEST STORE %lu\n", idx);
+    uint64_t res = 0;
+    switch(idx)
+    {
+        case 1:
+            res = (env->vpr[src1])->_mpfr_prec;
+            break;
+        case 2:
+            res = (env->vpr[src1])->_mpfr_sign;
+            break;
+        case 3:
+            res = (env->vpr[src1])->_mpfr_exp;
+            break;
+        case 4:
+            res = MPFR_LIMB_SIZE(env->vpr[src1]);
+            break;
+        default:
+            // On store chaque limb
+            res = ((env->vpr[src1])->_mpfr_d)[idx - 5];
+            break;
+    }
+    return res;
 }
