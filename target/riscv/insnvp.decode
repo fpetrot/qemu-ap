@@ -16,6 +16,9 @@
 #
 # https://qemu.weilnetz.de/doc/devel/decodetree.html
 
+
+# TODO : Remove
+##########################################################################################
 # Rocc register numbers: (beware, syntax is lsb:length)
 %rgs2     20:5
 %rgs1     15:5
@@ -35,31 +38,15 @@
 
 # Rocc formats:
 @rr       .......   ..... ..... ... ..... ....... &rr                %rgs2 %rgs1 %rgd
-@rt       .......   ..........  ... ..... ....... &rt     imm=%rtimm             %rgd
-@rf       .......   ..... ..... ... ..... ....... &rf     imm=%rfimm %rgs2       %rgd
+# @rt       .......   ..........  ... ..... ....... &rt     imm=%rtimm             %rgd
+# @rf       .......   ..... ..... ... ..... ....... &rf     imm=%rfimm %rgs2       %rgd
 @rx       .......   ..... ..... ... ..... ....... &rx     imm=%rfimx       %rgs1 %rgd
+#########################################################################################
 
-## *** Variable precision environment setting instruction ***
-## Please Andrea enlight me, I don't get why we have that many insns
-## Note also that the doc is incoherent => Xs1 appears on the register drawing
-## while Xs2 appears on the text. I assume Xs2 which is riscv-consistent
-susr          0000000 ..... ..... 010 ..... 0001011 @rf
-# susr_rnd      0011011 ..... ..... 010 ..... 0001011 @rf
-susr_due_ess  0010011 ..... ..... 010 ..... 0001011 @rf
-susr_due_fss  0010101 ..... ..... 010 ..... 0001011 @rf
-susr_sue_ess  0010111 ..... ..... 010 ..... 0001011 @rf
-susr_sue_fss  0011000 ..... ..... 010 ..... 0001011 @rf
-# susr_wgp      0011001 ..... ..... 010 ..... 0001011 @rf
-susr_mbb      0011010 ..... ..... 010 ..... 0001011 @rf
 
-lusr          0000000 ..... ..... 100 ..... 0001011 @rf
-# lusr_rnd      0001000 ..... ..... 100 ..... 0001011 @rf
-lusr_due_ess  0000010 ..... ..... 100 ..... 0001011 @rf
-lusr_due_fss  0000011 ..... ..... 100 ..... 0001011 @rf
-lusr_sue_ess  0000100 ..... ..... 100 ..... 0001011 @rf
-lusr_sue_fss  0000101 ..... ..... 100 ..... 0001011 @rf
-# lusr_wgp      0000110 ..... ..... 100 ..... 0001011 @rf
-lusr_mbb      0000111 ..... ..... 100 ..... 0001011 @rf
+######################################
+# Arbitrary Precision Floating Point #
+######################################
 
 # *** VP load and store the precision
 lpre      0000110 ..... ..... 100 ..... 0001011 @rx
@@ -69,79 +56,65 @@ spre      0011001 ..... ..... 010 ..... 0001011 @rx
 lrnd      0001000 ..... ..... 100 ..... 0001011 @rx
 srnd      0011011 ..... ..... 010 ..... 0001011 @rx
 
-# *** VP moves
-mov_g2g       0000000 ..... ..... 000 ..... 0001011 @rx
-movll_g2g     0000001 ..... ..... 000 ..... 0001011 @rx
-movlr_g2g     0000010 ..... ..... 000 ..... 0001011 @rx
-movrl_g2g     0000011 ..... ..... 000 ..... 0001011 @rx
-movrr_g2g     0000100 ..... ..... 000 ..... 0001011 @rx
-mov_x2g       0000001 ..... ..... 010 ..... 0001011 @rx
-mov_g2x       0000001 ..... ..... 100 ..... 0001011 @rx
-mov_c2g       0000101 ..... ..... 000 ..... 0001011 @rt
-
-# *** VP load and stores
-
-ldu           0000010 ..... ..... 010 ..... 0001011 @rr
-ldul          0000011 ..... ..... 010 ..... 0001011 @rr
-ldur          0000100 ..... ..... 010 ..... 0001011 @rr
-ldub          0000101 ..... ..... 010 ..... 0001011 @rr
-stul          0000110 ..... ..... 010 ..... 0001011 @rr
-stur          0000111 ..... ..... 010 ..... 0001011 @rr
-stub          0001000 ..... ..... 010 ..... 0001011 @rr
-ldu_next      0000000 ..... ..... 110 ..... 0001011 @rr
-ldul_next     0000001 ..... ..... 110 ..... 0001011 @rr
-ldur_next     0000010 ..... ..... 110 ..... 0001011 @rr
-ldub_next     0000011 ..... ..... 110 ..... 0001011 @rr
-stul_next     0000100 ..... ..... 110 ..... 0001011 @rr
-stur_next     0000101 ..... ..... 110 ..... 0001011 @rr
-stub_next     0000110 ..... ..... 110 ..... 0001011 @rr
-ldu_s         0001001 ..... ..... 010 ..... 0001011 @rr
-ldul_s        0001010 ..... ..... 010 ..... 0001011 @rr
-ldur_s        0001011 ..... ..... 010 ..... 0001011 @rr
-ldub_s        0001100 ..... ..... 010 ..... 0001011 @rr
-stul_s        0001101 ..... ..... 010 ..... 0001011 @rr
-stur_s        0001110 ..... ..... 010 ..... 0001011 @rr
-stub_s        0001111 ..... ..... 010 ..... 0001011 @rr
-ldu_next_s    0000111 ..... ..... 110 ..... 0001011 @rr
-ldul_next_s   0001000 ..... ..... 110 ..... 0001011 @rr
-ldur_next_s   0001001 ..... ..... 110 ..... 0001011 @rr
-ldub_next_s   0001010 ..... ..... 110 ..... 0001011 @rr
-stul_next_s   0001011 ..... ..... 110 ..... 0001011 @rr
-stur_next_s   0001100 ..... ..... 110 ..... 0001011 @rr
-stub_next_s   0001101 ..... ..... 110 ..... 0001011 @rr
-
 # *** VP load and store arbitrary precision registers
-
 lap           0010000 ..... ..... 010 ..... 0001011 @rx
 sap           0010001 ..... ..... 010 ..... 0001011 @rx
 
 # *** VP arithmetic operations
+fadd_p        0000011 ..... ..... ... ..... 0001011 @r_rm
+fsub_p        0000111 ..... ..... ... ..... 0001011 @r_rm
+fmul_p        0001011 ..... ..... ... ..... 0001011 @r_rm
+fdiv_p        0001111 ..... ..... ... ..... 0001011 @r_rm
+fsqrt_p       0101111 00000 ..... ... ..... 0001011 @r2_rm
+feq_p         1000000 ..... ..... 010 ..... 0001011 @r
+flt_p         1010011 ..... ..... 001 ..... 0001011 @r
+fle_p         1000000 ..... ..... 000 ..... 0001011 @r
+fmin_p        0011111 ..... ..... 000 ..... 0001011 @r
+fmax_p        0011111 ..... ..... 001 ..... 0001011 @r
 
-gadd          0000110 ..... ..... 000 ..... 0001011 @rr
-gsub          0000111 ..... ..... 000 ..... 0001011 @rr
+# *** VP conversions
+# Conversion gpr into mpfr
+fcvt_b_d     0010010 ..... ..... 010 ..... 0001011 @rx
+
+# Conversion fpr into mpfr
+fcvt_b_dfpr  0010111 ..... ..... 000 ..... 0001011 @rx
+
+# Conversion mpfr into gpr
+fcvt_d_b     0010011 ..... ..... 100 ..... 0001011 @rx
+
+# Conversion mpfr into fpr
+fcvt_dfpr_b  0011000 ..... ..... 000 ..... 0001011 @rx
+
+
+
+# TODO : Clean and Remove
+#############################################################################
+## *** Variable precision environment setting instruction ***
+## Please Andrea enlight me, I don't get why we have that many insns
+## Note also that the doc is incoherent => Xs1 appears on the register drawing
+## while Xs2 appears on the text. I assume Xs2 which is riscv-consistent
+
+
+# *** VP load and stores
+ldu           0000010 ..... ..... 010 ..... 0001011 @rr
+
 gguess        0001000 ..... ..... 000 ..... 0001011 @rr
 gradius       0010110 ..... ..... 000 ..... 0001011 @rr
 gaddu         0001001 ..... ..... 000 ..... 0001011 @rr
 gsubu         0001010 ..... ..... 000 ..... 0001011 @rr
-gmul          0001011 ..... ..... 000 ..... 0001011 @rr
 gmulu         0001100 ..... ..... 000 ..... 0001011 @rr
-gdiv          0001111 ..... ..... 000 ..... 0001011 @rr
 gdivu         0010010 ..... ..... 000 ..... 0001011 @rr
 
 # Overlap, was commented in Opcodes.vhd
 #gneg          0001101 ..... ..... 000 ..... 0001011 @rx
 gabs          0001101 ..... ..... 000 ..... 0001011 @rx
-gsqrt         0010000 ..... ..... 000 ..... 0001011 @rx
 gisqrt        0010001 ..... ..... 000 ..... 0001011 @rx
 gsqrtu        0010011 ..... ..... 000 ..... 0001011 @rx
 gisqrtu       0010100 ..... ..... 000 ..... 0001011 @rx
 
-gcmp          1000000 ..... ..... 000 ..... 0001011 @rr
-gcmp_eq       1000001 ..... ..... 000 ..... 0001011 @rr
 gcmp_neq      1000010 ..... ..... 000 ..... 0001011 @rr
 gcmp_nneq     1000011 ..... ..... 000 ..... 0001011 @rr
 gcmp_gt       1000100 ..... ..... 000 ..... 0001011 @rr
-gcmp_lt       1000101 ..... ..... 000 ..... 0001011 @rr
 gcmp_geq      1000110 ..... ..... 000 ..... 0001011 @rr
 gcmp_leq      1000111 ..... ..... 000 ..... 0001011 @rr
 gcmp_gnneq    1001000 ..... ..... 000 ..... 0001011 @rr
@@ -174,18 +147,6 @@ gcmp_rr_leq   1100001 ..... ..... 000 ..... 0001011 @rr
 # *** VP conversions
 # Not specified in the document yet
 
-# Conversion gpr into mpfr
-fcvt_b_d     0010010 ..... ..... 010 ..... 0001011 @rx
-
-# Conversion fpr into mpfr
-fcvt_b_dfpr  0010111 ..... ..... 000 ..... 0001011 @rx
-
-# Conversion mpfr into gpr
-fcvt_d_b     0010011 ..... ..... 100 ..... 0001011 @rx
-
-# Conversion mpfr into fpr
-fcvt_dfpr_b  0011000 ..... ..... 000 ..... 0001011 @rx
-
 # TODO : A modifier
 #gfloat_d2g    0010010
 #gfloat_g2d    0010011
@@ -196,3 +157,4 @@ fcvt_dfpr_b  0011000 ..... ..... 000 ..... 0001011 @rx
 #gfloat_h2g    0010110
 #gfloat_gl2h   0010111
 #gfloat_gr2h   0011000
+#################################################################################

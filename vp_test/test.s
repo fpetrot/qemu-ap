@@ -31,33 +31,42 @@ again:
 	fcvt.d.lu fa1,x30 # 4.0 <- 4
 
 	# Test conversions fpr -> mpfr
-	.word 0x2e05008b # fcvt_b_dfpr ux1, fa0
-	.word 0x2e05810b # fcvt_b_dfpr ux2, fa1
+	.word 0x2e05008b # fcvt_b_dfpr vp1, fa0
+	.word 0x2e05810b # fcvt_b_dfpr vp2, fa1
 
 	# Test arithmetic operations
-	.word 0xc20818b  # gadd   ux3, ux1, ux2
-	.word 0xe20818b  # gsub   ux3, ux1, ux2
-	.word 0x1620818b # gmul   ux3, ux1, ux2
-	.word 0x1e20818b # gdiv   ux3, ux1, ux2
+	.word 0x0620b18b  # fadd_p   vp3, vp1, vp2
+	.word 0x0e20b18b  # fsub_p   vp3, vp1, vp2
+	.word 0x1620b18b  # fmul_p   vp3, vp1, vp2
+	.word 0x5e01b18b  # fsqrt_p  vp3, vp3
+	.word 0x1e20b18b  # fdiv_p   vp3, vp1, vp2
+
+	# Test comparaisons
+	.word 0x8020a38b  # feq   x7, vp1, vp2
+	.word 0xa620938b  # flt   x7, vp1, vp2
+	.word 0x8020838b  # fle   x7, vp1, vp2
+	.word 0x3e20818b  # fmin_p   vp3, vp1, vp2
+	.word 0x3e20918b  # fmax_p   vp3, vp1, vp2
+
 
 	# Test conversions gpr -> mpfr
-	.word 0x240e220b # fcvt_b_d ux4, x28
-	.word 0x2403220b # fcvt_b_d ux4, x6
+	.word 0x240e220b # fcvt_b_d vp4, x28
+	.word 0x2403220b # fcvt_b_d vp4, x6
 
 	# Test conversion mpfr -> gpr
-	.word 0x26024f8b # fcvt_d_b x31, ux4
+	.word 0x26024f8b # fcvt_d_b x31, vp4
 
 	# Test conversion mpfr -> fpr
-	.word 0x3002060b # fcvt_dfpr_b fa2, ux4
+	.word 0x3002060b # fcvt_dfpr_b fa2, vp4
 
 	la	t0, room_for_vpr
-	.word 0x2201a28b # sap ux3, 0(t0)
-	.word 0x2002a00b # lap ux0, 0(t0)
+	.word 0x2201a28b # sap vp3, 0(t0)
+	.word 0x2002a00b # lap vp0, 0(t0)
 
 	# Test load after precision modification
 	li   x7, 300
 	.word 0x3203a00b # sprec x7
-	.word 0x2002a08b # lap ux1, 0(t0)
+	.word 0x2002a08b # lap vp1, 0(t0)
 
 	ret
 

@@ -21,11 +21,6 @@
  * https://wiki.qemu.org/Documentation/TCG/frontend-ops 
  */
 
-static bool trans_susr(DisasContext *ctx, arg_susr *a)
-{
-    return true;
-}
-
 static bool trans_srnd(DisasContext *ctx, arg_srnd *a)
 {
     TCGv dest = tcg_temp_new();
@@ -41,26 +36,6 @@ static bool trans_srnd(DisasContext *ctx, arg_srnd *a)
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(imm);
-    return true;
-}
-
-static bool trans_susr_due_ess(DisasContext *ctx, arg_susr_due_ess *a)
-{
-    return true;
-}
-
-static bool trans_susr_due_fss(DisasContext *ctx, arg_susr_due_fss *a)
-{
-    return true;
-}
-
-static bool trans_susr_sue_ess(DisasContext *ctx, arg_susr_sue_ess *a)
-{
-    return true;
-}
-
-static bool trans_susr_sue_fss(DisasContext *ctx, arg_susr_sue_fss *a)
-{
     return true;
 }
 
@@ -82,16 +57,6 @@ static bool trans_spre(DisasContext *ctx, arg_spre *a)
     return true;
 }
 
-static bool trans_susr_mbb(DisasContext *ctx, arg_susr_mbb *a)
-{
-    return true;
-}
-
-static bool trans_lusr(DisasContext *ctx, arg_lusr *a)
-{
-    return true;
-}
-
 static bool trans_lrnd(DisasContext *ctx, arg_lrnd *a)
 {
     TCGv dest = tcg_temp_new();
@@ -110,26 +75,6 @@ static bool trans_lrnd(DisasContext *ctx, arg_lrnd *a)
     return true;
 }
 
-static bool trans_lusr_due_ess(DisasContext *ctx, arg_lusr_due_ess *a)
-{
-    return true;
-}
-
-static bool trans_lusr_due_fss(DisasContext *ctx, arg_lusr_due_fss *a)
-{
-    return true;
-}
-
-static bool trans_lusr_sue_ess(DisasContext *ctx, arg_lusr_sue_ess *a)
-{
-    return true;
-}
-
-static bool trans_lusr_sue_fss(DisasContext *ctx, arg_lusr_sue_fss *a)
-{
-    return true;
-}
-
 static bool trans_lpre(DisasContext *ctx, arg_lpre *a)
 {
     TCGv dest = tcg_temp_new();
@@ -145,77 +90,6 @@ static bool trans_lpre(DisasContext *ctx, arg_lpre *a)
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(imm);
-    return true;
-}
-
-static bool trans_lusr_mbb(DisasContext *ctx, arg_lusr_mbb *a)
-{
-    return true;
-}
-
-static bool trans_mov_g2g(DisasContext *ctx, arg_mov_g2g *a)
-{
-    return true;
-}
-
-static bool trans_movll_g2g(DisasContext *ctx, arg_movll_g2g *a)
-{
-    return true;
-}
-
-static bool trans_movlr_g2g(DisasContext *ctx, arg_movlr_g2g *a)
-{
-    return true;
-}
-
-static bool trans_movrl_g2g(DisasContext *ctx, arg_movrl_g2g *a)
-{
-    return true;
-}
-
-static bool trans_movrr_g2g(DisasContext *ctx, arg_movrr_g2g *a)
-{
-    return true;
-}
-
-static bool trans_mov_x2g(DisasContext *ctx, arg_mov_x2g *a)
-{
-    TCGv dest = tcg_temp_new();
-    TCGv src1 = tcg_temp_new();
-    TCGv imm  = tcg_temp_new();
-
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(imm, a->imm);
-
-    gen_helper_mov_x2g(cpu_env, dest, src1, imm);
-
-    tcg_temp_free(dest);
-    tcg_temp_free(src1);
-    tcg_temp_free(imm);
-    return true;
-}
-
-static bool trans_mov_g2x(DisasContext *ctx, arg_mov_g2x *a)
-{
-    TCGv dest = tcg_temp_new();
-    TCGv src1 = tcg_temp_new();
-    TCGv imm  = tcg_temp_new();
-
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(imm, a->imm);
-
-    gen_helper_mov_g2x(cpu_env, dest, src1, imm);
-
-    tcg_temp_free(dest);
-    tcg_temp_free(src1);
-    tcg_temp_free(imm);
-    return true;
-}
-
-static bool trans_mov_c2g(DisasContext *ctx, arg_mov_c2g *a)
-{
     return true;
 }
 
@@ -247,141 +121,6 @@ static bool trans_ldu(DisasContext *ctx, arg_ldu *a)
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(i);
-    return true;
-}
-
-static bool trans_ldul(DisasContext *ctx, arg_ldul *a)
-{
-    return true;
-}
-
-static bool trans_ldur(DisasContext *ctx, arg_ldur *a)
-{
-    return true;
-}
-
-static bool trans_ldub(DisasContext *ctx, arg_ldub *a)
-{
-    return true;
-}
-
-static bool trans_stul(DisasContext *ctx, arg_stul *a)
-{
-    return true;
-}
-
-static bool trans_stur(DisasContext *ctx, arg_stur *a)
-{
-    return true;
-}
-
-static bool trans_stub(DisasContext *ctx, arg_stub *a)
-{
-    return true;
-}
-
-static bool trans_ldu_next(DisasContext *ctx, arg_ldu_next *a)
-{
-    return true;
-}
-
-static bool trans_ldul_next(DisasContext *ctx, arg_ldul_next *a)
-{
-    return true;
-}
-
-static bool trans_ldur_next(DisasContext *ctx, arg_ldur_next *a)
-{
-    return true;
-}
-
-static bool trans_ldub_next(DisasContext *ctx, arg_ldub_next *a)
-{
-    return true;
-}
-
-static bool trans_stul_next(DisasContext *ctx, arg_stul_next *a)
-{
-    return true;
-}
-
-static bool trans_stur_next(DisasContext *ctx, arg_stur_next *a)
-{
-    return true;
-}
-
-static bool trans_stub_next(DisasContext *ctx, arg_stub_next *a)
-{
-    return true;
-}
-
-static bool trans_ldu_s(DisasContext *ctx, arg_ldu_s *a)
-{
-    return true;
-}
-
-static bool trans_ldul_s(DisasContext *ctx, arg_ldul_s *a)
-{
-    return true;
-}
-
-static bool trans_ldur_s(DisasContext *ctx, arg_ldur_s *a)
-{
-    return true;
-}
-
-static bool trans_ldub_s(DisasContext *ctx, arg_ldub_s *a)
-{
-    return true;
-}
-
-static bool trans_stul_s(DisasContext *ctx, arg_stul_s *a)
-{
-    return true;
-}
-
-static bool trans_stur_s(DisasContext *ctx, arg_stur_s *a)
-{
-    return true;
-}
-
-static bool trans_stub_s(DisasContext *ctx, arg_stub_s *a)
-{
-    return true;
-}
-
-static bool trans_ldu_next_s(DisasContext *ctx, arg_ldu_next_s *a)
-{
-    return true;
-}
-
-static bool trans_ldul_next_s(DisasContext *ctx, arg_ldul_next_s *a)
-{
-    return true;
-}
-
-static bool trans_ldur_next_s(DisasContext *ctx, arg_ldur_next_s *a)
-{
-    return true;
-}
-
-static bool trans_ldub_next_s(DisasContext *ctx, arg_ldub_next_s *a)
-{
-    return true;
-}
-
-static bool trans_stul_next_s(DisasContext *ctx, arg_stul_next_s *a)
-{
-    return true;
-}
-
-static bool trans_stur_next_s(DisasContext *ctx, arg_stur_next_s *a)
-{
-    return true;
-}
-
-static bool trans_stub_next_s(DisasContext *ctx, arg_stub_next_s *a)
-{
     return true;
 }
 
@@ -490,39 +229,45 @@ static bool trans_sap(DisasContext *ctx, arg_sap *a)
     return true;
 }
 
-static bool trans_gadd(DisasContext *ctx, arg_gadd *a)
+static bool trans_fadd_p(DisasContext *ctx, arg_fadd_p *a)
 {
     TCGv dest = tcg_temp_new();
     TCGv src1 = tcg_temp_new();
     TCGv src2 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(src2, a->rgs2);
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+    tcg_gen_movi_tl(rm, a->rm);
 
-    gen_helper_gadd(cpu_env, dest, src1, src2);
+    gen_helper_fadd_p(cpu_env, dest, src1, src2, rm);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(src2);
+    tcg_temp_free(rm);
     return true;
 }
 
-static bool trans_gsub(DisasContext *ctx, arg_gsub *a)
+static bool trans_fsub_p(DisasContext *ctx, arg_fsub_p *a)
 {
     TCGv dest = tcg_temp_new();
     TCGv src1 = tcg_temp_new();
     TCGv src2 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(src2, a->rgs2);
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+    tcg_gen_movi_tl(rm, a->rm);
 
-    gen_helper_gsub(cpu_env, dest, src1, src2);
+    gen_helper_fsub_p(cpu_env, dest, src1, src2, rm);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(src2);
+    tcg_temp_free(rm);
     return true;
 }
 
@@ -546,21 +291,24 @@ static bool trans_gsubu(DisasContext *ctx, arg_gsubu *a)
     return true;
 }
 
-static bool trans_gmul(DisasContext *ctx, arg_gmul *a)
+static bool trans_fmul_p(DisasContext *ctx, arg_fmul_p *a)
 {
     TCGv dest = tcg_temp_new();
     TCGv src1 = tcg_temp_new();
     TCGv src2 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(src2, a->rgs2);
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+    tcg_gen_movi_tl(rm, a->rm);
 
-    gen_helper_gmul(cpu_env, dest, src1, src2);
+    gen_helper_fmul_p(cpu_env, dest, src1, src2, rm);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(src2);
+    tcg_temp_free(rm);
     return true;
 }
 
@@ -569,21 +317,24 @@ static bool trans_gmulu(DisasContext *ctx, arg_gmulu *a)
     return true;
 }
 
-static bool trans_gdiv(DisasContext *ctx, arg_gdiv *a)
+static bool trans_fdiv_p(DisasContext *ctx, arg_fdiv_p *a)
 {
     TCGv dest = tcg_temp_new();
     TCGv src1 = tcg_temp_new();
     TCGv src2 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(src2, a->rgs2);
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+    tcg_gen_movi_tl(rm, a->rm);
 
-    gen_helper_gdiv(cpu_env, dest, src1, src2);
+    gen_helper_fdiv_p(cpu_env, dest, src1, src2, rm);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(src2);
+    tcg_temp_free(rm);
     return true;
 }
 
@@ -597,8 +348,21 @@ static bool trans_gabs(DisasContext *ctx, arg_gabs *a)
     return true;
 }
 
-static bool trans_gsqrt(DisasContext *ctx, arg_gsqrt *a)
+static bool trans_fsqrt_p(DisasContext *ctx, arg_fsqrt_p *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
+
+    gen_helper_fsqrt_p(cpu_env, dest, src1, rm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(rm);
     return true;
 }
 
@@ -617,13 +381,39 @@ static bool trans_gisqrtu(DisasContext *ctx, arg_gisqrtu *a)
     return true;
 }
 
-static bool trans_gcmp(DisasContext *ctx, arg_gcmp *a)
+static bool trans_feq_p(DisasContext *ctx, arg_feq_p *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+
+    gen_helper_feq_p(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
     return true;
 }
 
-static bool trans_gcmp_eq(DisasContext *ctx, arg_gcmp_eq *a)
+static bool trans_fle_p(DisasContext *ctx, arg_fle_p *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+
+    gen_helper_fle_p(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
     return true;
 }
 
@@ -642,8 +432,57 @@ static bool trans_gcmp_gt(DisasContext *ctx, arg_gcmp_gt *a)
     return true;
 }
 
-static bool trans_gcmp_lt(DisasContext *ctx, arg_gcmp_lt *a)
+static bool trans_flt_p(DisasContext *ctx, arg_flt_p *a)
 {
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+
+    gen_helper_flt_p(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
+    return true;
+}
+
+static bool trans_fmin_p(DisasContext *ctx, arg_fmin_p *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+
+    gen_helper_fmin_p(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
+    return true;
+}
+
+static bool trans_fmax_p(DisasContext *ctx, arg_fmax_p *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+
+    gen_helper_fmax_p(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
     return true;
 }
 
