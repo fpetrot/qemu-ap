@@ -8,18 +8,19 @@ endif
 DECODETREE = $(SRC_PATH)/scripts/decodetree.py
 
 # Adding variable precision support in the core
-decodeg-y = $(SRC_PATH)/target/riscv/insnvp.decode
+# decodeg-y = $(SRC_PATH)/target/riscv/insnvp.decode
 
 decode32-y = $(SRC_PATH)/target/riscv/insn32.decode
 decode32-$(TARGET_RISCV64) += $(SRC_PATH)/target/riscv/insn32-64.decode
+decode32-$(TARGET_RISCV64) += $(SRC_PATH)/target/riscv/insnvp.decode
 
 decode16-y = $(SRC_PATH)/target/riscv/insn16.decode
 decode16-$(TARGET_RISCV32) += $(SRC_PATH)/target/riscv/insn16-32.decode
 decode16-$(TARGET_RISCV64) += $(SRC_PATH)/target/riscv/insn16-64.decode
 
-target/riscv/decode_insn32.inc.c: $(decode32-y) $(DECODETREE) $(decodeg-y)
+target/riscv/decode_insn32.inc.c: $(decode32-y) $(DECODETREE)
 	$(call quiet-command, \
-	  $(PYTHON) $(DECODETREE) -o $@ --static-decode decode_insn32 $(decodeg-y) \
+	  $(PYTHON) $(DECODETREE) -o $@ --static-decode decode_insn32 \
           $(decode32-y), "GEN", $(TARGET_DIR)$@)
 	cp target/riscv/decode_insn32.inc.c target/riscv/AAAA.c
 

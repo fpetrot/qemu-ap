@@ -68,67 +68,130 @@ void helper_ldu(CPURISCVState *env, target_ulong dest, target_ulong idx, target_
 
 
 /* For now dumb operations that should end up as calls to the mpfr library */
-void helper_gadd(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+void helper_fadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
-    printf("TEST ADD \n");
+    printf("TEST FADD_P \n");
 
     mpfr_t x;
     mpfr_init2(x, env->precision);
-    mpfr_add(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    mpfr_add(x, env->vpr[src1], env->vpr[src2], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
 }
 
 
-void helper_gsub(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
-    printf("TEST SUB \n");
+    printf("TEST FSUB_P \n");
 
     mpfr_t x;
     mpfr_init2(x, env->precision);
-    mpfr_sub(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    mpfr_sub(x, env->vpr[src1], env->vpr[src2], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
 }
 
 
-void helper_gmul(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+void helper_fmul_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
-    printf("TEST MUL \n");
+    printf("TEST FMUL_P \n");
 
     mpfr_t x;
     mpfr_init2(x, env->precision);
-    mpfr_mul(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
 }
 
 
-void helper_gdiv(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+void helper_fdiv_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
-    printf("TEST DIV \n");
+    printf("TEST FDIV_P \n");
 
     mpfr_t x;
     mpfr_init2(x, env->precision);
-    mpfr_div(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    mpfr_div(x, env->vpr[src1], env->vpr[src2], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
 }
 
 
-void helper_mov_x2g(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_fsqrt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    // TODO : Delete
+    printf("TEST FSQRT_P \n");
+
+    mpfr_t x;
+    mpfr_init2(x, env->precision);
+    mpfr_sqrt(x, env->vpr[src1], rm);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
 }
 
 
-void helper_mov_g2x(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_feq_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    // TODO : Delete
+    printf("TEST FEQ_P \n");
+
+    if (mpfr_cmp(env->vpr[src1], env->vpr[src2]) == 0) {
+        env->gpr[dest] = 1;
+    } else {
+        env->gpr[dest] = 0;
+    }
+}
+
+
+void helper_flt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    printf("TEST FLT_P \n");
+
+    if (mpfr_cmp(env->vpr[src1], env->vpr[src2]) < 0) {
+        env->gpr[dest] = 1;
+    } else {
+        env->gpr[dest] = 0;
+    }
+}
+
+
+void helper_fle_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    printf("TEST FLE_P \n");
+
+    if (mpfr_cmp(env->vpr[src1], env->vpr[src2]) <= 0) {
+        env->gpr[dest] = 1;
+    } else {
+        env->gpr[dest] = 0;
+    }
+}
+
+
+void helper_fmin_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    printf("TEST FMIN_P \n");
+
+    mpfr_t x;
+    mpfr_init2(x, env->precision);
+    mpfr_min(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
+void helper_fmax_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    printf("TEST FMAX_P \n");
+
+    mpfr_t x;
+    mpfr_init2(x, env->precision);
+    mpfr_max(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
 }
 
 
