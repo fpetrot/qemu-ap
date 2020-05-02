@@ -60,13 +60,13 @@ again:
 	.word 0x3002060b # fcvt_dfpr_b fa2, vp4
 
 	la	t0, room_for_vpr
-	.word 0x2201a28b # sap vp3, 0(t0)
-	.word 0x2002a00b # lap vp0, 0(t0)
+	.word 0x0032d027 # fsp vp3, 0(t0)
+	.word 0x0002d007 # flp vp0, 0(t0)
 
 	# Test load after precision modification
 	li   x7, 300
 	.word 0x3203a00b # sprec x7
-	.word 0x2002a08b # lap vp1, 0(t0)
+	.word 0x0002d087 # flp vp1, 0(t0)
 
 	ret
 
