@@ -124,7 +124,7 @@ static bool trans_ldu(DisasContext *ctx, arg_ldu *a)
     return true;
 }
 
-static bool trans_lap(DisasContext *ctx, arg_lap *a)
+static bool trans_flp(DisasContext *ctx, arg_flp *a)
 {
     TCGv     data  = tcg_temp_local_new();
     TCGv     dest  = tcg_temp_local_new();
@@ -137,37 +137,37 @@ static bool trans_lap(DisasContext *ctx, arg_lap *a)
     tcg_gen_movi_tl(i, 1);
 
     // On récupère l'adresse de la data en mémoire
-    gen_get_gpr(src1, a->rgs1);
+    gen_get_gpr(src1, a->rs1);
     tcg_gen_addi_tl(src1, src1, a->imm);
 
     // On récupère le n° du vpr où stocker la data
-    tcg_gen_movi_tl(dest, a->rgd);
+    tcg_gen_movi_tl(dest, a->rd);
 
     // On récupère les 3 premiers champs
     gen_set_label(loop);
     tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEQ);
-    gen_helper_lap(limb, cpu_env, dest, i, data);
+    gen_helper_flp(limb, cpu_env, dest, i, data);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(src1, src1, 8);
     tcg_gen_brcondi_tl(TCG_COND_LT, i, 4, loop);
 
     // On s'occupe du pointeur sur les limbs
     // D'abord on récupère le nombre de blocks limb qu'on met dans la variable limb
-    gen_helper_lap(limb, cpu_env, dest, i, data);
+    gen_helper_flp(limb, cpu_env, dest, i, data);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(nb, limb, 5); // nb est notre borne max pour la boucle sur les limbs
 
     // Puis on load les limbs
     gen_set_label(loop_limb);
     tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEQ);
-    gen_helper_lap(limb, cpu_env, dest, i, data);
+    gen_helper_flp(limb, cpu_env, dest, i, data);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(src1, src1, 8);
     tcg_gen_brcond_tl(TCG_COND_LT, i, nb, loop_limb);
 
     // Une fois que le nombre est reformé, on regarde si la précision de env a changé ou non
     tcg_gen_movi_tl(i, 0);
-    gen_helper_lap(limb, cpu_env, dest, i, data);
+    gen_helper_flp(limb, cpu_env, dest, i, data);
 
     tcg_temp_free(data);
     tcg_temp_free(dest);
@@ -178,7 +178,7 @@ static bool trans_lap(DisasContext *ctx, arg_lap *a)
     return true;
 }
 
-static bool trans_sap(DisasContext *ctx, arg_sap *a)
+static bool trans_fsp(DisasContext *ctx, arg_fsp *a)
 {
     TCGv dest = tcg_temp_local_new();
     TCGv src1 = tcg_temp_local_new();
@@ -189,15 +189,15 @@ static bool trans_sap(DisasContext *ctx, arg_sap *a)
     tcg_gen_movi_tl(i, 1);
 
     // On récupère l'adresse qui est dans le gpr dest et on l'avance de l'imm
-    gen_get_gpr(dest, a->rgd);
+    gen_get_gpr(dest, a->rs1);
     tcg_gen_addi_tl(dest, dest, a->imm);
 
     // On récupère le numéro du vpr source qui contient la data
-    tcg_gen_movi_tl(src1, a->rgs1);
+    tcg_gen_movi_tl(src1, a->rs2);
 
     // On appelle le helper et le store qemu sur chaque elt du mpfr_t (sauf limb)
     gen_set_label(loop);
-    gen_helper_sap(res, cpu_env, src1, i);
+    gen_helper_fsp(res, cpu_env, src1, i);
     tcg_gen_qemu_st_i64(res, dest, ctx->mem_idx, MO_TEQ);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(dest, dest, 8);
@@ -205,7 +205,7 @@ static bool trans_sap(DisasContext *ctx, arg_sap *a)
 
     // On s'occupe maintenant de store le dernier champ de la struct
     // On récupère d'abord le nombre de blocks limb que stocke le pointeur mp_limb_t *_mpfr_d
-    gen_helper_sap(res, cpu_env, src1, i);
+    gen_helper_fsp(res, cpu_env, src1, i);
     tcg_gen_addi_tl(i, i, 1);
 
     // Puis on boucle pour récupérer tous les blocks limb et les storer
@@ -215,7 +215,7 @@ static bool trans_sap(DisasContext *ctx, arg_sap *a)
     tcg_gen_add_tl(nb, nb, res);
 
     gen_set_label(loop_limb);
-    gen_helper_sap(res, cpu_env, src1, i);
+    gen_helper_fsp(res, cpu_env, src1, i);
     tcg_gen_qemu_st_i64(res, dest, ctx->mem_idx, MO_TEQ);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(dest, dest, 8);

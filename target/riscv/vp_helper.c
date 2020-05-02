@@ -299,7 +299,7 @@ void helper_fcvt_dfpr_b(CPURISCVState *env, target_ulong dest, target_ulong src1
 }
 
 
-uint64_t helper_lap(CPURISCVState *env, target_ulong dest, target_ulong idx, uint64_t data)
+uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uint64_t data)
 {
     printf("TEST LOAD %lu\n", idx);
     uint64_t res;
@@ -342,7 +342,7 @@ uint64_t helper_lap(CPURISCVState *env, target_ulong dest, target_ulong idx, uin
 }
 
 
-uint64_t helper_sap(CPURISCVState *env, target_ulong src1, uint64_t idx)
+uint64_t helper_fsp(CPURISCVState *env, target_ulong src1, uint64_t idx)
 {
     printf("TEST STORE %lu\n", idx);
     uint64_t res = 0;
