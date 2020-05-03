@@ -626,75 +626,74 @@ static bool trans_gcmp_rr_leq(DisasContext *ctx, arg_gcmp_rr_leq *a)
     return true;
 }
 
-static bool trans_fcvt_b_d(DisasContext *ctx, arg_fcvt_b_d *a)
+static bool trans_fcvt_vp_d(DisasContext *ctx, arg_fcvt_vp_d *a)
 {
     TCGv dest = tcg_temp_new();
     TCGv src1 = tcg_temp_new();
-    TCGv imm  = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(imm, a->imm);
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
 
-    gen_helper_fcvt_b_d(cpu_env, dest, src1, imm);
+    gen_helper_fcvt_vp_d(cpu_env, dest, src1, rm);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
-    tcg_temp_free(imm);
+    tcg_temp_free(rm);
     return true;
 }
 
-static bool trans_fcvt_b_dfpr(DisasContext *ctx, arg_fcvt_b_dfpr *a)
+static bool trans_fcvt_vp_dfpr(DisasContext *ctx, arg_fcvt_vp_dfpr *a)
 {
     TCGv dest = tcg_temp_new();
     TCGv src1 = tcg_temp_new();
-    TCGv imm  = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(imm, a->imm);
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
 
-    gen_helper_fcvt_b_dfpr(cpu_env, dest, src1, imm);
+    gen_helper_fcvt_vp_dfpr(cpu_env, dest, src1, rm);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
-    tcg_temp_free(imm);
+    tcg_temp_free(rm);
     return true;
 }
 
-static bool trans_fcvt_d_b(DisasContext *ctx, arg_fcvt_d_b *a)
+static bool trans_fcvt_d_vp(DisasContext *ctx, arg_fcvt_d_vp *a)
 {
     TCGv dest = tcg_temp_new();
     TCGv src1 = tcg_temp_new();
-    TCGv imm  = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(imm, a->imm);
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
 
-    gen_helper_fcvt_d_b(cpu_env, dest, src1, imm);
+    gen_helper_fcvt_d_vp(cpu_env, dest, src1, rm);
 
-    gen_set_gpr(a->rgd, dest);
     tcg_temp_free(dest);
     tcg_temp_free(src1);
-    tcg_temp_free(imm);
+    tcg_temp_free(rm);
     return true;
 }
 
-static bool trans_fcvt_dfpr_b(DisasContext *ctx, arg_fcvt_dfpr_b *a)
+static bool trans_fcvt_dfpr_vp(DisasContext *ctx, arg_fcvt_dfpr_vp *a)
 {
     TCGv dest = tcg_temp_new();
     TCGv src1 = tcg_temp_new();
-    TCGv imm  = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-    tcg_gen_movi_tl(dest, a->rgd);
-    tcg_gen_movi_tl(src1, a->rgs1);
-    tcg_gen_movi_tl(imm, a->imm);
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
 
-    gen_helper_fcvt_dfpr_b(cpu_env, dest, src1, imm);
+    gen_helper_fcvt_dfpr_vp(cpu_env, dest, src1, rm);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
-    tcg_temp_free(imm);
+    tcg_temp_free(rm);
     return true;
 }

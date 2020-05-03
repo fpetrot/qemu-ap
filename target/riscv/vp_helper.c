@@ -195,9 +195,9 @@ void helper_fmax_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
 }
 
 
-void helper_fcvt_b_d(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_fcvt_vp_d(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_B_D \n");
+    printf("TEST FCVT_VP_D \n");
 
     struct FloatIEEE *f = unpack_float(env->gpr[src1]);
     double m = 1.0;
@@ -213,16 +213,16 @@ void helper_fcvt_b_d(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
     mpfr_t x;
     mpfr_init2(x, env->precision);
-    mpfr_set_d(x, res, env->rounding_mode);
+    mpfr_set_d(x, res, rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);  
 }
 
 
-void helper_fcvt_b_dfpr(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_fcvt_vp_dfpr(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_B_DFPR \n");
+    printf("TEST FCVT_VP_DFPR \n");
 
     struct FloatIEEE *f = unpack_float(env->fpr[src1]);
     double m = 1.0;
@@ -238,7 +238,7 @@ void helper_fcvt_b_dfpr(CPURISCVState *env, target_ulong dest, target_ulong src1
 
     mpfr_t x;
     mpfr_init2(x, env->precision);
-    mpfr_set_d(x, res, env->rounding_mode);
+    mpfr_set_d(x, res, rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
@@ -273,26 +273,26 @@ void helper_srnd(CPURISCVState *env, target_ulong dest, target_ulong src1, targe
 }
 
 
-void helper_fcvt_d_b(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_fcvt_d_vp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_D_B \n");
+    printf("TEST FCVT_D_VP \n");
 
 #if defined(TARGET_RISCV64)
     target_ulong res;
-    double nb_double = mpfr_get_d(env->vpr[src1], env->rounding_mode);
+    double nb_double = mpfr_get_d(env->vpr[src1], rm);
     memcpy(&res, &nb_double, sizeof(target_ulong));
     env->gpr[dest] = res;
 #endif
 }
 
 
-void helper_fcvt_dfpr_b(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
+void helper_fcvt_dfpr_vp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_DFPR_B \n");
+    printf("TEST FCVT_DFPR_VP \n");
 
 #if defined(TARGET_RISCV64)
     target_ulong res;
-    double nb_double = mpfr_get_d(env->vpr[src1], env->rounding_mode);
+    double nb_double = mpfr_get_d(env->vpr[src1], rm);
     memcpy(&res, &nb_double, sizeof(target_ulong));
     env->fpr[dest] = res;
 #endif
