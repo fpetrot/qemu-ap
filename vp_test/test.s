@@ -31,8 +31,8 @@ again:
 	fcvt.d.lu fa1,x30 # 4.0 <- 4
 
 	# Test conversions fpr -> mpfr
-	.word 0x2e05008b # fcvt_b_dfpr vp1, fa0
-	.word 0x2e05810b # fcvt_b_dfpr vp2, fa1
+	.word 0xc625308b # fcvt_vp_dfpr vp1, fa0
+	.word 0xc625b10b # fcvt_vp_dfpr vp2, fa1
 
 	# Test arithmetic operations
 	.word 0x0620b18b  # fadd_p   vp3, vp1, vp2
@@ -50,14 +50,14 @@ again:
 
 
 	# Test conversions gpr -> mpfr
-	.word 0x240e220b # fcvt_b_d vp4, x28
-	.word 0x2403220b # fcvt_b_d vp4, x6
+	.word 0xc61e320b # fcvt_vp_d vp4, x28
+	.word 0xc613320b # fcvt_vp_d vp4, x6
 
 	# Test conversion mpfr -> gpr
-	.word 0x26024f8b # fcvt_d_b x31, vp4
+	.word 0xc6323f8b # fcvt_d_vp x31, vp4
 
 	# Test conversion mpfr -> fpr
-	.word 0x3002060b # fcvt_dfpr_b fa2, vp4
+	.word 0xc642360b # fcvt_dfpr_vp fa2, vp4
 
 	la	t0, room_for_vpr
 	.word 0x0032d027 # fsp vp3, 0(t0)
