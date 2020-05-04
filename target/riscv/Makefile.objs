@@ -11,6 +11,7 @@ DECODETREE = $(SRC_PATH)/scripts/decodetree.py
 # decodeg-y = $(SRC_PATH)/target/riscv/insnvp.decode
 
 decode32-y = $(SRC_PATH)/target/riscv/insn32.decode
+decode32-y += $(SRC_PATH)/target/riscv/insnvp32.decode
 decode32-$(TARGET_RISCV64) += $(SRC_PATH)/target/riscv/insn32-64.decode
 decode32-$(TARGET_RISCV64) += $(SRC_PATH)/target/riscv/insnvp.decode
 

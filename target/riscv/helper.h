@@ -106,6 +106,7 @@ DEF_HELPER_1(wfi, void, env)
 DEF_HELPER_1(tlb_flush, void, env)
 #endif
 
+<<<<<<< HEAD
 /* Hypervisor functions */
 #ifndef CONFIG_USER_ONLY
 DEF_HELPER_1(hyp_tlb_flush, void, env)
@@ -1111,8 +1112,14 @@ DEF_HELPER_5(divs_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(remu_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(rems_i128, tl, env, tl, tl, tl, tl)
 
+/* Variable Precision related instructions 32-bit */
+DEF_HELPER_FLAGS_4(fcvt_vp_f, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_vp_ffpr, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_f_vp, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_ffpr_vp, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+
 /*
- * Variable precision related instructions:
+ * Variable precision related instructions 64-bit:
  * Since we are calling mpfr functions in which the result is generaly
  * the first argument, the helper does not return any meaningful value.
  */
