@@ -138,6 +138,7 @@ DEF_HELPER_1(tlb_flush_all, void, env)
 DEF_HELPER_1(itrigger_match, void, env)
 #endif
 
+<<<<<<< HEAD
 /* Hypervisor functions */
 #ifndef CONFIG_USER_ONLY
 DEF_HELPER_1(hyp_tlb_flush, void, env)
@@ -1281,11 +1282,13 @@ DEF_HELPER_5(vsm4k_vi, void, ptr, ptr, i32, env, i32)
 DEF_HELPER_4(vsm4r_vv, void, ptr, ptr, env, i32)
 DEF_HELPER_4(vsm4r_vs, void, ptr, ptr, env, i32)
 
-/*
- * Variable precision related instructions:
- * Since we are calling mpfr functions in which the result is generaly
- * the first argument, the helper does not return any meaningful value.
- */
+/* Variable Precision related 32-bit instructions */
+DEF_HELPER_FLAGS_4(fcvt_vp_f, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_vp_ffpr, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_f_vp, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_ffpr_vp, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+
+/* Variable precision related 64-bit instructions */
 DEF_HELPER_FLAGS_4(ldu,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_5(fadd_p,    TCG_CALL_NO_RWG, void, env, tl, tl, tl, tl)
 DEF_HELPER_FLAGS_5(fsub_p,    TCG_CALL_NO_RWG, void, env, tl, tl, tl, tl)

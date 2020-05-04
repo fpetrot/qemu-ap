@@ -21,6 +21,82 @@
  * https://wiki.qemu.org/Documentation/TCG/frontend-ops 
  */
 
+
+/* 32-bit */
+static bool trans_fcvt_vp_f(DisasContext *ctx, arg_fcvt_vp_f *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
+
+    gen_helper_fcvt_vp_f(cpu_env, dest, src1, rm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(rm);
+    return true;
+}
+
+static bool trans_fcvt_vp_ffpr(DisasContext *ctx, arg_fcvt_vp_ffpr *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
+
+    gen_helper_fcvt_vp_ffpr(cpu_env, dest, src1, rm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(rm);
+    return true;
+}
+
+static bool trans_fcvt_f_vp(DisasContext *ctx, arg_fcvt_f_vp *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
+
+    gen_helper_fcvt_f_vp(cpu_env, dest, src1, rm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(rm);
+    return true;
+}
+
+static bool trans_fcvt_ffpr_vp(DisasContext *ctx, arg_fcvt_ffpr_vp *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(rm, a->rm);
+
+    gen_helper_fcvt_ffpr_vp(cpu_env, dest, src1, rm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(rm);
+    return true;
+}
+
+
+/* 64-bit */
 static bool trans_srnd(DisasContext *ctx, arg_srnd *a)
 {
     TCGv dest = tcg_temp_new();

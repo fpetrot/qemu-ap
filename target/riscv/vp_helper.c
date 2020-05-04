@@ -57,7 +57,85 @@ static struct FloatIEEE *unpack_float(target_ulong num)
     return f;
 }
 
-/* Helpers */
+
+/* Helpers 32-bit */
+void helper_fcvt_vp_f(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_VP_F \n");
+
+    struct FloatIEEE *f = unpack_float(env->gpr[src1]);
+    float m = 1.0;
+
+#if defined(TARGET_RISCV32)
+    for (int i = 1; i < 24; i++) {
+        m += powf(2.0, -(float)i) * ((f->frac >> (23-i)) & 1);
+    }
+#endif
+
+    // Result
+    float res = f->sign * m * pow(2, f->exp);
+
+    mpfr_t x;
+    mpfr_init2(x, env->precision);
+    mpfr_set_flt(x, res, rm);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
+void helper_fcvt_vp_ffpr(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_VP_FFPR \n");
+
+    struct FloatIEEE *f = unpack_float(env->fpr[src1]);
+    float m = 1.0;
+
+#if defined(TARGET_RISCV32)
+    for (int i = 1; i < 24; i++) {
+        m += powf(2.0, -(float)i) * ((f->frac >> (23-i)) & 1);
+    }
+#endif
+
+    // Result
+    float res = f->sign * m * pow(2, f->exp);
+
+    mpfr_t x;
+    mpfr_init2(x, env->precision);
+    mpfr_set_flt(x, res, rm);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
+void helper_fcvt_f_vp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_F_VP \n");
+
+#if defined(TARGET_RISCV32)
+    target_ulong res;
+    float nb_double = mpfr_get_flt(env->vpr[src1], rm);
+    memcpy(&res, &nb_double, sizeof(target_ulong));
+    env->gpr[dest] = res;
+#endif
+}
+
+
+void helper_fcvt_ffpr_vp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_FFPR_VP \n");
+
+#if defined(TARGET_RISCV32)
+    target_ulong res;
+    float nb_double = mpfr_get_flt(env->vpr[src1], rm);
+    memcpy(&res, &nb_double, sizeof(target_ulong));
+    env->fpr[dest] = res;
+#endif
+}
+
+
+/* Helpers 64-bit */
 
 void helper_ldu(CPURISCVState *env, target_ulong dest, target_ulong idx, target_ulong data)
 {

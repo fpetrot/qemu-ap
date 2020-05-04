@@ -1,0 +1,35 @@
+# Decoding variable precision extensions accessed through the ROCC interface
+#
+# Copyright (c) 2020-2020 Frédéric Pétrot 
+# 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2 or later, as published by the Free Software Foundation.
+# 
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+# 
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# https://qemu.weilnetz.de/doc/devel/decodetree.html
+
+
+#############################################
+# Arbitrary Precision Floating Point 32-bit #
+#############################################
+
+# *** VP conversions
+# Conversion gpr into mpfr
+fcvt_vp_f     1100011 00101 ..... ... ..... 0001011 @r2_rm
+
+# Conversion fpr into mpfr
+fcvt_vp_ffpr  1100011 00110 ..... ... ..... 0001011 @r2_rm
+
+# Conversion mpfr into gpr
+fcvt_f_vp     1100011 00111 ..... ... ..... 0001011 @r2_rm
+
+# Conversion mpfr into fpr
+fcvt_ffpr_vp  1100011 00000 ..... ... ..... 0001011 @r2_rm
