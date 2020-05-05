@@ -199,7 +199,7 @@ void init_array_cholesky_double(int n, double A[n][n])
          A[r][s] = B[r][s];
 }
 
-#if 1
+#if DUMP_ARRAY
 static
 void print_array_cholesky_double(int n, double A[n][n])
 {
