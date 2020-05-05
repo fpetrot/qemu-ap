@@ -159,6 +159,20 @@ void helper_fadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
 }
 
 
+void helper_fmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
+{
+    printf("TEST FMADD_P \n");
+
+    mpfr_t x;
+    mpfr_init2(x, env->precision);
+    mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
+    mpfr_add(x, x, env->vpr[src3], rm);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
 void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
     printf("TEST FSUB_P \n");
@@ -166,6 +180,20 @@ void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
     mpfr_t x;
     mpfr_init2(x, env->precision);
     mpfr_sub(x, env->vpr[src1], env->vpr[src2], rm);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
+void helper_fmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
+{
+    printf("TEST FMSUB_P \n");
+
+    mpfr_t x;
+    mpfr_init2(x, env->precision);
+    mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
+    mpfr_sub(x, x, env->vpr[src3], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
@@ -270,6 +298,52 @@ void helper_fmax_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
+void helper_fsgnj_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    printf("TEST FSGNJ_P \n");
+
+    if (src1 == src2) {
+        memcpy(env->vpr[dest], env->vpr[src1], sizeof(mpfr_t));
+    } else {
+        mpfr_copysign(env->vpr[dest], env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    }
+}
+
+
+void helper_fsgnjn_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    printf("TEST FSGNJN_P \n");
+
+    if (src1 == src2) {
+        mpfr_neg(env->vpr[dest], env->vpr[src1], env->rounding_mode);
+    } else {
+        if (mpfr_signbit(env->vpr[src2]) != 0) {
+            // the number is negative
+            mpfr_setsign(env->vpr[dest], env->vpr[src1], 0, env->rounding_mode);
+        } else {
+            // the number is positive
+            mpfr_setsign(env->vpr[dest], env->vpr[src1], 1, env->rounding_mode);
+        }
+    }
+}
+
+
+void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    printf("TEST FSGNJX_P \n");
+
+    if (src1 == src2) {
+        mpfr_abs(env->vpr[dest], env->vpr[src1], env->rounding_mode);
+    } else {
+        int sign_src1;
+        int sign_src2;
+        sign_src1 = mpfr_signbit(env->vpr[src1]) != 0?1:0;
+        sign_src2 = mpfr_signbit(env->vpr[src2]) != 0?1:0;
+        mpfr_setsign(env->vpr[dest], env->vpr[src1], sign_src1 ^ sign_src2, env->rounding_mode);
+    }
 }
 
 

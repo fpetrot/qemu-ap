@@ -326,6 +326,30 @@ static bool trans_fadd_p(DisasContext *ctx, arg_fadd_p *a)
     return true;
 }
 
+static bool trans_fmadd_p(DisasContext *ctx, arg_fmadd_p *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+    TCGv src3 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+    tcg_gen_movi_tl(src3, a->rs3);
+    tcg_gen_movi_tl(rm, a->rm);
+
+    gen_helper_fmadd_p(cpu_env, dest, src1, src2, src3, rm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
+    tcg_temp_free(src3);
+    tcg_temp_free(rm);
+    return true;
+}
+
 static bool trans_fsub_p(DisasContext *ctx, arg_fsub_p *a)
 {
     TCGv dest = tcg_temp_new();
@@ -347,23 +371,27 @@ static bool trans_fsub_p(DisasContext *ctx, arg_fsub_p *a)
     return true;
 }
 
-static bool trans_gguess(DisasContext *ctx, arg_gguess *a)
+static bool trans_fmsub_p(DisasContext *ctx, arg_fmsub_p *a)
 {
-    return true;
-}
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+    TCGv src3 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
 
-static bool trans_gradius(DisasContext *ctx, arg_gradius *a)
-{
-    return true;
-}
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+    tcg_gen_movi_tl(src3, a->rs3);
+    tcg_gen_movi_tl(rm, a->rm);
 
-static bool trans_gaddu(DisasContext *ctx, arg_gaddu *a)
-{
-    return true;
-}
+    gen_helper_fmsub_p(cpu_env, dest, src1, src2, src3, rm);
 
-static bool trans_gsubu(DisasContext *ctx, arg_gsubu *a)
-{
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
+    tcg_temp_free(src3);
+    tcg_temp_free(rm);
     return true;
 }
 
@@ -388,11 +416,6 @@ static bool trans_fmul_p(DisasContext *ctx, arg_fmul_p *a)
     return true;
 }
 
-static bool trans_gmulu(DisasContext *ctx, arg_gmulu *a)
-{
-    return true;
-}
-
 static bool trans_fdiv_p(DisasContext *ctx, arg_fdiv_p *a)
 {
     TCGv dest = tcg_temp_new();
@@ -414,16 +437,6 @@ static bool trans_fdiv_p(DisasContext *ctx, arg_fdiv_p *a)
     return true;
 }
 
-static bool trans_gdivu(DisasContext *ctx, arg_gdivu *a)
-{
-    return true;
-}
-
-static bool trans_gabs(DisasContext *ctx, arg_gabs *a)
-{
-    return true;
-}
-
 static bool trans_fsqrt_p(DisasContext *ctx, arg_fsqrt_p *a)
 {
     TCGv dest = tcg_temp_new();
@@ -439,21 +452,6 @@ static bool trans_fsqrt_p(DisasContext *ctx, arg_fsqrt_p *a)
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(rm);
-    return true;
-}
-
-static bool trans_gisqrt(DisasContext *ctx, arg_gisqrt *a)
-{
-    return true;
-}
-
-static bool trans_gsqrtu(DisasContext *ctx, arg_gsqrtu *a)
-{
-    return true;
-}
-
-static bool trans_gisqrtu(DisasContext *ctx, arg_gisqrtu *a)
-{
     return true;
 }
 
@@ -490,21 +488,6 @@ static bool trans_fle_p(DisasContext *ctx, arg_fle_p *a)
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(src2);
-    return true;
-}
-
-static bool trans_gcmp_neq(DisasContext *ctx, arg_gcmp_neq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_nneq(DisasContext *ctx, arg_gcmp_nneq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_gt(DisasContext *ctx, arg_gcmp_gt *a)
-{
     return true;
 }
 
@@ -559,146 +542,6 @@ static bool trans_fmax_p(DisasContext *ctx, arg_fmax_p *a)
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(src2);
-    return true;
-}
-
-static bool trans_gcmp_geq(DisasContext *ctx, arg_gcmp_geq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_leq(DisasContext *ctx, arg_gcmp_leq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_gnneq(DisasContext *ctx, arg_gcmp_gnneq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_lnneq(DisasContext *ctx, arg_gcmp_lnneq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_ll_eq(DisasContext *ctx, arg_gcmp_ll_eq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_ll_neq(DisasContext *ctx, arg_gcmp_ll_neq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_ll_gt(DisasContext *ctx, arg_gcmp_ll_gt *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_ll_lt(DisasContext *ctx, arg_gcmp_ll_lt *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_ll_geq(DisasContext *ctx, arg_gcmp_ll_geq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_ll_leq(DisasContext *ctx, arg_gcmp_ll_leq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_lr_eq(DisasContext *ctx, arg_gcmp_lr_eq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_lr_neq(DisasContext *ctx, arg_gcmp_lr_neq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_lr_gt(DisasContext *ctx, arg_gcmp_lr_gt *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_lr_lt(DisasContext *ctx, arg_gcmp_lr_lt *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_lr_geq(DisasContext *ctx, arg_gcmp_lr_geq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_lr_leq(DisasContext *ctx, arg_gcmp_lr_leq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rl_eq(DisasContext *ctx, arg_gcmp_rl_eq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rl_neq(DisasContext *ctx, arg_gcmp_rl_neq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rl_gt(DisasContext *ctx, arg_gcmp_rl_gt *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rl_lt(DisasContext *ctx, arg_gcmp_rl_lt *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rl_geq(DisasContext *ctx, arg_gcmp_rl_geq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rl_leq(DisasContext *ctx, arg_gcmp_rl_leq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rr_eq(DisasContext *ctx, arg_gcmp_rr_eq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rr_neq(DisasContext *ctx, arg_gcmp_rr_neq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rr_gt(DisasContext *ctx, arg_gcmp_rr_gt *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rr_lt(DisasContext *ctx, arg_gcmp_rr_lt *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rr_geq(DisasContext *ctx, arg_gcmp_rr_geq *a)
-{
-    return true;
-}
-
-static bool trans_gcmp_rr_leq(DisasContext *ctx, arg_gcmp_rr_leq *a)
-{
     return true;
 }
 
@@ -771,5 +614,59 @@ static bool trans_fcvt_dfpr_vp(DisasContext *ctx, arg_fcvt_dfpr_vp *a)
     tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(rm);
+    return true;
+}
+
+static bool trans_fsgnj_p(DisasContext *ctx, arg_fsgnj_p *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+
+    gen_helper_fsgnj_p(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
+    return true;
+}
+
+static bool trans_fsgnjn_p(DisasContext *ctx, arg_fsgnjn_p *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+
+    gen_helper_fsgnjn_p(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
+    return true;
+}
+
+static bool trans_fsgnjx_p(DisasContext *ctx, arg_fsgnjx_p *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+
+    gen_helper_fsgnjx_p(cpu_env, dest, src1, src2);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
     return true;
 }

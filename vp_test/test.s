@@ -17,9 +17,9 @@ again:
 
 	# Precision et rounding mode
     li   x7, 200
-    .word 0x3203a00b # sprec x7 : store the precision into the status register precision
+    .word 0x3203a00f # sprec x7 : store the precision into the status register precision
     li  x5, MPFR_RNDD
-    .word 0x3602a00b # srnd x5 : store the rounding mode in the rounding mode register
+    .word 0x3602a00f # srnd x5 : store the rounding mode in the rounding mode register
 
     li   x29, 8
 	li   x30, 4
@@ -40,14 +40,20 @@ again:
 	.word 0x1620b18b  # fmul_p   vp3, vp1, vp2
 	.word 0x5e01b18b  # fsqrt_p  vp3, vp3
 	.word 0x1e20b18b  # fdiv_p   vp3, vp1, vp2
+	.word 0x1820b20b  # fmadd_p vp4, vp1, vp2, vp3
+	.word 0x1a20b20b  # fmsub_p vp4, vp1, vp2, vp3
 
 	# Test comparaisons
-	.word 0x8020a38b  # feq   x7, vp1, vp2
-	.word 0xa620938b  # flt   x7, vp1, vp2
-	.word 0x8020838b  # fle   x7, vp1, vp2
-	.word 0x3e20818b  # fmin_p   vp3, vp1, vp2
-	.word 0x3e20918b  # fmax_p   vp3, vp1, vp2
+	.word 0xa620a38b  # feq_p   x7, vp1, vp2
+	.word 0xa620938b  # flt_p   x7, vp1, vp2
+	.word 0xa620838b  # fle_p   x7, vp1, vp2
+	.word 0x2e20818b  # fmin_p   vp3, vp1, vp2
+	.word 0x2e20918b  # fmax_p   vp3, vp1, vp2
 
+	# Test signe
+	.word 0x2620818b  # fsgnj_p vp3, vp1, vp2
+	.word 0x2620918b  # fsgnjn  vp3, vp1, vp2
+	.word 0x2620a18b  # fsgnjx  vp3, vp1, vp2
 
 	# Test conversions gpr -> mpfr
 	.word 0xc61e320b # fcvt_vp_d vp4, x28
@@ -65,7 +71,7 @@ again:
 
 	# Test load after precision modification
 	li   x7, 300
-	.word 0x3203a00b # sprec x7
+	.word 0x3203a00f # sprec x7
 	.word 0x0002d087 # flp vp1, 0(t0)
 
 	ret
