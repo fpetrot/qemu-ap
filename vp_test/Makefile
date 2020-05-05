@@ -9,11 +9,12 @@ b.out : e_test_insn.o
 e_test_insn.o : e_test_insn.S
 	riscv64-unknown-elf-gcc -march=rv64ifd -mabi=lp64d -c $<
 
-cholesky.out : cholesky.o
-	riscv64-unknown-elf-ld -T link.ld $< -o $@ /opt/riscv/lib/gcc/riscv64-unknown-elf/9.2.0/libgcc.a
+crt.o : crt.s
+	riscv64-unknown-elf-gcc -c $<
+cholesky.out : cholesky.o crt.o
+	riscv64-unknown-elf-ld -T link.ld $^ -o $@
 cholesky.o : cholesky.c
-	riscv64-unknown-elf-gcc -mcmodel=medany -O3 -march=rv64ifd -mabi=lp64d -c $<
-
+	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -O3 -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
 
 c.out : gadd.o
 	riscv64-unknown-elf-ld -T link.ld $< -o $@
