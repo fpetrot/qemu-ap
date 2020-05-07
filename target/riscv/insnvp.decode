@@ -17,44 +17,9 @@
 # https://qemu.weilnetz.de/doc/devel/decodetree.html
 
 
-# TODO : Remove
-##########################################################################################
-# Rocc register numbers: (beware, syntax is lsb:length)
-%rgs2     20:5
-%rgs1     15:5
-%rgd      7:5
-
-# Rocc immediates:
-%rtimm    15:10
-%rfimm    15:5
-%rfimx    20:5
-#
-# Rocc argument sets:
-&rr   rgd rgs1 rgs2
-&rt   imm rgd
-&rf   imm rgs2 rgd
-&rx   imm rgs1 rgd
-
-
-# Rocc formats:
-@rr       .......   ..... ..... ... ..... ....... &rr                %rgs2 %rgs1 %rgd
-# @rt       .......   ..........  ... ..... ....... &rt     imm=%rtimm             %rgd
-# @rf       .......   ..... ..... ... ..... ....... &rf     imm=%rfimm %rgs2       %rgd
-@rx       .......   ..... ..... ... ..... ....... &rx     imm=%rfimx       %rgs1 %rgd
-#########################################################################################
-
-
 #############################################
 # Arbitrary Precision Floating Point 64-bit #
 #############################################
-
-# *** VP load and store the precision
-lpre      0000110 ..... ..... 100 ..... 0001111 @rx
-spre      0011001 ..... ..... 010 ..... 0001111 @rx
-
-# *** VP load and store rounding mode
-lrnd      0001000 ..... ..... 100 ..... 0001111 @rx
-srnd      0011011 ..... ..... 010 ..... 0001111 @rx
 
 # *** VP load and store arbitrary precision registers
 flp           ............   ..... 101 ..... 0000111 @i
@@ -89,17 +54,3 @@ fcvt_d_vp     1100011 00011 ..... ... ..... 0001011 @r2_rm
 
 # Conversion mpfr into fpr
 fcvt_dfpr_vp  1100011 00100 ..... ... ..... 0001011 @r2_rm
-
-
-
-# TODO : Clean and Remove
-#############################################################################
-## *** Variable precision environment setting instruction ***
-## Please Andrea enlight me, I don't get why we have that many insns
-## Note also that the doc is incoherent => Xs1 appears on the register drawing
-## while Xs2 appears on the text. I assume Xs2 which is riscv-consistent
-
-
-# *** VP load and stores
-ldu           0000010 ..... ..... 010 ..... 0001111 @rr
-#################################################################################

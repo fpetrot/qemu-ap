@@ -454,6 +454,19 @@ static int write_vcsr(CPURISCVState *env, int csrno, target_ulong val)
     return RISCV_EXCP_NONE;
 }
 
+/* User Arbitrary Precision Floating-Point CSRs */
+static int read_fprec(CPURISCVState *env, int csrno, target_ulong *val)
+{
+    *val = env->fprec;
+    return 0;
+}
+
+static int write_fprec(CPURISCVState *env, int csrno, target_ulong val)
+{
+    env->fprec = val;
+    return 0;
+}
+
 /* User Timers and Counters */
 static RISCVException read_instret(CPURISCVState *env, int csrno,
                                    target_ulong *val)
@@ -3075,6 +3088,8 @@ riscv_csr_operations csr_ops[CSR_TABLE_SIZE] = {
     [CSR_VL]       = { "vl",       vs,     read_vl                    },
     [CSR_VTYPE]    = { "vtype",    vs,     read_vtype                 },
     [CSR_VLENB]    = { "vlenb",    vs,     read_vlenb                 },
+    /* User Arbitrary Precision Floating-Point CSRs */
+    [CSR_FPREC]    = { "fprec",    any,    read_fprec,   write_fprec  },
     /* User Timers and Counters */
     [CSR_CYCLE]    = { "cycle",    ctr,    read_instret  },
     [CSR_INSTRET]  = { "instret",  ctr,    read_instret  },

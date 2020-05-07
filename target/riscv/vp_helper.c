@@ -76,7 +76,7 @@ void helper_fcvt_vp_f(CPURISCVState *env, target_ulong dest, target_ulong src1, 
     float res = f->sign * m * pow(2, f->exp);
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_set_flt(x, res, rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -101,7 +101,7 @@ void helper_fcvt_vp_ffpr(CPURISCVState *env, target_ulong dest, target_ulong src
     float res = f->sign * m * pow(2, f->exp);
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_set_flt(x, res, rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -136,22 +136,12 @@ void helper_fcvt_ffpr_vp(CPURISCVState *env, target_ulong dest, target_ulong src
 
 
 /* Helpers 64-bit */
-
-void helper_ldu(CPURISCVState *env, target_ulong dest, target_ulong idx, target_ulong data)
-{
-    // TODO
-    //env->vpr[dest] = NULL;
-    //env->vpr[dest][idx] = data; /* TODO: inline that to gain some time when refactoring */
-}
-
-
-/* For now dumb operations that should end up as calls to the mpfr library */
 void helper_fadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
     printf("TEST FADD_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_add(x, env->vpr[src1], env->vpr[src2], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -164,7 +154,7 @@ void helper_fmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
     printf("TEST FMADD_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
     mpfr_add(x, x, env->vpr[src3], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
@@ -178,7 +168,7 @@ void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
     printf("TEST FSUB_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_sub(x, env->vpr[src1], env->vpr[src2], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -191,7 +181,7 @@ void helper_fmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
     printf("TEST FMSUB_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
     mpfr_sub(x, x, env->vpr[src3], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
@@ -205,7 +195,7 @@ void helper_fmul_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
     printf("TEST FMUL_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -218,7 +208,7 @@ void helper_fdiv_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
     printf("TEST FDIV_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_div(x, env->vpr[src1], env->vpr[src2], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -231,7 +221,7 @@ void helper_fsqrt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
     printf("TEST FSQRT_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_sqrt(x, env->vpr[src1], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -280,8 +270,8 @@ void helper_fmin_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
     printf("TEST FMIN_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
-    mpfr_min(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    mpfr_init2(x, env->fprec);
+    mpfr_min(x, env->vpr[src1], env->vpr[src2], env->frm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
@@ -293,8 +283,8 @@ void helper_fmax_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
     printf("TEST FMAX_P \n");
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
-    mpfr_max(x, env->vpr[src1], env->vpr[src2], env->rounding_mode);
+    mpfr_init2(x, env->fprec);
+    mpfr_max(x, env->vpr[src1], env->vpr[src2], env->frm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
@@ -308,7 +298,7 @@ void helper_fsgnj_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
     if (src1 == src2) {
         memcpy(env->vpr[dest], env->vpr[src1], sizeof(mpfr_t));
     } else {
-        mpfr_copysign(env->vpr[dest], env->vpr[src1], env->vpr[src2], env->rounding_mode);
+        mpfr_copysign(env->vpr[dest], env->vpr[src1], env->vpr[src2], env->frm);
     }
 }
 
@@ -318,14 +308,14 @@ void helper_fsgnjn_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
     printf("TEST FSGNJN_P \n");
 
     if (src1 == src2) {
-        mpfr_neg(env->vpr[dest], env->vpr[src1], env->rounding_mode);
+        mpfr_neg(env->vpr[dest], env->vpr[src1], env->frm);
     } else {
         if (mpfr_signbit(env->vpr[src2]) != 0) {
             // the number is negative
-            mpfr_setsign(env->vpr[dest], env->vpr[src1], 0, env->rounding_mode);
+            mpfr_setsign(env->vpr[dest], env->vpr[src1], 0, env->frm);
         } else {
             // the number is positive
-            mpfr_setsign(env->vpr[dest], env->vpr[src1], 1, env->rounding_mode);
+            mpfr_setsign(env->vpr[dest], env->vpr[src1], 1, env->frm);
         }
     }
 }
@@ -336,13 +326,13 @@ void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
     printf("TEST FSGNJX_P \n");
 
     if (src1 == src2) {
-        mpfr_abs(env->vpr[dest], env->vpr[src1], env->rounding_mode);
+        mpfr_abs(env->vpr[dest], env->vpr[src1], env->frm);
     } else {
         int sign_src1;
         int sign_src2;
         sign_src1 = mpfr_signbit(env->vpr[src1]) != 0?1:0;
         sign_src2 = mpfr_signbit(env->vpr[src2]) != 0?1:0;
-        mpfr_setsign(env->vpr[dest], env->vpr[src1], sign_src1 ^ sign_src2, env->rounding_mode);
+        mpfr_setsign(env->vpr[dest], env->vpr[src1], sign_src1 ^ sign_src2, env->frm);
     }
 }
 
@@ -364,7 +354,7 @@ void helper_fcvt_vp_d(CPURISCVState *env, target_ulong dest, target_ulong src1, 
     double res = f->sign * m * pow(2, f->exp);
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_set_d(x, res, rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
@@ -389,39 +379,11 @@ void helper_fcvt_vp_dfpr(CPURISCVState *env, target_ulong dest, target_ulong src
     double res = f->sign * m * pow(2, f->exp);
 
     mpfr_t x;
-    mpfr_init2(x, env->precision);
+    mpfr_init2(x, env->fprec);
     mpfr_set_d(x, res, rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
-}
-
-
-void helper_lpre(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
-{
-    printf("TEST LOAD PRECISION : %ld\n", env->precision);
-    env->gpr[dest] = env->precision;
-}
-
-
-void helper_spre(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
-{
-    printf("TEST STORE PRECISION : %ld\n", env->gpr[src1]);
-    env->precision = env->gpr[src1];
-}
-
-
-void helper_lrnd(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
-{
-    printf("TEST LOAD ROUNDING MODE : %ld\n", env->rounding_mode);
-    env->gpr[dest] = env->rounding_mode;
-}
-
-
-void helper_srnd(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong imm)
-{
-    printf("TEST STORE ROUNDING MODE : %ld\n", env->gpr[src1]);
-    env->rounding_mode = env->gpr[src1];
 }
 
 
@@ -460,8 +422,8 @@ uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uin
     {
         case 0:
             // On regarde si la précision a changé
-            if (env->precision != (env->vpr[dest])->_mpfr_prec) {
-                mpfr_prec_round(env->vpr[dest], env->precision, env->rounding_mode);
+            if (env->fprec != (env->vpr[dest])->_mpfr_prec) {
+                mpfr_prec_round(env->vpr[dest], env->fprec, env->frm);
             }
             mpfr_printf("%.128Rf\n", env->vpr[dest]);
             res = 1;

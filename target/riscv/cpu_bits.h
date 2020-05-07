@@ -71,6 +71,9 @@
 #define VCSR_VXRM_SHIFT     1
 #define VCSR_VXRM           (0x3 << VCSR_VXRM_SHIFT)
 
+/* User Arbitrary Precision Floating-Point CSRs */
+#define CSR_FPREC           0x006
+
 /* User Timers and Counters */
 #define CSR_CYCLE           0xc00
 #define CSR_TIME            0xc01
