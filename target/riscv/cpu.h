@@ -146,8 +146,6 @@ struct CPUArchState {
      * Note that I would put them in the csr if ROCC wasn't involved */
 
     mpfr_t vpr[32];
-    target_ulong precision;
-    target_ulong rounding_mode;
 
     target_ulong pc;
     target_ulong load_res;
@@ -157,6 +155,7 @@ struct CPUArchState {
     uint64_t fpr[32]; /* assume both F and D extensions */
     target_ulong frm;
     float_status fp_status;
+    target_ulong fprec;
 
     target_ulong badaddr;
     target_ulong bins;

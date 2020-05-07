@@ -15,11 +15,12 @@ again:
 	li	t0, MSTATUS_FS
 	csrs	mstatus, t0
 
-	# Precision et rounding mode
-    li   x7, 200
-    .word 0x3203a00f # sprec x7 : store the precision into the status register precision
-    li  x5, MPFR_RNDD
-    .word 0x3602a00f # srnd x5 : store the rounding mode in the rounding mode register
+	# Using already existing rounding mode instruction
+	csrrwi x0, 2, MPFR_RNDD
+
+	# Write the precision as csr
+	li   x7, 200
+	csrrw x0, 6, x7
 
     li   x29, 8
 	li   x30, 4
@@ -71,7 +72,7 @@ again:
 
 	# Test load after precision modification
 	li   x7, 300
-	.word 0x3203a00f # sprec x7
+	csrrw x0, 6, x7
 	.word 0x0002d087 # flp vp1, 0(t0)
 
 	ret

@@ -2021,6 +2021,7 @@ static const char *csr_name(int csrno)
     case 0x0003: return "fcsr";
     case 0x0004: return "uie";
     case 0x0005: return "utvec";
+    case 0x0006: return "fprec";
     case 0x0008: return "vstart";
     case 0x0009: return "vxsat";
     case 0x000a: return "vxrm";
