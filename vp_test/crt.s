@@ -12,7 +12,7 @@ _start:
 
     # We're in bare metal, so set stack at the end of physical memory
     la      sp, _memory_end
-    j       main
+    jal     main
 
 die:
     wfi

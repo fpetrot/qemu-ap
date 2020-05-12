@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #endif
 /* Something to start with */
-#define SMALL_DATASET
+#define MEDIUM_DATASET
 
 /* Default to LARGE_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(MEDIUM_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
@@ -170,8 +170,7 @@ void print_double(double f)
 
 static double B[N_CHOLESKY][N_CHOLESKY];
 
-static
-void init_array_cholesky_double(int n, double A[n][n])
+static void init_array_cholesky_double(int n, double A[n][n])
 {
    int i, j;
 
@@ -218,8 +217,8 @@ void print_array_cholesky_double(int n, double A[n][n])
 }
 #endif
 
-static
-void kernel_cholesky_double(int n, double A[n][n])
+static void kernel_cholesky_double(int n, double A[n][n]) __attribute__((noinline));
+static void kernel_cholesky_double(int n, double A[n][n])
 {
    int i, j, k;
 
@@ -267,5 +266,6 @@ void cholesky(void)
 int main(void)
 {
    cholesky();
+   *(volatile unsigned int *)0x100000 = 0x5555;
    return 0;
 }

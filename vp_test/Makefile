@@ -1,3 +1,5 @@
+SHELL=/bin/bash  # To have access to 'time'
+
 a.out: marie_test_e.o link.ld
 	riscv64-unknown-elf-ld -T link.ld marie_test_e.o
 marie_test_e.o : marie_test_e.s
@@ -11,6 +13,12 @@ e_test_insn.o : e_test_insn.S
 
 crt.o : crt.s
 	riscv64-unknown-elf-gcc -c $<
+
+.PHONY: cholesky
+cholesky : cholesky.log cholesky.time
+	cat $^
+%.log %.time : cholesky.out
+	{ time ../build_vp/riscv64-softmmu/qemu-system-riscv64 -machine virt -bios none -nographic -kernel $< > $*.log ; } 2> $*.time
 cholesky.out : cholesky.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
 cholesky.o : cholesky.c
