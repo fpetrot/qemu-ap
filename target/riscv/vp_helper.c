@@ -59,34 +59,9 @@ static struct FloatIEEE *unpack_float(target_ulong num)
 
 
 /* Helpers 32-bit */
-void helper_fcvt_vp_f(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+void helper_fcvt_p_f(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_VP_F \n");
-
-    struct FloatIEEE *f = unpack_float(env->gpr[src1]);
-    float m = 1.0;
-
-#if defined(TARGET_RISCV32)
-    for (int i = 1; i < 24; i++) {
-        m += powf(2.0, -(float)i) * ((f->frac >> (23-i)) & 1);
-    }
-#endif
-
-    // Result
-    float res = f->sign * m * pow(2, f->exp);
-
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_set_flt(x, res, rm);
-    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->vpr[dest]);
-}
-
-
-void helper_fcvt_vp_ffpr(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
-{
-    printf("TEST FCVT_VP_FFPR \n");
+    printf("TEST FCVT_P_F \n");
 
     struct FloatIEEE *f = unpack_float(env->fpr[src1]);
     float m = 1.0;
@@ -109,28 +84,51 @@ void helper_fcvt_vp_ffpr(CPURISCVState *env, target_ulong dest, target_ulong src
 }
 
 
-void helper_fcvt_f_vp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+void helper_fcvt_f_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_F_VP \n");
-
-#if defined(TARGET_RISCV32)
-    target_ulong res;
-    float nb_double = mpfr_get_flt(env->vpr[src1], rm);
-    memcpy(&res, &nb_double, sizeof(target_ulong));
-    env->gpr[dest] = res;
-#endif
-}
-
-
-void helper_fcvt_ffpr_vp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
-{
-    printf("TEST FCVT_FFPR_VP \n");
+    printf("TEST FCVT_F_P \n");
 
 #if defined(TARGET_RISCV32)
     target_ulong res;
     float nb_double = mpfr_get_flt(env->vpr[src1], rm);
     memcpy(&res, &nb_double, sizeof(target_ulong));
     env->fpr[dest] = res;
+#endif
+}
+
+
+void helper_fcvt_p_w(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_P_W \n");
+#if defined(TARGET_RISCV32)
+    mpfr_set_si(env->vpr[dest], env->gpr[src1], rm);
+#endif
+}
+
+
+void helper_fcvt_w_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_W_P \n");
+#if defined(TARGET_RISCV32)
+    env->gpr[dest] = mpfr_get_si(env->vpr[src1], rm);
+#endif
+}
+
+
+void helper_fcvt_p_wu(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_P_WU \n");
+#if defined(TARGET_RISCV32)
+    mpfr_set_ui(env->vpr[dest], env->gpr[src1], rm);
+#endif
+}
+
+
+void helper_fcvt_wu_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_WU_P \n");
+#if defined(TARGET_RISCV32)
+    env->gpr[dest] = mpfr_get_ui(env->vpr[src1], rm);
 #endif
 }
 
@@ -337,11 +335,11 @@ void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 }
 
 
-void helper_fcvt_vp_d(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_VP_D \n");
+    printf("TEST FCVT_P_D \n");
 
-    struct FloatIEEE *f = unpack_float(env->gpr[src1]);
+    struct FloatIEEE *f = unpack_float(env->fpr[src1]);
     double m = 1.0;
 
 #if defined(TARGET_RISCV64)
@@ -362,53 +360,55 @@ void helper_fcvt_vp_d(CPURISCVState *env, target_ulong dest, target_ulong src1, 
 }
 
 
-void helper_fcvt_vp_dfpr(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+void helper_fcvt_d_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_VP_DFPR \n");
-
-    struct FloatIEEE *f = unpack_float(env->fpr[src1]);
-    double m = 1.0;
-
-#if defined(TARGET_RISCV64)
-    for (int i = 1; i < 53; i++) {
-        m += powl(2.0, -(double)i) * ((f->frac >> (52-i)) & 1);
-    }
-#endif
-
-    // Result
-    double res = f->sign * m * pow(2, f->exp);
-
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_set_d(x, res, rm);
-    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->vpr[dest]);
-}
-
-
-void helper_fcvt_d_vp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
-{
-    printf("TEST FCVT_D_VP \n");
-
-#if defined(TARGET_RISCV64)
-    target_ulong res;
-    double nb_double = mpfr_get_d(env->vpr[src1], rm);
-    memcpy(&res, &nb_double, sizeof(target_ulong));
-    env->gpr[dest] = res;
-#endif
-}
-
-
-void helper_fcvt_dfpr_vp(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
-{
-    printf("TEST FCVT_DFPR_VP \n");
+    printf("TEST FCVT_D_P \n");
 
 #if defined(TARGET_RISCV64)
     target_ulong res;
     double nb_double = mpfr_get_d(env->vpr[src1], rm);
     memcpy(&res, &nb_double, sizeof(target_ulong));
     env->fpr[dest] = res;
+#endif
+}
+
+
+void helper_fcvt_p_l(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_P_L \n");
+
+#if defined(TARGET_RISCV64)
+    mpfr_set_si(env->vpr[dest], env->gpr[src1], rm);
+#endif
+}
+
+
+void helper_fcvt_l_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_L_P \n");
+
+#if defined(TARGET_RISCV64)
+    env->gpr[dest] = mpfr_get_si(env->vpr[src1], rm);
+#endif
+}
+
+
+void helper_fcvt_p_lu(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_P_LU \n");
+
+#if defined(TARGET_RISCV64)
+    mpfr_set_ui(env->vpr[dest], env->gpr[src1], rm);
+#endif
+}
+
+
+void helper_fcvt_lu_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    printf("TEST FCVT_LU_P \n");
+
+#if defined(TARGET_RISCV64)
+    env->gpr[dest] = mpfr_get_ui(env->vpr[src1], rm);
 #endif
 }
 
