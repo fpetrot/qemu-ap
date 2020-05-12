@@ -22,14 +22,20 @@
 #############################################
 
 # *** VP conversions
-# Conversion gpr into mpfr
-fcvt_vp_f     1100011 00101 ..... ... ..... 0001011 @r2_rm
+# Conversion float into mpfr
+fcvt_p_f     1100011 00011 ..... ... ..... 0001011 @r2_rm
 
-# Conversion fpr into mpfr
-fcvt_vp_ffpr  1100011 00110 ..... ... ..... 0001011 @r2_rm
+# Conversion mpfr into float
+fcvt_f_p     1100011 00100 ..... ... ..... 0001011 @r2_rm
 
-# Conversion mpfr into gpr
-fcvt_f_vp     1100011 00111 ..... ... ..... 0001011 @r2_rm
+# Conversion int into mpfr
+fcvt_p_w      1100011 01101 ..... ... ..... 0001011 @r2_rm
 
-# Conversion mpfr into fpr
-fcvt_ffpr_vp  1100011 00000 ..... ... ..... 0001011 @r2_rm
+# Conversion mpfr into int
+fcvt_w_p      1100011 01110 ..... ... ..... 0001011 @r2_rm
+
+# Conversion uint into mpfr
+fcvt_p_wu      1100011 01111 ..... ... ..... 0001011 @r2_rm
+
+# Conversion mpfr into uint
+fcvt_wu_p      1100011 01000 ..... ... ..... 0001011 @r2_rm

@@ -9,38 +9,38 @@
  * Let's define our own register names, just to make things clear
  * FIXME: change the names sometimes
  */
-#define  gx0  x0
-#define  gx1  x1
-#define  gx2  x2
-#define  gx3  x3
-#define  gx4  x4
-#define  gx5  x5
-#define  gx6  x6
-#define  gx7  x7
-#define  gx8  x8
-#define  gx9  x9
-#define gx10 x10
-#define gx11 x11
-#define gx12 x12
-#define gx13 x13
-#define gx14 x14
-#define gx15 x15
-#define gx16 x16
-#define gx17 x17
-#define gx18 x18
-#define gx19 x19
-#define gx20 x20
-#define gx21 x21
-#define gx22 x22
-#define gx23 x23
-#define gx24 x24
-#define gx25 x25
-#define gx26 x26
-#define gx27 x27
-#define gx28 x28
-#define gx29 x29
-#define gx30 x30
-#define gx31 x31
+#define  p0  x0
+#define  p1  x1
+#define  p2  x2
+#define  p3  x3
+#define  p4  x4
+#define  p5  x5
+#define  p6  x6
+#define  p7  x7
+#define  p8  x8
+#define  p9  x9
+#define p10 x10
+#define p11 x11
+#define p12 x12
+#define p13 x13
+#define p14 x14
+#define p15 x15
+#define p16 x16
+#define p17 x17
+#define p18 x18
+#define p19 x19
+#define p20 x20
+#define p21 x21
+#define p22 x22
+#define p23 x23
+#define p24 x24
+#define p25 x25
+#define p26 x26
+#define p27 x27
+#define p28 x28
+#define p29 x29
+#define p30 x30
+#define p31 x31
 
 /*
  * Values copied form mpfr.h that we need in asm
@@ -70,9 +70,27 @@
  * +-------+-----+-----+-------+----+-------------+
  * 31      25    20    15      12   7             0
  */
-#define fcvt_d_g(aprd, rs1)      .insn r 0x0b, 2, 0x12, aprd, rs1,   x0
-#define gmul(aprd, aprs1, aprs2) .insn r 0x0b, 0, 0xb,  aprd, aprs1, aprs2
-#define gdiv(aprd, aprs1, aprs2) .insn r 0x0b, 0, 0x0f, aprd, aprs1, aprs2
-#define gadd(aprd, aprs1, aprs2) .insn r 0x0b, 0, 0x06, aprd, aprs1, aprs2
-#define spre(rs1)                .insn r 0x0b, 2, 0x19, x0,   rs1,   x0
-#define srnd(rs1)                .insn r 0x0b, 2, 0x1b, x0,   rs1,   x0
+
+#define flp(imm, rs1, rd)               .insn i 0b0000111, 0b101, rd, rs1, imm
+#define fsp(imm, rs2, rs1)              .insn s 0b0100111, 0b101, rs1, rs2, imm
+#define fadd_p(rs2, rs1, rm, rd)        .insn r 0b0001011, rm, 0b0000011, rd, rs1, rs2
+#define fsub_p(rs2, rs1, rm, rd)        .insn r 0b0001011, rm, 0b0000111, rd, rs1, rs2
+#define fmul_p(rs2, rs1, rm, rd)        .insn r 0b0001011, rm, 0b0001011, rd, rs1, rs2
+#define fdiv_p(rs2, rs1, rm, rd)        .insn r 0b0001011, rm, 0b0001111, rd, rs1, rs2
+#define fsqrt_p(rs1, rm, rd)            .insn r 0b0001011, rm, 0b0101111, rd, rs1, x0
+#define feq_p(rs2, rs1, rd)             .insn r 0b0001011, 0b010, 0b1010011, rd, rs1, rs2
+#define flt_p(rs2, rs1, rd)             .insn r 0b0001011, 0b001, 0b1010011, rd, rs1, rs2
+#define fle_p(rs2, rs1, rd)             .insn r 0b0001011, 0b000, 0b1010011, rd, rs1, rs2
+#define fmin_p(rs2, rs1, rd)            .insn r 0b0001011, 0b000, 0b0010111, rd, rs1, rs2
+#define fmax_p(rs2, rs1, rd)            .insn r 0b0001011, 0b001, 0b0010111, rd, rs1, rs2
+#define fsgnj_p(rs2, rs1, rd)           .insn r 0b0001011, 0b000, 0b0010011, rd, rs1, rs2
+#define fsgnjn_p(rs2, rs1, rd)          .insn r 0b0001011, 0b001, 0b0010011, rd, rs1, rs2
+#define fsgnjx_p(rs2, rs1, rd)          .insn r 0b0001011, 0b010, 0b0010011, rd, rs1, rs2
+#define fcvt_p_d(rs1, rm, rd)           .insn r 0b0001011, rm, 0b1100011, rd, rs1, x1
+#define fcvt_d_p(rs1, rm, rd)           .insn r 0b0001011, rm, 0b1100011, rd, rs1, x2
+#define fcvt_p_l(rs1, rm, rd)           .insn r 0b0001011, rm, 0b1100011, rd, rs1, x9
+#define fcvt_l_p(rs1, rm, rd)           .insn r 0b0001011, rm, 0b1100011, rd, rs1, x10
+#define fcvt_p_lu(rs1, rm, rd)          .insn r 0b0001011, rm, 0b1100011, rd, rs1, x11
+#define fcvt_lu_p(rs1, rm, rd)          .insn r 0b0001011, rm, 0b1100011, rd, rs1, x12
+#define fmadd_p(rs3, rs2, rs1, rm, rd)  .insn r4 0b0001011, rm, 0b00, rd, rs1, rs2, rs3
+#define fmsub_p(rs3, rs2, rs1, rm, rd)  .insn r4 0b0001011, rm, 0b01, rd, rs1, rs2, rs3

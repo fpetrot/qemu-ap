@@ -43,14 +43,20 @@ fmadd_p       ..... 00 ..... ..... ... ..... 0001011 @r4_rm
 fmsub_p       ..... 01 ..... ..... ... ..... 0001011 @r4_rm
 
 # *** VP conversions
-# Conversion gpr into mpfr
-fcvt_vp_d     1100011 00001 ..... ... ..... 0001011 @r2_rm
+# Conversion double into mpfr
+fcvt_p_d     1100011 00001 ..... ... ..... 0001011 @r2_rm
 
-# Conversion fpr into mpfr
-fcvt_vp_dfpr  1100011 00010 ..... ... ..... 0001011 @r2_rm
+# Conversion mpfr into double
+fcvt_d_p     1100011 00010 ..... ... ..... 0001011 @r2_rm
 
-# Conversion mpfr into gpr
-fcvt_d_vp     1100011 00011 ..... ... ..... 0001011 @r2_rm
+# Conversion int into mpfr
+fcvt_p_l      1100011 01001 ..... ... ..... 0001011 @r2_rm
 
-# Conversion mpfr into fpr
-fcvt_dfpr_vp  1100011 00100 ..... ... ..... 0001011 @r2_rm
+# Conversion mpfr into int
+fcvt_l_p      1100011 01010 ..... ... ..... 0001011 @r2_rm
+
+# Conversion uint into mpfr
+fcvt_p_lu     1100011 01011 ..... ... ..... 0001011 @r2_rm
+
+# Conversion mpfr into uint
+fcvt_lu_p     1100011 01100 ..... ... ..... 0001011 @r2_rm

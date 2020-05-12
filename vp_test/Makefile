@@ -45,4 +45,4 @@ mpfr-test : mpfr-test.o
 	gcc -o $@ $< $(LDFLAGS)
 mpfr-test.o : mpfr-test.c
 
-clean : ; rm -f *.out  marie_test_e.o a.dis tests.s mpfr-test mpfr-test.o e_test_insn.o cholesky.o
+clean : ; rm -f *.out  test_all.o a.dis tests.s mpfr-test mpfr-test.o e_test_insn.o cholesky.o

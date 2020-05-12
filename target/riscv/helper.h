@@ -138,7 +138,6 @@ DEF_HELPER_1(tlb_flush_all, void, env)
 DEF_HELPER_1(itrigger_match, void, env)
 #endif
 
-<<<<<<< HEAD
 /* Hypervisor functions */
 #ifndef CONFIG_USER_ONLY
 DEF_HELPER_1(hyp_tlb_flush, void, env)
@@ -1154,6 +1153,7 @@ DEF_HELPER_5(divs_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(remu_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(rems_i128, tl, env, tl, tl, tl, tl)
 
+<<<<<<< HEAD
 /* Crypto functions */
 DEF_HELPER_FLAGS_3(aes32esmi, TCG_CALL_NO_RWG_SE, tl, tl, tl, tl)
 DEF_HELPER_FLAGS_3(aes32esi, TCG_CALL_NO_RWG_SE, tl, tl, tl, tl)
@@ -1282,11 +1282,13 @@ DEF_HELPER_5(vsm4k_vi, void, ptr, ptr, i32, env, i32)
 DEF_HELPER_4(vsm4r_vv, void, ptr, ptr, env, i32)
 DEF_HELPER_4(vsm4r_vs, void, ptr, ptr, env, i32)
 
-/* Variable Precision related 32-bit instructions */
-DEF_HELPER_FLAGS_4(fcvt_vp_f, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-DEF_HELPER_FLAGS_4(fcvt_vp_ffpr, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-DEF_HELPER_FLAGS_4(fcvt_f_vp, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-DEF_HELPER_FLAGS_4(fcvt_ffpr_vp, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+/* Variable Precision related instructions 32-bit */
+DEF_HELPER_FLAGS_4(fcvt_p_f, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_f_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_p_w, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_w_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_p_wu, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_wu_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 
 /* Variable precision related 64-bit instructions */
 DEF_HELPER_FLAGS_4(ldu,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
@@ -1302,12 +1304,14 @@ DEF_HELPER_FLAGS_4(flt_p,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(fle_p,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(fmin_p,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(fmax_p,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-DEF_HELPER_FLAGS_4(fcvt_vp_d, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-DEF_HELPER_FLAGS_4(fcvt_vp_dfpr, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-DEF_HELPER_FLAGS_4(fcvt_d_vp, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-DEF_HELPER_FLAGS_4(fcvt_dfpr_vp, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_p_d, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_d_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(flp, TCG_CALL_NO_RWG, i64, env, tl, tl, i64)
 DEF_HELPER_FLAGS_3(fsp, TCG_CALL_NO_RWG, i64, env, tl, i64)
 DEF_HELPER_FLAGS_4(fsgnj_p,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(fsgnjn_p,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(fsgnjx_p,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_p_l, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_l_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_p_lu, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
+DEF_HELPER_FLAGS_4(fcvt_lu_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
