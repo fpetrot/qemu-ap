@@ -21,11 +21,11 @@
 # Arbitrary Precision Floating Point 64-bit #
 #############################################
 
-# *** VP load and store arbitrary precision registers
+# *** Load and Store
 flp           ............   ..... 101 ..... 0000111 @i
 fsp           ....... .....  ..... 101 ..... 0100111 @s
 
-# *** VP arithmetic operations
+# *** Arithmetic operations
 fadd_p        0000011 ..... ..... ... ..... 0001011 @r_rm
 fsub_p        0000111 ..... ..... ... ..... 0001011 @r_rm
 fmul_p        0001011 ..... ..... ... ..... 0001011 @r_rm
@@ -42,7 +42,7 @@ fsgnjx_p      0010011 ..... ..... 010 ..... 0001011 @r
 fmadd_p       ..... 00 ..... ..... ... ..... 0001011 @r4_rm
 fmsub_p       ..... 01 ..... ..... ... ..... 0001011 @r4_rm
 
-# *** VP conversions
+# *** Conversions
 # Conversion double into mpfr
 fcvt_p_d     1100011 00001 ..... ... ..... 0001011 @r2_rm
 

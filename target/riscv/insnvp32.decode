@@ -21,7 +21,7 @@
 # Arbitrary Precision Floating Point 32-bit #
 #############################################
 
-# *** VP conversions
+# *** Conversions
 # Conversion float into mpfr
 fcvt_p_f     1100011 00011 ..... ... ..... 0001011 @r2_rm
 
