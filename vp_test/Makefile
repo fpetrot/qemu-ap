@@ -19,6 +19,12 @@ e_test_double.out : e_test_double.o crt.o
 e_test_double.o : e_test_double.c
 	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -O3 -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
 
+newton_double.out : newton_double.o crt.o
+	riscv64-unknown-elf-ld -T link.ld $^ -o $@
+newton_double.o : newton_double.c
+	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -O3 -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
+
+
 .PHONY: cholesky
 cholesky : cholesky.log cholesky.time
 	cat $^
@@ -59,4 +65,4 @@ mpfr-test : mpfr-test.o
 	gcc -o $@ $< $(LDFLAGS)
 mpfr-test.o : mpfr-test.c
 
-clean : ; rm -f *.out  test_all.o tests.s mpfr-test mpfr-test.o e_test_insn.o cholesky.o e_test_double.o
+clean : ; rm -f *.out  test_all.o tests.s mpfr-test mpfr-test.o e_test_insn.o cholesky.o e_test_double.o newton_double.o
