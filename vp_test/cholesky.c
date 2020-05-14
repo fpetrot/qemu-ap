@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #endif
 /* Something to start with */
-#define MEDIUM_DATASET
+#define MINI_DATASET
 
 /* Default to LARGE_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(MEDIUM_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
@@ -38,7 +38,6 @@
 #define N_CHOLESKY N
 
 typedef unsigned int size_t;
-
 
 #ifdef RISCV
 /*
@@ -84,10 +83,11 @@ static inline double sqrt(double x)
    return x;
 }
 
+#ifdef DUMP_ARRAY
 /* 
  * Thanks to https://stackoverflow.com/questions/16647278/minimal-implementation-of-sprintf-or-printf
  */
-int normalize(double *val)
+static int normalize(double *val)
 {
    int exponent = 0;
    double value = *val;
@@ -160,27 +160,28 @@ static void ftoa_fixed(char *buffer, double value)
    *buffer = '\0';
 }
 
-void print_double(double f)
+static void print_double(double f)
 {
    char buffer[64];
    ftoa_fixed(buffer, f);
    putstr(buffer);
 }
-#endif
+#endif /* DUMP_ARRAY */
+#endif /* RISCV */
 
+static double A[N_CHOLESKY][N_CHOLESKY];
 static double B[N_CHOLESKY][N_CHOLESKY];
 
-static void init_array_cholesky_double(int n, double A[n][n])
+static void init_array_cholesky_double(int n, double a[n][n])
 {
    int i, j;
 
    for (i = 0; i < n; i++) {
       for (j = 0; j <= i; j++)
-         A[i][j] = (double) (-j % n) / n + 1;
-      for (j = i + 1; j < n; j++) {
-         A[i][j] = 0;
-      }
-      A[i][i] = 1;
+         a[i][j] = (double) (-j % n) / n + 1;
+      for (j = i + 1; j < n; j++)
+         a[i][j] = 0;
+      a[i][i] = 1;
    }
 
    int r, s, t;
@@ -191,76 +192,64 @@ static void init_array_cholesky_double(int n, double A[n][n])
    for (t = 0; t < n; ++t)
       for (r = 0; r < n; ++r)
          for (s = 0; s < n; ++s)
-            B[r][s] += A[r][t] * A[s][t];
+            B[r][s] += a[r][t] * a[s][t];
 
    for (r = 0; r < n; ++r)
       for (s = 0; s < n; ++s)
-         A[r][s] = B[r][s];
+         a[r][s] = B[r][s];
 }
 
-#if DUMP_ARRAY
-static
-void print_array_cholesky_double(int n, double A[n][n])
+#ifdef DUMP_ARRAY
+static void print_array_cholesky_double(int n, double a[n][n])
 {
    int i, j;
 
-   putstr("==BEGIN DUMP_ARRAYS==\n");
-   putstr("begin dump: A\n");
+   putstr("==BEGIN DUMP_ARRAY==\n");
+   putstr("begin dump: a\n");
    for (i = 0; i < n; i++)
       for (j = 0; j <= i; j++) {
          if ((i * n + j) % 20 == 0)
             putstr("\n");
-         print_double(A[i][j]); putstr(" ");
+         print_double(a[i][j]); putstr(" ");
       }
-   putstr("\nend   dump: A\n");
-   putstr("==END   DUMP_ARRAYS==\n");
+   putstr("\nend   dump: a\n");
+   putstr("==END   DUMP_ARRAY==\n");
 }
 #endif
 
-static void kernel_cholesky_double(int n, double A[n][n]) __attribute__((noinline));
-static void kernel_cholesky_double(int n, double A[n][n])
+static void kernel_cholesky_double(int n, double a[n][n]) __attribute__((noinline));
+static void kernel_cholesky_double(int n, double a[n][n])
 {
    int i, j, k;
 
    for (i = 0; i < n; i++) {
       for (j = 0; j < i; j++) {
          for (k = 0; k < j; k++) {
-            A[i][j] -= A[i][k] * A[j][k];
+            a[i][j] -= a[i][k] * a[j][k];
          }
-         A[i][j] /= A[j][j];
+         a[i][j] /= a[j][j];
       }
-
       for (k = 0; k < i; k++) {
-         A[i][i] -= A[i][k] * A[i][k];
+         a[i][i] -= a[i][k] * a[i][k];
       }
-      A[i][i] = sqrt(A[i][i]);
+      a[i][i] = sqrt(a[i][i]);
    }
 }
 
-int cholesky_double(int n, double A[n][n])
+static void cholesky_double(int n, double a[n][n])
 {
-
-   init_array_cholesky_double(n, A);
-   kernel_cholesky_double(n, A);
-#if DUMP_ARRAY
-   print_array_cholesky_double(n, A);
-#endif
-
-   return 0;
+   init_array_cholesky_double(n, a);
+   kernel_cholesky_double(n, a);
 }
 
-static double A_double[N_CHOLESKY][N_CHOLESKY];
-void cholesky(void)
+static void cholesky(void)
 {
    putstr("Start Cholesky\n");
-   cholesky_double(N_CHOLESKY, A_double);
-
-#if 0
-   diff_double_unum_2d((double *) A_double, (vpfloat < mpfr | 16 | 101 > *)A_unum, N_CHOLESKY, N_CHOLESKY);
-#endif
-
-   print_array_cholesky_double(N_CHOLESKY, A_double);
+   cholesky_double(N_CHOLESKY, A);
    putstr("End Cholesky\n");
+#if DUMP_ARRAY
+   print_array_cholesky_double(N_CHOLESKY, A);
+#endif
 }
 
 int main(void)
