@@ -38,13 +38,45 @@
 # endif
 
 /* For double at first */
-#define DTSZ 8
+#define DOUBLE
 
-	/*
-	 * Global arrays, makes things simpler
-	 * static type A[N][N];
-	 * static type B[N][N];
-	*/
+#if !defined(SINGLE) && !defined(DOUBLE) && !defined(ARBITRARY)
+#  error "Please define the type to use for this program"
+#endif
+
+#if defined (SINGLE)
+#  define DTSZ 4
+#  define FCVT_X_W  fcvt.s.w
+#  define FADD_X    fadd.s
+#  define FSUB_X    fsub.s
+#  define FMUL_X    fmul.s
+#  define FDIV_X    fdiv.s
+#  define FMADD_X   fmadd.s
+#  define FNMSUB_X  fnmsub.s
+#  define FSQRT_X   fsqrt.s
+#  define FL_X      flw
+#  define FS_X      fsw
+#elif defined (DOUBLE)
+#  define DTSZ 8
+#  define FCVT_X_W  fcvt.d.w
+#  define FADD_X    fadd.d
+#  define FSUB_X    fsub.d
+#  define FMUL_X    fmul.d
+#  define FDIV_X    fdiv.d
+#  define FMADD_X   fmadd.d
+#  define FNMSUB_X  fnmsub.d
+#  define FSQRT_X   fsqrt.d
+#  define FL_X      fld
+#  define FS_X      fsd
+#else
+#  error 'Arrgghhhh!!!'
+#endif
+
+/*
+ * Global arrays, makes things simpler
+ * static type A[N][N];
+ * static type B[N][N];
+ */
 	.bss
 	.align	3
 	.type	A, @object
@@ -61,21 +93,28 @@ B:	.zero	N * N * DTSZ
 	.type	main, @function
 main:	li	a0, N
 	la	a1, A
-	jal	init_array_cholesky_double
+	jal	init_array_cholesky
 	li	a0, N
 	la	a1, A
-	jal	kernel_cholesky_double
+	jal	kernel_cholesky
+#if defined (SINGLE)
+	li	a0, N
+	la	a1, A
+	jal	print_array_cholesky_single
+#elif defined (DOUBLE)
 	li	a0, N
 	la	a1, A
 	jal	print_array_cholesky_double
+#else
+#  error 'No pretty printing stuff, sorry'
+#endif
 	li	t0, 0x100000
 	li	t1, 0x5555
 	sd	t1, 0(t0)
 	ret
 
-init_array_cholesky_double:
 /*
-static void init_array_cholesky_type(int n, type a[n][n])
+static void init_array_cholesky(int n, type a[n][n])
 {
    int i, j;
 
@@ -104,16 +143,16 @@ static void init_array_cholesky_type(int n, type a[n][n])
 */
 
 	.align	2
-	.type	init_array_cholesky_double, @function
-init_array_cholesky_double:
+	.type	init_array_cholesky, @function
+init_array_cholesky:
 
 	# Initialization of a few reused values
 	li	a3, DTSZ	# compute n * DTSZ before the loops
 	mul	a2, a3, a0	# suboptimal if DTSZ = 2^p
-	fcvt.d.w	fa0, a0	# n in whatever type is required
-	fcvt.d.w    ft0, zero	#
+	FCVT_X_W	fa0, a0	# n in whatever type is required
+	FCVT_X_W    ft0, zero	#
 	li	t1, 1	# 1 in whatever type is required
-	fcvt.d.w	ft1, t1	# 1 => 1.0
+	FCVT_X_W	ft1, t1	# 1 => 1.0
 
 	# First loopnest
 	li	t0, 0	# i = 0
@@ -125,26 +164,26 @@ ni:	bge	t0, a0, 1f	# break if i >= n
 nj1:	bge	t1, t0, 2f	# break if j >= i
 	negw	t5, t1
 	remw	t5, t5, a0
-	fcvt.d.w	ft2,t5
-	fdiv.d	ft2,ft2,fa0
-	fadd.d	ft2,ft2,ft1
+	FCVT_X_W	ft2,t5
+	FDIV_X	ft2,ft2,fa0
+	FADD_X	ft2,ft2,ft1
 	add	t4, t2, t3
 	add	t4, a1, t4
-	fsd	ft2, 0(t4)	# a[i][j]
+	FS_X	ft2, 0(t4)	# a[i][j]
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1	# j++
 	j	nj1	# back to loop j1 check
 
 2:	add	t4, t2, t3
 	add	t4, a1, t4
-	fsd	ft1, 0(t4)	# a[i][j] = 1 when i == j
+	FS_X	ft1, 0(t4)	# a[i][j] = 1 when i == j
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1	# j++
 
 nj2:	bge	t1, a0, 3f	# break if j >= n
 	add	t4, t2, t3
 	add	t4, a1, t4
-	fsd	ft0, 0(t4)	# a[i][j] = 0
+	FS_X	ft0, 0(t4)	# a[i][j] = 0
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1
 	j	nj2	# back to loop j2 check
@@ -164,7 +203,7 @@ nr1:	bge	t0, a0, 1f	# break if r >= n
 ns1:	bge	t1, a0, 3f	# break if s >= n
 	add	t4, t2, t3
 	add	t4, a7, t4
-	fsd	ft0, 0(t4)	# b[r][s] = 0
+	FS_X	ft0, 0(t4)	# b[r][s] = 0
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1
 	j	ns1	# back to loop s check
@@ -185,7 +224,7 @@ nr2:	bge	t2, a0, 2f	# break if r >= n
 	
 	add	a4, t3, t1	#
 	add	a4, a1, a4	# a4 is now &a[r][t]
-	fld	ft0, 0(a4)	# ft0 is a[r][t]
+	FL_X	ft0, 0(a4)	# ft0 is a[r][t]
 
 	li	t4, 0	# s = 0
 	li	t5, 0	# column offset
@@ -194,16 +233,19 @@ ns2:	bge	t4, a0, 3f	# break if s >= n
 
 	add	a4, t3, t5	# a4 is a free temporary
 	add	a4, a7, a4	# column address
-	fld	ft1, 0(a4)	# ft1 = b[r][s]
+	FL_X	ft1, 0(a4)	# ft1 = b[r][s]
 
 	add	a5, t6, t1	#
 	add	a5, a1, a5	# a5 is now &a[s][t]
-	fld	ft2, 0(a5)	# ft0 is a[s][t]
+	FL_X	ft2, 0(a5)	# ft2 is a[s][t]
+#if 0
+	FMUL_X	ft2, ft2, ft0
+	FADD_X	ft1, ft1, ft2
+#else
+	FMADD_X	ft1, ft0, ft2, ft1	# ft1 = (ft0 * ft2) + ft1
+#endif
 
-	fmul.d	ft2, ft2, ft0
-	fadd.d	ft2, ft1, ft2
-
-	fsd	ft2, 0(a4)
+	FS_X	ft1, 0(a4)
 
 	add	t5, t5, a3	# update column offset
 	add	t6, t6, a2	# update row offset
@@ -228,9 +270,9 @@ nr3:	bge	t0, a0, 1f	# break if r >= n
 ns3:	bge	t1, a0, 3f	# break if s >= n
 	add	t4, t2, t3
 	add	t5, a7, t4
-	fld	ft0, 0(t5)	# ft0 = b[r][s]
+	FL_X	ft0, 0(t5)	# ft0 = b[r][s]
 	add	t6, a1, t4
-	fsd	ft0, 0(t6)	# a[r][s] = ft0
+	FS_X	ft0, 0(t6)	# a[r][s] = ft0
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1
 	j	ns3	# back to loop s check
@@ -241,7 +283,7 @@ ns3:	bge	t1, a0, 3f	# break if s >= n
 1:
 	ret
 /*
-static void kernel_cholesky_double(int n, double a[n][n])
+static void kernel_cholesky(int n, type a[n][n])
 {
    int i, j, k;
    double x;
@@ -262,8 +304,8 @@ static void kernel_cholesky_double(int n, double a[n][n])
 }
 */
 	.align	2
-	.type	kernel_cholesky_double, @function
-kernel_cholesky_double:
+	.type	kernel_cholesky, @function
+kernel_cholesky:
 	# Initialization of the offset displacement variables
 	li	a3, DTSZ	# compute n * DTSZ before the loops
 	mul	a2, a3, a0	# suboptimal if DTSZ = 2^p
@@ -281,7 +323,7 @@ knj:	bge	t3, t0, 2f	# break if j >= i
 	
 	add	a4, t2, t4	#
 	add	a4, a1, a4	# a4 is now &a[i][j]
-	fld	ft0, 0(a4)	# ft0 = a[i][j]
+	FL_X	ft0, 0(a4)	# ft0 = a[i][j]
 
 	li	t6, 0	# k = 0
 	li	a6, 0	# k column offset
@@ -289,14 +331,17 @@ knk1:	bge	t6, t3, 3f	# break if k >= j
 
 	add	a5, t2, a6	# [i][k]
 	add	a5, a1, a5	# &a[i][k]
-	fld	ft1, 0(a5)	# ft1 = a[i][k]
+	FL_X	ft1, 0(a5)	# ft1 = a[i][k]
 
 	add	a5, t5, a6	# [j][k]
 	add	a5, a1, a5	# &a[j][k]
-	fld	ft2, 0(a5)	# ft2 = a[j][k]
-
-	fmul.d	ft2, ft2, ft1
-	fsub.d	ft0, ft0, ft2
+	FL_X	ft2, 0(a5)	# ft2 = a[j][k]
+#if 0
+	FMUL_X	ft2, ft2, ft1
+	FSUB_X	ft0, ft0, ft2
+#else
+	FNMSUB_X	ft0, ft1, ft2, ft0	# ft0 = ft0 - (ft1 * ft2)
+#endif
 
 	add	a6, a6, a3	# update column offset
 	addi	t6, t6, 1	# k++
@@ -304,9 +349,9 @@ knk1:	bge	t6, t3, 3f	# break if k >= j
 
 3:	add	a5, t5, t4	# [j][j]
 	add	a5, a1, a5	# &a[j][j]
-	fld	ft1, 0(a5)	# ft1 = a[j][j]
-	fdiv.d	ft0, ft0, ft1
-	fsd	ft0, 0(a4)	# a[i][j] = ft0
+	FL_X	ft1, 0(a5)	# ft1 = a[j][j]
+	FDIV_X	ft0, ft0, ft1
+	FS_X	ft0, 0(a4)	# a[i][j] = ft0
 
 	add	t4, t4, a3	# update j column offset
 	add	t5, t5, a2	# update j row offset
@@ -315,7 +360,7 @@ knk1:	bge	t6, t3, 3f	# break if k >= j
 
 2:	add	a4, t2, t1	#
 	add	a4, a1, a4	# a4 is now &a[i][i]
-	fld	ft0, 0(a4)	# ft0 = a[i][i]
+	FL_X	ft0, 0(a4)	# ft0 = a[i][i]
 
 	li	t6, 0	# k = 0
 	li	a6, 0	# k column offset
@@ -323,17 +368,21 @@ knk2:	bge	t6, t0, 4f	# break if k >= i
 
 	add	a5, t2, a6	# [i][k]
 	add	a5, a1, a5	# &a[i][k]
-	fld	ft1, 0(a5)	# ft1 = a[i][k]
+	FL_X	ft1, 0(a5)	# ft1 = a[i][k]
 
-	fmul.d	ft1, ft1, ft1
-	fsub.d	ft0, ft0, ft1
+#if 0
+	FMUL_X	ft1, ft1, ft1
+	FSUB_X	ft0, ft0, ft1
+#else
+	FNMSUB_X	ft0, ft1, ft1, ft0	# ft0 = ft0 - (ft1 * ft1)
+#endif
 
 	add	a6, a6, a3	# update k column offset
 	addi	t6, t6, 1	# k++
 	j	knk2	# back to loop k2 check
 
-4:	fsqrt.d	ft0, ft0
-	fsd	ft0, 0(a4)	# a[i][i] = ft0
+4:	FSQRT_X	ft0, ft0
+	FS_X	ft0, 0(a4)	# a[i][i] = ft0
 
 	add	t1, t1, a3	# update i column offset
 	add	t2, t2, a2	# update i row offset
