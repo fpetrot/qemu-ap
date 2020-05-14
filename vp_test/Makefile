@@ -22,7 +22,16 @@ cholesky : cholesky.log cholesky.time
 cholesky.out : cholesky.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
 cholesky.o : cholesky.c
-	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -O3 -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
+	riscv64-unknown-elf-gcc -DRISCV -DDUMP_ARRAY -mcmodel=medany -Os -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
+cholesky.s : cholesky.c
+	riscv64-unknown-elf-gcc -mcmodel=medany -Os -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -fverbose-asm -S -DRISCV cholesky.c
+
+cholesky-asm.out : cholesky-asm.o lib.o crt.o
+	riscv64-unknown-elf-ld -T link.ld $^ -o $@
+cholesky-asm.o : cholesky-asm.S
+	riscv64-unknown-elf-gcc -g -march=rv64imfd -c $<
+lib.o : lib.c
+	riscv64-unknown-elf-gcc -mcmodel=medany -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 
 c.out : gadd.o
 	riscv64-unknown-elf-ld -T link.ld $< -o $@
@@ -31,7 +40,7 @@ gadd.o : gadd.s
 
 # Small file to check conversions and fpreg/gpreg moves.
 tests.s : tests.c
-	riscv32-unknown-elf-gcc -S $<
+	riscv64-unknown-elf-gcc -S $<
 
 ifeq ($(shell echo $$LOGNAME), petrot) 
 MPFR=$(HOME)/Developpement/mpfr-4.0.2
