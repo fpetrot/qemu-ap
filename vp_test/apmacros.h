@@ -92,5 +92,7 @@
 #define fcvt_l_p(rs1, rm, rd)           .insn r 0b0001011, rm, 0b1100011, rd, rs1, x10
 #define fcvt_p_lu(rs1, rm, rd)          .insn r 0b0001011, rm, 0b1100011, rd, rs1, x11
 #define fcvt_lu_p(rs1, rm, rd)          .insn r 0b0001011, rm, 0b1100011, rd, rs1, x12
-#define fmadd_p(rs3, rs2, rs1, rm, rd)  .insn r4 0b0001011, rm, 0b00, rd, rs1, rs2, rs3
-#define fmsub_p(rs3, rs2, rs1, rm, rd)  .insn r4 0b0001011, rm, 0b01, rd, rs1, rs2, rs3
+#define fmadd_p(rs3, rs2, rs1, rm, rd)  .insn r4 0b1000011, rm, 0b10, rd, rs1, rs2, rs3
+#define fmsub_p(rs3, rs2, rs1, rm, rd)  .insn r4 0b1000111, rm, 0b10, rd, rs1, rs2, rs3
+#define fnmadd_p(rs3, rs2, rs1, rm, rd) .insn r4 0b1001111, rm, 0b10, rd, rs1, rs2, rs3
+#define fnmsub_p(rs3, rs2, rs1, rm, rd) .insn r4 0b1001011, rm, 0b10, rd, rs1, rs2, rs3

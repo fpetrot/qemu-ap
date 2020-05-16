@@ -161,6 +161,22 @@ void helper_fmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
 }
 
 
+void helper_fnmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
+{
+    printf("TEST FNMADD_P \n");
+
+    MPFR_CHANGE_SIGN(env->vpr[src1]);
+    mpfr_t x;
+    mpfr_init2(x, env->fprec);
+    mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
+    mpfr_sub(x, x, env->vpr[src3], rm);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+    MPFR_CHANGE_SIGN(env->vpr[src1]);
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
 void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
     printf("TEST FSUB_P \n");
@@ -183,6 +199,22 @@ void helper_fmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
     mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
     mpfr_sub(x, x, env->vpr[src3], rm);
     memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
+}
+
+
+void helper_fnmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
+{
+    printf("TEST FNMSUB_P \n");
+
+    MPFR_CHANGE_SIGN(env->vpr[src1]);
+    mpfr_t x;
+    mpfr_init2(x, env->fprec);
+    mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
+    mpfr_add(x, x, env->vpr[src3], rm);
+    memcpy(env->vpr[dest], x, sizeof(mpfr_t));
+    MPFR_CHANGE_SIGN(env->vpr[src1]);
 
     mpfr_printf("%.128Rf\n", env->vpr[dest]);
 }

@@ -37,7 +37,9 @@ func:
 	fsqrt_p(p3, MPFR_RNDD, p3) # fsqrt_p  p3, p3
 	fdiv_p(p2, p1, MPFR_RNDD, p3) # fdiv_p   p3, p1, p2
 	fmadd_p(p3, p2, p1, MPFR_RNDD, p4) # fmadd_p p4, p1, p2, p3
-	fmsub_p(p3, p2, p1, MPFR_RNDD, p4) # fmsub_p p4, p1, p2, p3 
+	fmsub_p(p3, p2, p1, MPFR_RNDD, p4) # fmsub_p p4, p1, p2, p3
+	fnmadd_p(p3, p2, p1, MPFR_RNDD, p4) # fnmadd_p p4, p1, p2, p3
+	fnmsub_p(p3, p2, p1, MPFR_RNDD, p4) # fnmadd_p p4, p1, p2, p3
 
 	# Test comparaisons
 	feq_p(p2, p1, x7)  # feq_p   x7, p1, p2
