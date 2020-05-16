@@ -17,14 +17,24 @@ func:
 	li   x7, 200
 	csrrw x0, 6, x7
 
-    li   x29, 8
-	li   x30, 4
+    li   x29, -6
+	li   x30, -678
 	li   x28, 1023
 	slli x28, x28, 52 # 0x3ff0000000000000 = 1,0
 	li   x6, 0x3FC4000000000000 # 0,15625
 	
+	# Test conversions int -> mpfr
+	fcvt_p_l(x29, MPFR_RNDD, p1)
+	fcvt_p_l(x30, MPFR_RNDD, p2)
+
+	li   x29, 8
+	li   x30, 4
 	fcvt.d.lu fa0,x29 # 8.0 <- 8
 	fcvt.d.lu fa1,x30 # 4.0 <- 4
+
+	# Test conversions uint -> mpfr
+	fcvt_p_lu(x29, MPFR_RNDD, p1)
+	fcvt_p_lu(x30, MPFR_RNDD, p2)
 
 	# Test conversions double -> mpfr
 	fcvt_p_d(fa0, MPFR_RNDD, p1) # fcvt_p_d p1, fa0
@@ -55,6 +65,9 @@ func:
 
 	# Test conversion mpfr -> double
 	fcvt_d_p(p4, MPFR_RNDD, fa2) # fcvt_d_p fa2, p4
+
+	# Test conversion mpfr -> uint
+	fcvt_lu_p(p3, MPFR_RNDD, x30)
 
 	la	t0, room_for_vpr
 	.word 0x0032d027 # fsp p3, 0(t0)

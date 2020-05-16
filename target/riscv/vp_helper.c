@@ -101,6 +101,7 @@ void helper_fcvt_p_w(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 {
     printf("TEST FCVT_P_W \n");
 #if defined(TARGET_RISCV32)
+    mpfr_init2(env->vpr[dest], env->fprec);
     mpfr_set_si(env->vpr[dest], env->gpr[src1], rm);
 #endif
 }
@@ -119,6 +120,7 @@ void helper_fcvt_p_wu(CPURISCVState *env, target_ulong dest, target_ulong src1, 
 {
     printf("TEST FCVT_P_WU \n");
 #if defined(TARGET_RISCV32)
+    mpfr_init2(env->vpr[dest], env->fprec);
     mpfr_set_ui(env->vpr[dest], env->gpr[src1], rm);
 #endif
 }
@@ -410,7 +412,9 @@ void helper_fcvt_p_l(CPURISCVState *env, target_ulong dest, target_ulong src1, t
     printf("TEST FCVT_P_L \n");
 
 #if defined(TARGET_RISCV64)
+    mpfr_init2(env->vpr[dest], env->fprec);
     mpfr_set_si(env->vpr[dest], env->gpr[src1], rm);
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
 #endif
 }
 
@@ -430,7 +434,9 @@ void helper_fcvt_p_lu(CPURISCVState *env, target_ulong dest, target_ulong src1, 
     printf("TEST FCVT_P_LU \n");
 
 #if defined(TARGET_RISCV64)
+    mpfr_init2(env->vpr[dest], env->fprec);
     mpfr_set_ui(env->vpr[dest], env->gpr[src1], rm);
+    mpfr_printf("%.128Rf\n", env->vpr[dest]);
 #endif
 }
 
