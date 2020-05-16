@@ -283,6 +283,30 @@ static bool trans_fmadd_p(DisasContext *ctx, arg_fmadd_p *a)
     return true;
 }
 
+static bool trans_fnmadd_p(DisasContext *ctx, arg_fnmadd_p *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+    TCGv src3 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+    tcg_gen_movi_tl(src3, a->rs3);
+    tcg_gen_movi_tl(rm, a->rm);
+
+    gen_helper_fnmadd_p(cpu_env, dest, src1, src2, src3, rm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
+    tcg_temp_free(src3);
+    tcg_temp_free(rm);
+    return true;
+}
+
 static bool trans_fsub_p(DisasContext *ctx, arg_fsub_p *a)
 {
     TCGv dest = tcg_temp_new();
@@ -319,6 +343,30 @@ static bool trans_fmsub_p(DisasContext *ctx, arg_fmsub_p *a)
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fmsub_p(cpu_env, dest, src1, src2, src3, rm);
+
+    tcg_temp_free(dest);
+    tcg_temp_free(src1);
+    tcg_temp_free(src2);
+    tcg_temp_free(src3);
+    tcg_temp_free(rm);
+    return true;
+}
+
+static bool trans_fnmsub_p(DisasContext *ctx, arg_fnmsub_p *a)
+{
+    TCGv dest = tcg_temp_new();
+    TCGv src1 = tcg_temp_new();
+    TCGv src2 = tcg_temp_new();
+    TCGv src3 = tcg_temp_new();
+    TCGv rm = tcg_temp_new();
+
+    tcg_gen_movi_tl(dest, a->rd);
+    tcg_gen_movi_tl(src1, a->rs1);
+    tcg_gen_movi_tl(src2, a->rs2);
+    tcg_gen_movi_tl(src3, a->rs3);
+    tcg_gen_movi_tl(rm, a->rm);
+
+    gen_helper_fnmsub_p(cpu_env, dest, src1, src2, src3, rm);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
