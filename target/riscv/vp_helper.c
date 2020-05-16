@@ -265,7 +265,7 @@ void helper_feq_p(CPURISCVState *env, target_ulong dest, target_ulong src1, targ
 {
     printf("TEST FEQ_P \n");
 
-    if (mpfr_cmp(env->vpr[src1], env->vpr[src2]) == 0) {
+    if (mpfr_equal_p(env->vpr[src1], env->vpr[src2]) != 0) {
         env->gpr[dest] = 1;
     } else {
         env->gpr[dest] = 0;
@@ -277,7 +277,7 @@ void helper_flt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, targ
 {
     printf("TEST FLT_P \n");
 
-    if (mpfr_cmp(env->vpr[src1], env->vpr[src2]) < 0) {
+    if (mpfr_less_p(env->vpr[src1], env->vpr[src2]) != 0) {
         env->gpr[dest] = 1;
     } else {
         env->gpr[dest] = 0;
@@ -289,7 +289,7 @@ void helper_fle_p(CPURISCVState *env, target_ulong dest, target_ulong src1, targ
 {
     printf("TEST FLE_P \n");
 
-    if (mpfr_cmp(env->vpr[src1], env->vpr[src2]) <= 0) {
+    if (mpfr_lessequal_p(env->vpr[src1], env->vpr[src2]) != 0) {
         env->gpr[dest] = 1;
     } else {
         env->gpr[dest] = 0;

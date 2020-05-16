@@ -54,7 +54,7 @@ func:
 	# Test comparaisons
 	feq_p(p2, p1, x7)  # feq_p   x7, p1, p2
 	flt_p(p2, p1, x7)  # flt_p   x7, p1, p2
-	fle_p(p2, p1, x7)  # fle_p   x7, vp1, vp2
+	fle_p(p2, p1, x7)  # fle_p   x7, p1, p2
 	fmin_p(p2, p1, p3)  # fmin_p   p3, p1, p2
 	fmax_p(p2, p1, p3)  # fmax_p   p3, p1, p2
 
