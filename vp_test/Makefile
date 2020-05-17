@@ -11,6 +11,11 @@ b.out : e_test_insn.o
 e_test_insn.o : e_test_insn.S
 	riscv64-unknown-elf-gcc -march=rv64ifd -mabi=lp64d -c $<
 
+d.out : newton_insn.o
+	riscv64-unknown-elf-ld -T link.ld $< -o $@
+newton_insn.o : newton_insn.S
+	riscv64-unknown-elf-gcc -march=rv64ifd -mabi=lp64d -c $<
+
 crt.o : crt.s
 	riscv64-unknown-elf-gcc -c $<
 
