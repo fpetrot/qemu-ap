@@ -169,3 +169,21 @@ void print_array_cholesky_double(int n, double a[n][n])
    putstr("\nend   dump: a\n");
    putstr("==END   DUMP_ARRAYS==\n");
 }
+
+
+/* Dirtiest hack on earth, lovin'it though! */
+void print_array_cholesky_single(int n, float a[n][n])
+{
+   int i, j;
+
+   putstr("==BEGIN DUMP_ARRAYS==\n");
+   putstr("begin dump: a\n");
+   for (i = 0; i < n; i++)
+      for (j = 0; j <= i; j++) {
+         if ((i * n + j) % 20 == 0)
+            putstr("\n");
+         print_double((double)a[i][j]); putstr(" ");
+      }
+   putstr("\nend   dump: a\n");
+   putstr("==END   DUMP_ARRAYS==\n");
+}

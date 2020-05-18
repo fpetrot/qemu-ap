@@ -33,7 +33,7 @@ newton_double.o : newton_double.c
 .PHONY: cholesky
 cholesky : cholesky.log cholesky.time
 	cat $^
-%.log %.time : cholesky.out
+%.log %.time : %.out
 	{ time ../build_vp/riscv64-softmmu/qemu-system-riscv64 -machine virt -bios none -nographic -kernel $< > $*.log ; } 2> $*.time
 cholesky.out : cholesky.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
@@ -41,6 +41,10 @@ cholesky.o : cholesky.c
 	riscv64-unknown-elf-gcc -DRISCV -DDUMP_ARRAY -mcmodel=medany -Os -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 cholesky.s : cholesky.c
 	riscv64-unknown-elf-gcc -mcmodel=medany -Os -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -fverbose-asm -S -DRISCV cholesky.c
+a : a.o crt.o
+	riscv64-unknown-elf-ld -T link.ld $^ -o $@
+a.o : a.c
+	riscv64-unknown-elf-gcc -g -mcmodel=medany -Os -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -fverbose-asm -c $<
 
 cholesky-asm.out : cholesky-asm.o lib.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
@@ -70,4 +74,4 @@ mpfr-test : mpfr-test.o
 	gcc -o $@ $< $(LDFLAGS)
 mpfr-test.o : mpfr-test.c
 
-clean : ; rm -f *.out  test_all.o tests.s mpfr-test mpfr-test.o e_test_insn.o cholesky.o e_test_double.o newton_double.o
+clean : ; rm -f *.out *.time *.log test_all.o tests.s mpfr-test mpfr-test.o e_test_insn.o cholesky.o e_test_double.o newton_double.o lib.o crt.o
