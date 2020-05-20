@@ -44,6 +44,9 @@ loop:
 	addi	t1, t1, 1
 	ble	t1, t2, loop
 	la	t0, room_for_vpr
+	li t3, 0x100000
+	li t4, 0x5555
+	sw t4, 0(t3)
 	ret
 
 	.data
