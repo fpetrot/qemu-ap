@@ -83,6 +83,11 @@ loop:
     beqz t1, loop
 
 loopend:
+    la	t0, room_for_vpr
+	li t3, 0x100000
+	li t4, 0x5555
+	sw t4, 0(t3)
+	ret
 
 	.data
 room_for_vpr: .space 1024
