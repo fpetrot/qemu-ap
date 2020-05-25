@@ -61,8 +61,6 @@ static struct FloatIEEE *unpack_float(target_ulong num)
 /* Helpers 32-bit */
 void helper_fcvt_p_f(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_P_F \n");
-
     struct FloatIEEE *f = unpack_float(env->fpr[src1]);
     float m = 1.0;
 
@@ -86,8 +84,6 @@ void helper_fcvt_p_f(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_f_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_F_P \n");
-
 #if defined(TARGET_RISCV32)
     target_ulong res;
     float nb_double = mpfr_get_flt(env->vpr[src1], rm);
@@ -99,7 +95,6 @@ void helper_fcvt_f_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_p_w(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_P_W \n");
 #if defined(TARGET_RISCV32)
     mpfr_init2(env->vpr[dest], env->fprec);
     mpfr_set_si(env->vpr[dest], env->gpr[src1], rm);
@@ -109,7 +104,6 @@ void helper_fcvt_p_w(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_w_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_W_P \n");
 #if defined(TARGET_RISCV32)
     env->gpr[dest] = mpfr_get_si(env->vpr[src1], rm);
 #endif
@@ -118,7 +112,6 @@ void helper_fcvt_w_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_p_wu(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_P_WU \n");
 #if defined(TARGET_RISCV32)
     mpfr_init2(env->vpr[dest], env->fprec);
     mpfr_set_ui(env->vpr[dest], env->gpr[src1], rm);
@@ -128,7 +121,6 @@ void helper_fcvt_p_wu(CPURISCVState *env, target_ulong dest, target_ulong src1, 
 
 void helper_fcvt_wu_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_WU_P \n");
 #if defined(TARGET_RISCV32)
     env->gpr[dest] = mpfr_get_ui(env->vpr[src1], rm);
 #endif
@@ -138,8 +130,6 @@ void helper_fcvt_wu_p(CPURISCVState *env, target_ulong dest, target_ulong src1, 
 /* Helpers 64-bit */
 void helper_fadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
-    printf("TEST FADD_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_add(x, env->vpr[src1], env->vpr[src2], rm);
@@ -151,8 +141,6 @@ void helper_fadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
 
 void helper_fmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
 {
-    printf("TEST FMADD_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
@@ -165,8 +153,6 @@ void helper_fmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
 
 void helper_fnmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
 {
-    printf("TEST FNMADD_P \n");
-
     MPFR_CHANGE_SIGN(env->vpr[src1]);
     mpfr_t x;
     mpfr_init2(x, env->fprec);
@@ -181,8 +167,6 @@ void helper_fnmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
-    printf("TEST FSUB_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_sub(x, env->vpr[src1], env->vpr[src2], rm);
@@ -194,8 +178,6 @@ void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
 
 void helper_fmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
 {
-    printf("TEST FMSUB_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
@@ -208,8 +190,6 @@ void helper_fmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
 
 void helper_fnmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
 {
-    printf("TEST FNMSUB_P \n");
-
     MPFR_CHANGE_SIGN(env->vpr[src1]);
     mpfr_t x;
     mpfr_init2(x, env->fprec);
@@ -224,8 +204,6 @@ void helper_fnmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fmul_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
-    printf("TEST FMUL_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_mul(x, env->vpr[src1], env->vpr[src2], rm);
@@ -237,8 +215,6 @@ void helper_fmul_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
 
 void helper_fdiv_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
 {
-    printf("TEST FDIV_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_div(x, env->vpr[src1], env->vpr[src2], rm);
@@ -250,8 +226,6 @@ void helper_fdiv_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
 
 void helper_fsqrt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FSQRT_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_sqrt(x, env->vpr[src1], rm);
@@ -263,8 +237,6 @@ void helper_fsqrt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
 
 void helper_feq_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    printf("TEST FEQ_P \n");
-
     if (mpfr_equal_p(env->vpr[src1], env->vpr[src2]) != 0) {
         env->gpr[dest] = 1;
     } else {
@@ -275,8 +247,6 @@ void helper_feq_p(CPURISCVState *env, target_ulong dest, target_ulong src1, targ
 
 void helper_flt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    printf("TEST FLT_P \n");
-
     if (mpfr_less_p(env->vpr[src1], env->vpr[src2]) != 0) {
         env->gpr[dest] = 1;
     } else {
@@ -287,8 +257,6 @@ void helper_flt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, targ
 
 void helper_fle_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    printf("TEST FLE_P \n");
-
     if (mpfr_lessequal_p(env->vpr[src1], env->vpr[src2]) != 0) {
         env->gpr[dest] = 1;
     } else {
@@ -299,8 +267,6 @@ void helper_fle_p(CPURISCVState *env, target_ulong dest, target_ulong src1, targ
 
 void helper_fmin_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    printf("TEST FMIN_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_min(x, env->vpr[src1], env->vpr[src2], env->frm);
@@ -312,8 +278,6 @@ void helper_fmin_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
 
 void helper_fmax_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    printf("TEST FMAX_P \n");
-
     mpfr_t x;
     mpfr_init2(x, env->fprec);
     mpfr_max(x, env->vpr[src1], env->vpr[src2], env->frm);
@@ -325,8 +289,6 @@ void helper_fmax_p(CPURISCVState *env, target_ulong dest, target_ulong src1, tar
 
 void helper_fsgnj_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    printf("TEST FSGNJ_P \n");
-
     if (src1 == src2) {
         memcpy(env->vpr[dest], env->vpr[src1], sizeof(mpfr_t));
     } else {
@@ -337,8 +299,6 @@ void helper_fsgnj_p(CPURISCVState *env, target_ulong dest, target_ulong src1, ta
 
 void helper_fsgnjn_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    printf("TEST FSGNJN_P \n");
-
     if (src1 == src2) {
         mpfr_neg(env->vpr[dest], env->vpr[src1], env->frm);
     } else {
@@ -355,8 +315,6 @@ void helper_fsgnjn_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
 {
-    printf("TEST FSGNJX_P \n");
-
     if (src1 == src2) {
         mpfr_abs(env->vpr[dest], env->vpr[src1], env->frm);
     } else {
@@ -371,8 +329,6 @@ void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_P_D \n");
-
     struct FloatIEEE *f = unpack_float(env->fpr[src1]);
     double m = 1.0;
 
@@ -396,8 +352,6 @@ void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_d_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_D_P \n");
-
 #if defined(TARGET_RISCV64)
     target_ulong res;
     double nb_double = mpfr_get_d(env->vpr[src1], rm);
@@ -409,8 +363,6 @@ void helper_fcvt_d_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_p_l(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_P_L \n");
-
 #if defined(TARGET_RISCV64)
     mpfr_init2(env->vpr[dest], env->fprec);
     mpfr_set_si(env->vpr[dest], env->gpr[src1], rm);
@@ -421,8 +373,6 @@ void helper_fcvt_p_l(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_l_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_L_P \n");
-
 #if defined(TARGET_RISCV64)
     env->gpr[dest] = mpfr_get_si(env->vpr[src1], rm);
 #endif
@@ -431,8 +381,6 @@ void helper_fcvt_l_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 void helper_fcvt_p_lu(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_P_LU \n");
-
 #if defined(TARGET_RISCV64)
     mpfr_init2(env->vpr[dest], env->fprec);
     mpfr_set_ui(env->vpr[dest], env->gpr[src1], rm);
@@ -443,8 +391,6 @@ void helper_fcvt_p_lu(CPURISCVState *env, target_ulong dest, target_ulong src1, 
 
 void helper_fcvt_lu_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    printf("TEST FCVT_LU_P \n");
-
 #if defined(TARGET_RISCV64)
     env->gpr[dest] = mpfr_get_ui(env->vpr[src1], rm);
 #endif
@@ -453,7 +399,6 @@ void helper_fcvt_lu_p(CPURISCVState *env, target_ulong dest, target_ulong src1, 
 
 uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uint64_t data)
 {
-    printf("TEST LOAD %lu\n", idx);
     uint64_t res;
     uint64_t nb_limb;
     switch(idx)
@@ -463,7 +408,6 @@ uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uin
             if (env->fprec != (env->vpr[dest])->_mpfr_prec) {
                 mpfr_prec_round(env->vpr[dest], env->fprec, env->frm);
             }
-            mpfr_printf("%.128Rf\n", env->vpr[dest]);
             res = 1;
             break;
         case 1:
@@ -496,7 +440,6 @@ uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uin
 
 uint64_t helper_fsp(CPURISCVState *env, target_ulong src1, uint64_t idx)
 {
-    printf("TEST STORE %lu\n", idx);
     uint64_t res = 0;
     switch(idx)
     {
