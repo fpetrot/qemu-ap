@@ -187,3 +187,8 @@ void print_array_cholesky_single(int n, float a[n][n])
    putstr("\nend   dump: a\n");
    putstr("==END   DUMP_ARRAYS==\n");
 }
+
+void print_array_cholesky_arbitrary(void)
+{
+   putstr("CHOLESKY ARBITRARY\n");
+}

@@ -68,6 +68,19 @@
 #  define FSQRT_X   fsqrt.d
 #  define FL_X      fld
 #  define FS_X      fsd
+#elif defined (ARBITRARY)
+#include "apmacros.h"
+#  define DTSZ 40
+#  define FCVT_X_W(rs1, rd)           fcvt_p_l(rs1, MPFR_RNDD, rd)
+#  define FADD_X(rs2, rs1, rd)        fadd_p(rs2, rs1, MPFR_RNDD, rd)
+#  define FSUB_X(rs2, rs1, rd)        fsub_p(rs2, rs1, MPFR_RNDD, rd)
+#  define FMUL_X(rs2, rs1, rd)        fmul_p(rs2, rs1, MPFR_RNDD, rd)
+#  define FDIV_X(rs2, rs1, rd)        fdiv_p(rs2, rs1, MPFR_RNDD, rd)
+#  define FMADD_X(rs3, rs2, rs1, rd)  fmadd_p(rs3, rs2, rs1, MPFR_RNDD, rd)
+#  define FNMSUB_X(rs3, rs2, rs1, rd) fnmsub_p(rs3, rs2, rs1, MPFR_RNDD, rd)
+#  define FSQRT_X(rs1, rd)            fsqrt_p(rs1, MPFR_RNDD, rd)
+#  define FL_X(imm, rs1, rd)          flp(imm, rs1, rd)
+#  define FS_X(imm, rs2, rs1)         fsp(imm, rs2, rs1)
 #else
 #  error 'Arrgghhhh!!!'
 #endif
@@ -93,6 +106,11 @@ B:	.zero	N * N * DTSZ
 	.type	main, @function
 main:	li	a0, N
 	la	a1, A
+#if defined (ARBITRARY)
+	csrrwi x0, 2, MPFR_RNDD
+	li   x7, 100
+	csrrw x0, 6, x7
+#endif
 	jal	init_array_cholesky
 	li	a0, N
 	la	a1, A
@@ -105,6 +123,8 @@ main:	li	a0, N
 	li	a0, N
 	la	a1, A
 	jal	print_array_cholesky_double
+#elif defined (ARBITRARY)
+	jal	print_array_cholesky_arbitrary
 #else
 #  error 'No pretty printing stuff, sorry'
 #endif
@@ -149,10 +169,19 @@ init_array_cholesky:
 	# Initialization of a few reused values
 	li	a3, DTSZ	# compute n * DTSZ before the loops
 	mul	a2, a3, a0	# suboptimal if DTSZ = 2^p
+#if defined (ARBITRARY)
+	FCVT_X_W(a0, p2) # n
+	FCVT_X_W(zero, p0) # 0
+#else
 	FCVT_X_W	fa0, a0	# n in whatever type is required
 	FCVT_X_W    ft0, zero	#
+#endif
 	li	t1, 1	# 1 in whatever type is required
+#if defined (ARBITRARY)
+	FCVT_X_W(t1, p1) # 1 => 1.0
+#else
 	FCVT_X_W	ft1, t1	# 1 => 1.0
+#endif
 
 	# First loopnest
 	li	t0, 0	# i = 0
@@ -164,26 +193,44 @@ ni:	bge	t0, a0, 1f	# break if i >= n
 nj1:	bge	t1, t0, 2f	# break if j >= i
 	negw	t5, t1
 	remw	t5, t5, a0
+#if defined (ARBITRARY)
+	FCVT_X_W(t5, p3)
+	FDIV_X(p2, p3, p3)
+	FADD_X(p1, p3, p3)
+#else
 	FCVT_X_W	ft2,t5
 	FDIV_X	ft2,ft2,fa0
 	FADD_X	ft2,ft2,ft1
+#endif
 	add	t4, t2, t3
 	add	t4, a1, t4
+#if defined (ARBITRARY)
+	.word 0x003ed027 # FS_X(0, p3, t4)
+#else
 	FS_X	ft2, 0(t4)	# a[i][j]
+#endif
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1	# j++
 	j	nj1	# back to loop j1 check
 
 2:	add	t4, t2, t3
 	add	t4, a1, t4
+#if defined (ARBITRARY)
+	.word 0x001ed027 # FS_X(0, p1, t4)
+#else
 	FS_X	ft1, 0(t4)	# a[i][j] = 1 when i == j
+#endif
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1	# j++
 
 nj2:	bge	t1, a0, 3f	# break if j >= n
 	add	t4, t2, t3
 	add	t4, a1, t4
+#if defined (ARBITRARY)
+	.word 0x000ed027 # FS_X(0, p0, t4)
+#else
 	FS_X	ft0, 0(t4)	# a[i][j] = 0
+#endif
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1
 	j	nj2	# back to loop j2 check
@@ -203,7 +250,11 @@ nr1:	bge	t0, a0, 1f	# break if r >= n
 ns1:	bge	t1, a0, 3f	# break if s >= n
 	add	t4, t2, t3
 	add	t4, a7, t4
+#if defined (ARBITRARY)
+	.word 0x000ed027 # FS_X(0, p0, t4)
+#else
 	FS_X	ft0, 0(t4)	# b[r][s] = 0
+#endif
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1
 	j	ns1	# back to loop s check
@@ -224,7 +275,11 @@ nr2:	bge	t2, a0, 2f	# break if r >= n
 	
 	add	a4, t3, t1	#
 	add	a4, a1, a4	# a4 is now &a[r][t]
+#if defined (ARBITRARY)
+	FL_X(0, a4, p0)
+#else
 	FL_X	ft0, 0(a4)	# ft0 is a[r][t]
+#endif
 
 	li	t4, 0	# s = 0
 	li	t5, 0	# column offset
@@ -233,19 +288,31 @@ ns2:	bge	t4, a0, 3f	# break if s >= n
 
 	add	a4, t3, t5	# a4 is a free temporary
 	add	a4, a7, a4	# column address
+#if defined (ARBITRARY)
+	FL_X(0, a4, p1)
+#else
 	FL_X	ft1, 0(a4)	# ft1 = b[r][s]
+#endif
 
 	add	a5, t6, t1	#
 	add	a5, a1, a5	# a5 is now &a[s][t]
+#if defined (ARBITRARY)
+	FL_X(0, a5, p3)
+#else
 	FL_X	ft2, 0(a5)	# ft2 is a[s][t]
-#if 0
-	FMUL_X	ft2, ft2, ft0
-	FADD_X	ft1, ft1, ft2
+#endif
+
+#if defined (ARBITRARY)
+	FMADD_X(p1, p3, p0, p1)
 #else
 	FMADD_X	ft1, ft0, ft2, ft1	# ft1 = (ft0 * ft2) + ft1
 #endif
 
+#if defined (ARBITRARY)
+	.word 0x00175027 # FS_X(0, p1, a4)
+#else
 	FS_X	ft1, 0(a4)
+#endif
 
 	add	t5, t5, a3	# update column offset
 	add	t6, t6, a2	# update row offset
@@ -270,9 +337,17 @@ nr3:	bge	t0, a0, 1f	# break if r >= n
 ns3:	bge	t1, a0, 3f	# break if s >= n
 	add	t4, t2, t3
 	add	t5, a7, t4
+#if defined (ARBITRARY)
+	FL_X(0, t5, p0)
+#else
 	FL_X	ft0, 0(t5)	# ft0 = b[r][s]
+#endif
 	add	t6, a1, t4
+#if defined (ARBITRARY)
+	.word 0x000fd027 # FS_X(0, p0, t6)
+#else
 	FS_X	ft0, 0(t6)	# a[r][s] = ft0
+#endif
 	add	t3, t3, a3	# update column offset
 	addi	t1, t1, 1
 	j	ns3	# back to loop s check
@@ -323,7 +398,11 @@ knj:	bge	t3, t0, 2f	# break if j >= i
 	
 	add	a4, t2, t4	#
 	add	a4, a1, a4	# a4 is now &a[i][j]
+#if defined (ARBITRARY)
+	FL_X(0, a4, p0)
+#else
 	FL_X	ft0, 0(a4)	# ft0 = a[i][j]
+#endif
 
 	li	t6, 0	# k = 0
 	li	a6, 0	# k column offset
@@ -331,14 +410,22 @@ knk1:	bge	t6, t3, 3f	# break if k >= j
 
 	add	a5, t2, a6	# [i][k]
 	add	a5, a1, a5	# &a[i][k]
+#if defined (ARBITRARY)
+	FL_X(0, a5, p1)
+#else
 	FL_X	ft1, 0(a5)	# ft1 = a[i][k]
+#endif
 
 	add	a5, t5, a6	# [j][k]
 	add	a5, a1, a5	# &a[j][k]
+#if defined (ARBITRARY)
+	FL_X(0, a5, p3)
+#else
 	FL_X	ft2, 0(a5)	# ft2 = a[j][k]
-#if 0
-	FMUL_X	ft2, ft2, ft1
-	FSUB_X	ft0, ft0, ft2
+#endif
+
+#if defined (ARBITRARY)
+	FNMSUB_X(p0, p3, p1, p0)
 #else
 	FNMSUB_X	ft0, ft1, ft2, ft0	# ft0 = ft0 - (ft1 * ft2)
 #endif
@@ -349,9 +436,15 @@ knk1:	bge	t6, t3, 3f	# break if k >= j
 
 3:	add	a5, t5, t4	# [j][j]
 	add	a5, a1, a5	# &a[j][j]
+#if defined (ARBITRARY)
+	FL_X(0, a5, p1)
+	FDIV_X(p1, p0, p0)
+	.word 0x00075027 # FS_X(0, p0, a4)
+#else
 	FL_X	ft1, 0(a5)	# ft1 = a[j][j]
 	FDIV_X	ft0, ft0, ft1
 	FS_X	ft0, 0(a4)	# a[i][j] = ft0
+#endif
 
 	add	t4, t4, a3	# update j column offset
 	add	t5, t5, a2	# update j row offset
@@ -360,7 +453,11 @@ knk1:	bge	t6, t3, 3f	# break if k >= j
 
 2:	add	a4, t2, t1	#
 	add	a4, a1, a4	# a4 is now &a[i][i]
+#if defined (ARBITRARY)
+	FL_X(0, a4, p0)
+#else
 	FL_X	ft0, 0(a4)	# ft0 = a[i][i]
+#endif
 
 	li	t6, 0	# k = 0
 	li	a6, 0	# k column offset
@@ -368,11 +465,14 @@ knk2:	bge	t6, t0, 4f	# break if k >= i
 
 	add	a5, t2, a6	# [i][k]
 	add	a5, a1, a5	# &a[i][k]
+#if defined (ARBITRARY)
+	FL_X(0, a5, p1)
+#else
 	FL_X	ft1, 0(a5)	# ft1 = a[i][k]
+#endif
 
-#if 0
-	FMUL_X	ft1, ft1, ft1
-	FSUB_X	ft0, ft0, ft1
+#if defined (ARBITRARY)
+	FNMSUB_X(p0, p1, p1, p0)
 #else
 	FNMSUB_X	ft0, ft1, ft1, ft0	# ft0 = ft0 - (ft1 * ft1)
 #endif
@@ -381,8 +481,14 @@ knk2:	bge	t6, t0, 4f	# break if k >= i
 	addi	t6, t6, 1	# k++
 	j	knk2	# back to loop k2 check
 
-4:	FSQRT_X	ft0, ft0
+4:
+#if defined (ARBITRARY)
+	FSQRT_X(p0, p0)
+	.word 0x00075027 # FS_X(0, p0, a4)
+#else
+	FSQRT_X	ft0, ft0
 	FS_X	ft0, 0(a4)	# a[i][i] = ft0
+#endif
 
 	add	t1, t1, a3	# update i column offset
 	add	t2, t2, a2	# update i row offset
