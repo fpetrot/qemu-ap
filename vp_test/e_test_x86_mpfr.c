@@ -1,9 +1,9 @@
-#include <stdio.h>
+#include <stdlib.h>
 
 #include <gmp.h>
 #include <mpfr.h>
 
-int main (void)
+int main(int argc, char *argv[])
 {
   unsigned int i;
   mpfr_t s, t, u;
@@ -13,16 +13,13 @@ int main (void)
   mpfr_init2 (s, 200);
   mpfr_set_d (s, 1.0, MPFR_RNDD);
   mpfr_init2 (u, 200);
-  for (i = 1; i <= 100; i++)
+  for (i = 1; i <= atoi(argv[1]); i++)
     {
       mpfr_mul_ui (t, t, i, MPFR_RNDU);
       mpfr_set_d (u, 1.0, MPFR_RNDD);
       mpfr_div (u, u, t, MPFR_RNDD);
       mpfr_add (s, s, u, MPFR_RNDD);
     }
-  printf ("Sum is ");
-  mpfr_out_str (stdout, 10, 0, s, MPFR_RNDD);
-  putchar ('\n');
 
   mpfr_clear (s);
   mpfr_clear (t);
