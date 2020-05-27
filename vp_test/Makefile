@@ -68,10 +68,15 @@ else # Marie
 MPFR=$(HOME)/Documents/Ensimag/MasterDI/Stage/Frederic_Petrot/qemu/variable_precision_floating_point/qemu-vp/mpfr-4.0.2
 endif
 
+# Tests to be executed in x86 machine
 CFLAGS=-I$(MPFR)/src/
 LDFLAGS=-L$(MPFR)/build/src/.libs/ $(MPFR)/build/src/.libs/libmpfr.so -lgmp -lm
-mpfr-test : mpfr-test.o
+e_test_x86_mpfr : e_test_x86_mpfr.o
 	gcc -o $@ $< $(LDFLAGS)
-mpfr-test.o : mpfr-test.c
+e_test_x86_mpfr.o : e_test_x86_mpfr.c
 
-clean : ; rm -f *.out *.time *.log test_all.o tests.s mpfr-test mpfr-test.o e_test_insn.o cholesky.o e_test_double.o newton_double.o lib.o crt.o
+e_test_x86 : e_test_x86.o
+	gcc -o $@ $<
+e_test_x86.o : e_test_x86.c
+
+clean : ; rm -f *.out *.time *.log test_all.o tests.s e_test_x86 e_test_x86.o e_test_x86_mpfr e_test_x86_mpfr.o e_test_insn.o cholesky.o e_test_double.o newton_double.o lib.o crt.o
