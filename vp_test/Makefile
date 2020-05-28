@@ -9,7 +9,7 @@ a.dis: a.out
 b.out : e_test_insn.o
 	riscv64-unknown-elf-ld -T link.ld $< -o $@
 e_test_insn.o : e_test_insn.S
-	riscv64-unknown-elf-gcc -march=rv64ifd -mabi=lp64d -c $<
+	riscv64-unknown-elf-gcc -Os -march=rv64ifd -mabi=lp64d -c $<
 
 d.out : newton_insn.o
 	riscv64-unknown-elf-ld -T link.ld $< -o $@
@@ -22,12 +22,12 @@ crt.o : crt.s
 e_test_double.out : e_test_double.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
 e_test_double.o : e_test_double.c
-	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -O3 -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
+	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -Os -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
 
 newton_double.out : newton_double.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
 newton_double.o : newton_double.c
-	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -O3 -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
+	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -Os -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
 
 
 .PHONY: cholesky
@@ -72,11 +72,11 @@ endif
 CFLAGS=-I$(MPFR)/src/
 LDFLAGS=-L$(MPFR)/build/src/.libs/ $(MPFR)/build/src/.libs/libmpfr.so -lgmp -lm
 e_test_x86_mpfr : e_test_x86_mpfr.o
-	gcc -o $@ $< $(LDFLAGS)
+	gcc -O2 -o $@ $< $(LDFLAGS)
 e_test_x86_mpfr.o : e_test_x86_mpfr.c
 
 e_test_x86 : e_test_x86.o
-	gcc -o $@ $<
+	gcc -O2 -o $@ $<
 e_test_x86.o : e_test_x86.c
 
 clean : ; rm -f *.out *.time *.log test_all.o tests.s e_test_x86 e_test_x86.o e_test_x86_mpfr e_test_x86_mpfr.o e_test_insn.o cholesky.o e_test_double.o newton_double.o lib.o crt.o

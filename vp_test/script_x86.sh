@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# TEST of e double/mpfr for x86
 make e_test_x86
 make e_test_x86_mpfr
 
@@ -7,7 +8,7 @@ make e_test_x86_mpfr
 : > res_mpfr.txt
 
 
-for i in 100 500 1000 5000 10000 50000 100000 500000
+for i in 100 500 1000 5000 10000 50000 100000 500000 1000000 5000000
 do
 	for j in {1..10}
 	do
