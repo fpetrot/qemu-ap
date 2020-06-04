@@ -20,7 +20,8 @@ do
 	#(time ../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -kernel cholesky-asm.out) 2>> riscv_cholesky_mpfr_prec2.txt
 	#(time ../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -kernel cholesky-asm.out) 2>> riscv_cholesky_mpfr_prec3.txt
 	#(time ../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -kernel newton_double.out) 2>> riscv_newton_double.txt
-	(time ../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -kernel d.out) 2>> riscv_newton_mpfr.txt
+	#(time ../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -kernel d.out) 2>> riscv_newton_mpfr.txt
+	(time ../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -kernel d.out) 2>> riscv_newton_mpfr_prec.txt
 done
 
 make clean
