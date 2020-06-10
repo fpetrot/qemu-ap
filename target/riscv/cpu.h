@@ -145,7 +145,7 @@ struct CPUArchState {
     /* TODO: add vp control and status registers
      * Note that I would put them in the csr if ROCC wasn't involved */
 
-    mpfr_t vpr[32];
+    mpfr_t apr[32]; /* AP registers */
 
     target_ulong pc;
     target_ulong load_res;
@@ -427,7 +427,7 @@ static inline int riscv_has_ext(CPURISCVState *env, target_ulong ext)
 extern const char * const riscv_int_regnames[];
 extern const char * const riscv_int_regnamesh[];
 extern const char * const riscv_fpr_regnames[];
-extern const char * const riscv_vpr_regnames[]; /* vp support */
+extern const char * const riscv_apr_regnames[]; /* vp support */
 extern const char * const riscv_excp_names[];
 extern const char * const riscv_intr_names[];
 

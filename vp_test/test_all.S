@@ -69,7 +69,7 @@ func:
 	# Test conversion mpfr -> uint
 	fcvt_lu_p(p3, MPFR_RNDD, x30)
 
-	la	t0, room_for_vpr
+	la	t0, room_for_apr
 	.word 0x0032d027 # fsp p3, 0(t0)
 	flp(0, t0, p0) # flp p0, 0(t0)
 
@@ -81,4 +81,4 @@ func:
 	ret
 
 	.data
-room_for_vpr: .space 1024
+room_for_apr: .space 1024
