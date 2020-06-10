@@ -62,13 +62,13 @@ const char * const riscv_fpr_regnames[] = {
   "f30/ft10", "f31/ft11"
 };
 
-const char * const riscv_vpr_regnames[] = {
-  "v0/vp0",   "v1/vp1",  "v2/vp2",   "v3/vp3",   "v4/vp4",  "v5/vp5",
-  "v6/vp6",   "v7/vp7",  "v8/vp8",   "v9/vp9",   "v10/vp10", "v11/vp11",
-  "v12/vp12",  "v13/vp13", "v14/vp14",  "v15/vp15",  "v16/vp16", "v17/vp17",
-  "v18/vp18",  "v19/vp19", "v20/vp20",  "v21/vp21",  "v22/vp22", "v23/vp23",
-  "v24/vp24",  "v25/vp25", "v26/vp26", "v27/vp27", "v28/vp28", "v29/vp29",
-  "v30/vp30", "v31/vp31"
+const char * const riscv_apr_regnames[] = {
+  "v0/ap0",   "v1/ap1",  "v2/ap2",   "v3/ap3",   "v4/ap4",  "v5/ap5",
+  "v6/ap6",   "v7/ap7",  "v8/ap8",   "v9/ap9",   "v10/ap10", "v11/ap11",
+  "v12/ap12",  "v13/ap13", "v14/ap14",  "v15/ap15",  "v16/ap16", "v17/ap17",
+  "v18/ap18",  "v19/ap19", "v20/ap20",  "v21/ap21",  "v22/ap22", "v23/ap23",
+  "v24/ap24",  "v25/ap25", "v26/ap26", "v27/ap27", "v28/ap28", "v29/ap29",
+  "v30/ap30", "v31/ap31"
 };
 
 const char * const riscv_excp_names[] = {
@@ -354,15 +354,6 @@ static void riscv_cpu_dump_state(CPUState *cs, FILE *f, int flags)
         }
     }
     /* Will probably print out good only on 4k line length terminals! */
-    /*
-    for (i = 0; i < 32; i++) {
-        qemu_fprintf(f, " %s ", riscv_vpr_regnames[i]);
-        for (j = 0; j < 32; j++) {
-            qemu_fprintf(f, TARGET_FMT_lx, env->vpr[i][j]);
-        }
-        qemu_fprintf(f, "\n");
-    }
-    */
 }
 
 static void riscv_cpu_set_pc(CPUState *cs, vaddr value)

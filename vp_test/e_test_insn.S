@@ -2,7 +2,7 @@
  * vim:list:ts=4:sw=4:noet:
  */
 
-#define DOUBLE
+#define ARBITRARY
 #include "apmacros.h"
 	.text
 	.align	1
@@ -57,11 +57,11 @@ loop:
 
 	addi	t1, t1, 1
 	ble	t1, t2, loop
-	la	t0, room_for_vpr
+	la	t0, room_for_apr
 	li t3, 0x100000
 	li t4, 0x5555
 	sw t4, 0(t3)
 	ret
 
 	.data
-room_for_vpr: .space 1024
+room_for_apr: .space 1024
