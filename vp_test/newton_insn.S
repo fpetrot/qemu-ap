@@ -43,7 +43,8 @@ newton_raphson:
     fcvt_p_d(fa0, MPFR_RNDD, p3)
 
     # Init epsilon
-    li t0, 0x1dac9a7b3b7302f
+    # li t0, 0x1dac9a7b3b7302f # 10e-300
+    li t0, 0x37d5c72fb1552d83 # 10e-40
     fmv.d.x   fa0, t0
     fcvt_p_d(fa0, MPFR_RNDD, p4)
 

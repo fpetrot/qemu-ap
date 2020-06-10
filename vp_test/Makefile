@@ -14,19 +14,19 @@ e_test_insn.o : e_test_insn.S
 d.out : newton_insn.o
 	riscv64-unknown-elf-ld -T link.ld $< -o $@
 newton_insn.o : newton_insn.S
-	riscv64-unknown-elf-gcc -march=rv64ifd -mabi=lp64d -c $<
+	riscv64-unknown-elf-gcc -Os -march=rv64ifd -mabi=lp64d -c $<
 
 crt.o : crt.s
 	riscv64-unknown-elf-gcc -c $<
 
-e_test_double.out : e_test_double.o crt.o
+e_float_double.out : e_float_double.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
-e_test_double.o : e_test_double.c
+e_float_double.o : e_float_double.c
 	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -Os -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
 
-newton_double.out : newton_double.o crt.o
+newton_float_double.out : newton_float_double.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
-newton_double.o : newton_double.c
+newton_float_double.o : newton_float_double.c
 	riscv64-unknown-elf-gcc -DRISCV -mcmodel=medany -Os -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -Werror -ffreestanding -c $<
 
 

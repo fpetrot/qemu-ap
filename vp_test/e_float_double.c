@@ -98,9 +98,15 @@ void print_double(double f)
 } 
 #endif
 
+#define DOUBLE
+
 int main(void) {
 	unsigned int i;
-	double s, t, u;
+#if defined (FLOAT)
+   float s, t, u;
+#else
+   double s, t, u;
+#endif
 
 	t = 1.0;
 	s = 1.0;
