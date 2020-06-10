@@ -114,11 +114,30 @@ double fp(double x)
     return 3*x*x - 2*x;
 }
 
-void newton_raphson(double x)
+void newton_raphson_float(float x)
+{
+    float h, xn, xp, epsilon;
+    h = 1.0;
+    epsilon = 10e-40;
+
+    while(1) {
+        h = abs(h);
+        if (h < epsilon)
+            break;
+        xp = x;
+        xn = x;
+        x = f(x);
+        xp = fp(xp);
+        h = x / xp;
+        x = xn - h;
+    }
+}
+
+void newton_raphson_double(double x)
 {
     double h, xn, xp, epsilon;
     h = 1.0;
-    epsilon = 10e-300;
+    epsilon = 10e-40;
 
     while(1) {
         h = abs(h);
@@ -136,10 +155,17 @@ void newton_raphson(double x)
     putstr("\n");
 }
 
+#define DOUBLE
+
 int main(void)
 {
+#if defined (FLOAT)
+    float x0 = -20.0;
+    newton_raphson_float(x0);
+#else
     double x0 = -20.0;
-    newton_raphson(x0);
+    newton_raphson_double(x0);
+#endif
     *(volatile unsigned int *)0x100000 = 0x5555;
     return 0;
 }

@@ -25,7 +25,7 @@
 #  endif
 
 #  ifdef MEDIUM_DATASET
-#   define N 400
+#   define N 250
 #  endif
 
 #  ifdef LARGE_DATASET
