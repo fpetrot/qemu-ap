@@ -73,6 +73,7 @@
 
 /* User Arbitrary Precision Floating-Point CSRs */
 #define CSR_FPREC           0x006
+#define CSR_FEXP            0x007
 
 /* User Timers and Counters */
 #define CSR_CYCLE           0xc00

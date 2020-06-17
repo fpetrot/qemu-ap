@@ -765,6 +765,14 @@ static void riscv_cpu_init(Object *obj)
     qdev_init_gpio_in(DEVICE(cpu), riscv_cpu_set_irq,
                       IRQ_LOCAL_MAX + IRQ_LOCAL_GUEST_MAX);
 #endif /* CONFIG_USER_ONLY */
+
+    /* Let us assume this is the right place for that :
+     * use mpfr_init as we have no idea of the precision yet. */
+    for (int i = 0; i < 32; i++) {
+        mpfr_init(cpu->env.apr[i]);
+    }
+    /* FIXME: understand this magic and what to do with the exponent */
+    cpu->env.fexp = 0x8000000000000002;
 }
 
 static Property riscv_cpu_properties[] = {

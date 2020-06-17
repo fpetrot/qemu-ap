@@ -140,7 +140,8 @@ struct CPUArchState {
     target_ulong load_val;
 
     target_ulong frm;
-    target_ulong fprec;
+    target_ulong fprec; /* AP precision csr */
+    target_ulong fexp;  /* AP exponent csr */
 
     target_ulong badaddr;
     uint32_t bins;
