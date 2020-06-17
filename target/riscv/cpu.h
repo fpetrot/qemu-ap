@@ -155,7 +155,8 @@ struct CPUArchState {
     uint64_t fpr[32]; /* assume both F and D extensions */
     target_ulong frm;
     float_status fp_status;
-    target_ulong fprec;
+    target_ulong fprec; /* ap precision csr */
+    target_ulong fexp;  /* ap exponent csr */
 
     target_ulong badaddr;
     target_ulong bins;

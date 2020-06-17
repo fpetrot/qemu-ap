@@ -759,6 +759,18 @@ static int write_fprec(CPURISCVState *env, int csrno, target_ulong val)
     return 0;
 }
 
+static int read_fexp(CPURISCVState *env, int csrno, target_ulong *val)
+{
+    *val = env->fexp;
+    return 0;
+}
+
+static int write_fexp(CPURISCVState *env, int csrno, target_ulong val)
+{
+    env->fexp = val;
+    return 0;
+}
+
 /* User Timers and Counters */
 static target_ulong get_ticks(bool shift)
 {
@@ -4110,6 +4122,8 @@ riscv_csr_operations csr_ops[CSR_TABLE_SIZE] = {
     [CSR_VLENB]    = { "vlenb",    vs,     read_vlenb                 },
     /* User Arbitrary Precision Floating-Point CSRs */
     [CSR_FPREC]    = { "fprec",    any,    read_fprec,   write_fprec  },
+    [CSR_FEXP]     = { "fexp",     any,    read_fexp,    write_fexp   },
+
     /* User Timers and Counters */
     [CSR_CYCLE]    = { "cycle",    ctr,    read_hpmcounter  },
     [CSR_INSTRET]  = { "instret",  ctr,    read_hpmcounter  },
