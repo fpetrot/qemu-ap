@@ -58,10 +58,38 @@ static struct FloatIEEE *unpack_float(target_ulong num)
 }
 
 
-/* Helpers 32-bit */
-void helper_fcvt_p_f(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+/*
+ * In the following functions we use MPFR_DECL_INIT followed by mpfr_set
+ * when assigning a result because the destination register may also be
+ * a source register, in which case changing its precision/exponent as
+ * source leads to errors.
+ * This might not be optimal in terms of performance, depending on the
+ * cost of the mpfr_set_prec and mpfr_set functions, and checking if a srcx
+ * register is the dest register could spare some time, ..., or not
+ */
+static inline void check_attributes(CPURISCVState *env, target_ulong dest)
 {
-    struct FloatIEEE *f = unpack_float(env->fpr[src1]);
+   if (mpfr_get_prec(env->apr[dest]) != env->fprec)
+      mpfr_set_prec(env->apr[dest], env->fprec);
+   if (mpfr_get_exp(env->apr[dest]) != env->fexp)
+      mpfr_set_exp(env->apr[dest], env->fexp);
+}
+
+/* 
+ * Printing helper, cause we must unfortunately debug, as we are only
+ * humans, ...
+ */
+
+#define MPFR_OUT(x) \
+    mpfr_printf("%-10s %.128Rf\n", &__func__[sizeof("helper")], x);
+
+#define OTHR_OUT(fmt, x) \
+    printf("%-10s %" #fmt "\n", &__func__[sizeof("helper")], x);
+
+/* Helpers 32-bit */
+void helper_fcvt_p_f(CPURISCVState *env, target_ulong dest, uint64_t src1, target_ulong rm)
+{
+    struct FloatIEEE *f = unpack_float(src1);
     float m = 1.0;
 
 #if defined(TARGET_RISCV32)
@@ -73,22 +101,24 @@ void helper_fcvt_p_f(CPURISCVState *env, target_ulong dest, target_ulong src1, t
     // Result
     float res = f->sign * m * pow(2, f->exp);
 
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_set_flt(x, res, rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
+    check_attributes(env, dest);
+    mpfr_set_flt(env->apr[dest], res, rm == 7 ? env->frm : rm);
 
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
+    MPFR_OUT(env->apr[dest]);
 }
 
 
-void helper_fcvt_f_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+target_ulong helper_fcvt_f_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV32)
-    target_ulong res;
-    float nb_double = mpfr_get_flt(env->apr[src1], rm);
-    memcpy(&res, &nb_double, sizeof(target_ulong));
-    env->fpr[dest] = res;
+    union {
+        target_ulong u;
+        float        f;
+    } res;
+    res.f = mpfr_get_flt(env->apr[src1], rm == 7 ? env->frm : rm);
+    return res.u;
+#else
+    return 0xdeadbeef;
 #endif
 }
 
@@ -96,16 +126,18 @@ void helper_fcvt_f_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 void helper_fcvt_p_w(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV32)
-    mpfr_init2(env->apr[dest], env->fprec);
-    mpfr_set_si(env->apr[dest], env->gpr[src1], rm);
+    check_attributes(env, dest);
+    mpfr_set_si(env->apr[dest], src1, rm == 7 ? env->frm : rm);
 #endif
 }
 
 
-void helper_fcvt_w_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+target_ulong helper_fcvt_w_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV32)
-    env->gpr[dest] = mpfr_get_si(env->apr[src1], rm);
+    return mpfr_get_si(env->apr[src1], rm == 7 ? env->frm : rm);
+#else
+    return 0xdeadbeef;
 #endif
 }
 
@@ -113,223 +145,25 @@ void helper_fcvt_w_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 void helper_fcvt_p_wu(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV32)
-    mpfr_init2(env->apr[dest], env->fprec);
-    mpfr_set_ui(env->apr[dest], env->gpr[src1], rm);
+    check_attributes(env, dest);
+    mpfr_set_ui(env->apr[dest], src1, rm == 7 ? env->frm : rm);
 #endif
 }
 
 
-void helper_fcvt_wu_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+target_ulong helper_fcvt_wu_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV32)
-    env->gpr[dest] = mpfr_get_ui(env->apr[src1], rm);
+    return mpfr_get_ui(env->apr[src1], rm == 7 ? env->frm : rm);
+#else
+    return 0xdeadbeef;
 #endif
 }
 
-
 /* Helpers 64-bit */
-void helper_fadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_add(x, env->apr[src1], env->apr[src2], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_mul(x, env->apr[src1], env->apr[src2], rm);
-    mpfr_add(x, x, env->apr[src3], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fnmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
-{
-    MPFR_CHANGE_SIGN(env->apr[src1]);
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_mul(x, env->apr[src1], env->apr[src2], rm);
-    mpfr_sub(x, x, env->apr[src3], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-    MPFR_CHANGE_SIGN(env->apr[src1]);
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_sub(x, env->apr[src1], env->apr[src2], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_mul(x, env->apr[src1], env->apr[src2], rm);
-    mpfr_sub(x, x, env->apr[src3], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fnmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
-{
-    MPFR_CHANGE_SIGN(env->apr[src1]);
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_mul(x, env->apr[src1], env->apr[src2], rm);
-    mpfr_add(x, x, env->apr[src3], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-    MPFR_CHANGE_SIGN(env->apr[src1]);
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fmul_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_mul(x, env->apr[src1], env->apr[src2], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fdiv_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_div(x, env->apr[src1], env->apr[src2], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fsqrt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_sqrt(x, env->apr[src1], rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_feq_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
-{
-    if (mpfr_equal_p(env->apr[src1], env->apr[src2]) != 0) {
-        env->gpr[dest] = 1;
-    } else {
-        env->gpr[dest] = 0;
-    }
-}
-
-
-void helper_flt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
-{
-    if (mpfr_less_p(env->apr[src1], env->apr[src2]) != 0) {
-        env->gpr[dest] = 1;
-    } else {
-        env->gpr[dest] = 0;
-    }
-}
-
-
-void helper_fle_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
-{
-    if (mpfr_lessequal_p(env->apr[src1], env->apr[src2]) != 0) {
-        env->gpr[dest] = 1;
-    } else {
-        env->gpr[dest] = 0;
-    }
-}
-
-
-void helper_fmin_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_min(x, env->apr[src1], env->apr[src2], env->frm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fmax_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
-{
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_max(x, env->apr[src1], env->apr[src2], env->frm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
-
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
-}
-
-
-void helper_fsgnj_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
-{
-    if (src1 == src2) {
-        memcpy(env->apr[dest], env->apr[src1], sizeof(mpfr_t));
-    } else {
-        mpfr_copysign(env->apr[dest], env->apr[src1], env->apr[src2], env->frm);
-    }
-}
-
-
-void helper_fsgnjn_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
-{
-    if (src1 == src2) {
-        mpfr_neg(env->apr[dest], env->apr[src1], env->frm);
-    } else {
-        if (mpfr_signbit(env->apr[src2]) != 0) {
-            // the number is negative
-            mpfr_setsign(env->apr[dest], env->apr[src1], 0, env->frm);
-        } else {
-            // the number is positive
-            mpfr_setsign(env->apr[dest], env->apr[src1], 1, env->frm);
-        }
-    }
-}
-
-
-void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
-{
-    if (src1 == src2) {
-        mpfr_abs(env->apr[dest], env->apr[src1], env->frm);
-    } else {
-        int sign_src1;
-        int sign_src2;
-        sign_src1 = mpfr_signbit(env->apr[src1]) != 0?1:0;
-        sign_src2 = mpfr_signbit(env->apr[src2]) != 0?1:0;
-        mpfr_setsign(env->apr[dest], env->apr[src1], sign_src1 ^ sign_src2, env->frm);
-    }
-}
-
-
 void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
-    struct FloatIEEE *f = unpack_float(env->fpr[src1]);
+    struct FloatIEEE *f = unpack_float(src1);
     double m = 1.0;
 
 #if defined(TARGET_RISCV64)
@@ -341,22 +175,27 @@ void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, t
     // Result
     double res = f->sign * m * pow(2, f->exp);
 
-    mpfr_t x;
-    mpfr_init2(x, env->fprec);
-    mpfr_set_d(x, res, rm);
-    memcpy(env->apr[dest], x, sizeof(mpfr_t));
+    check_attributes(env, dest);
+    mpfr_set_d(env->apr[dest], res, rm == 7 ? env->frm : rm);
 
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
+#if 1
+    MPFR_OUT(env->apr[dest]);
+#endif
 }
 
 
-void helper_fcvt_d_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+target_ulong helper_fcvt_d_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV64)
-    target_ulong res;
-    double nb_double = mpfr_get_d(env->apr[src1], rm);
-    memcpy(&res, &nb_double, sizeof(target_ulong));
-    env->fpr[dest] = res;
+    union {
+        target_ulong u;
+        double       d;
+    } res;
+    res.d = mpfr_get_d(env->apr[src1], rm == 7 ? env->frm : rm);
+    OTHR_OUT(f, res.d);
+    return res.u;
+#else
+    return 0xdeadbeef;
 #endif
 }
 
@@ -364,17 +203,23 @@ void helper_fcvt_d_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 void helper_fcvt_p_l(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV64)
-    mpfr_init2(env->apr[dest], env->fprec);
-    mpfr_set_si(env->apr[dest], env->gpr[src1], rm);
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
+    check_attributes(env, dest);
+    mpfr_set_si(env->apr[dest], src1, rm == 7 ? env->frm : rm);
+#if 1
+    MPFR_OUT(env->apr[dest]);
+#endif
 #endif
 }
 
 
-void helper_fcvt_l_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+target_ulong helper_fcvt_l_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV64)
-    env->gpr[dest] = mpfr_get_si(env->apr[src1], rm);
+    target_ulong res = mpfr_get_si(env->apr[src1], rm == 7 ? env->frm : rm);
+    OTHR_OUT(ld, res);
+    return res;
+#else
+    return 0xdeadbeef;
 #endif
 }
 
@@ -382,18 +227,203 @@ void helper_fcvt_l_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 void helper_fcvt_p_lu(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV64)
-    mpfr_init2(env->apr[dest], env->fprec);
-    mpfr_set_ui(env->apr[dest], env->gpr[src1], rm);
-    mpfr_printf("%.128Rf\n", env->apr[dest]);
+    check_attributes(env, dest);
+    mpfr_set_ui(env->apr[dest], src1, rm == 7 ? env->frm : rm);
+#if 1
+    MPFR_OUT(env->apr[dest]);
+#endif
 #endif
 }
 
 
-void helper_fcvt_lu_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+target_ulong helper_fcvt_lu_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
 #if defined(TARGET_RISCV64)
-    env->gpr[dest] = mpfr_get_ui(env->apr[src1], rm);
+    target_ulong res = mpfr_get_ui(env->apr[src1], rm == 7 ? env->frm : rm);
+    OTHR_OUT(lu, res);
+    return res;
+#else
+    return 0xdeadbeef;
 #endif
+}
+
+void helper_fadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_add(x, env->apr[src1], env->apr[src2], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_mul(x, env->apr[src1], env->apr[src2], rm == 7 ? env->frm : rm);
+    mpfr_add(x, x, env->apr[src3], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fnmadd_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    MPFR_CHANGE_SIGN(env->apr[src1]);
+    mpfr_mul(x, env->apr[src1], env->apr[src2], rm == 7 ? env->frm : rm);
+    mpfr_sub(x, x, env->apr[src3], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+    MPFR_CHANGE_SIGN(env->apr[src1]);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_sub(x, env->apr[src1], env->apr[src2], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_mul(x, env->apr[src1], env->apr[src2], rm == 7 ? env->frm : rm);
+    mpfr_sub(x, x, env->apr[src3], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fnmsub_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong src3, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    MPFR_CHANGE_SIGN(env->apr[src1]);
+    mpfr_mul(x, env->apr[src1], env->apr[src2], rm == 7 ? env->frm : rm);
+    mpfr_add(x, x, env->apr[src3], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+    MPFR_CHANGE_SIGN(env->apr[src1]);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fmul_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_mul(x, env->apr[src1], env->apr[src2], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fdiv_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_div(x, env->apr[src1], env->apr[src2], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fsqrt_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_sqrt(env->apr[dest], env->apr[src1], rm == 7 ? env->frm : rm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, rm == 7 ? env->frm : rm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+target_ulong helper_feq_p(CPURISCVState *env, target_ulong src1, target_ulong src2)
+{
+    return mpfr_equal_p(env->apr[src1], env->apr[src2]);
+}
+
+
+target_ulong helper_flt_p(CPURISCVState *env, target_ulong src1, target_ulong src2)
+{
+    return mpfr_less_p(env->apr[src1], env->apr[src2]);
+}
+
+
+target_ulong helper_fle_p(CPURISCVState *env, target_ulong src1, target_ulong src2)
+{
+    return mpfr_lessequal_p(env->apr[src1], env->apr[src2]);
+}
+
+
+void helper_fmin_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_min(x, env->apr[src1], env->apr[src2], env->frm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, env->frm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fmax_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_max(x, env->apr[src1], env->apr[src2], env->frm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, env->frm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fsgnj_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_copysign(x, env->apr[src1], env->apr[src2], env->frm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, env->frm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fsgnjn_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_setsign(x, env->apr[src1], !mpfr_signbit(env->apr[src2]), env->frm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, env->frm);
+
+    MPFR_OUT(env->apr[dest]);
+}
+
+
+void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong src2)
+{
+    MPFR_DECL_INIT(x, env->fprec);
+    mpfr_setsign(x, env->apr[src1], !!mpfr_signbit(env->apr[src1]) ^ !!mpfr_signbit(env->apr[src2]), env->frm);
+    check_attributes(env, dest);
+    mpfr_set(env->apr[dest], x, env->frm);
+
+    MPFR_OUT(env->apr[dest]);
 }
 
 
