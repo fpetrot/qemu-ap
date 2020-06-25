@@ -1,25 +1,31 @@
 /*
  * vim:list:ts=8:sw=8:noet:
  */
-
-#define ARBITRARY
 #include "apmacros.h"
+#if defined(ARBITRARY) && PRECISION == 0
+#error "Define PRECISION with a value other than zero please"
+#endif
 	.text
 	.align	1
 	.globl	e_approx
 	.type	e_approx, @function
 
 e_approx:
-
 	# Indique que l'on veut utiliser la FPU
 	li	t0, MSTATUS_FS
 	csrs	mstatus, t0
 
+ #if defined (ARBITRARY)
 	# Precision
-	li	x7, 200
+	li	x7, PRECISION
 	csrrw	x0, 6, x7
+#endif
 	# Rounding mode
 	csrrwi	x0, 2, MPFR_RNDD
+
+	# Do that 10000 times so as to amortize QEMU bootstrap
+	li s0, 10000
+outerloop:
 
 	# Met 1.0 dans fa0
 	li	t0, 1
@@ -28,13 +34,15 @@ e_approx:
 #if defined (ARBITRARY)
 	fcvt_p_d(p0, fa0, MPFR_RNDD)
 	fcvt_p_d(p1, fa0, MPFR_RNDD)
-#else
+#elif defined (DOUBLE)
 	fcvt.d.lu fa5,t0 # t = 1.0
 	fcvt.d.lu fa6,t0 # s = 1.0
+#else
+# error "Define either ARBITRARY or DOUBLE please"
 #endif
 
 	li	t1, 1		# indice de boucle, i
-	li	t2, 10		# borne de la boucle
+	li	t2, ITERATIONS		# borne de la boucle
 loop:	
 	fcvt.d.lu fa1,t1 # 1 => 1.0
 
@@ -57,6 +65,10 @@ loop:
 
 	addi	t1, t1, 1
 	ble	t1, t2, loop
+
+	addi	s0, s0, -1
+	bnez	s0, outerloop
+
 	li t3, 0x100000
 	li t4, 0x5555
 	sw t4, 0(t3)

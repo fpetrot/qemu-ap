@@ -7,7 +7,7 @@
  * types, for demonstration purposes only.
  */
 
-#define MINI_DATASET
+#define MEDIUM_DATASET
 
 /* Default to LARGE_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(MEDIUM_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
@@ -25,7 +25,7 @@
 #  endif
 
 #  ifdef MEDIUM_DATASET
-#   define N 250
+#   define N 400
 #  endif
 
 #  ifdef LARGE_DATASET
@@ -37,12 +37,11 @@
 #  endif
 # endif
 
-/* For double at first */
-#define ARBITRARY
-
 #if !defined(SINGLE) && !defined(DOUBLE) && !defined(ARBITRARY)
 #  error "Please define the type to use for this program"
 #endif
+
+#include "apmacros.h"
 
 #if defined (SINGLE)
 #  define DTSZ 4
@@ -58,18 +57,17 @@
 #  define FS_X      fsw
 #elif defined (DOUBLE)
 #  define DTSZ 8
-#  define FCVT_X_W(rd, rs1)           fcvt.d.w
-#  define FADD_X(rd, rs1, rs2)        fadd.d
-#  define FSUB_X(rd, rs1, rs2)        fsub.d
-#  define FMUL_X(rd, rs1, rs2)        fmul.d
-#  define FDIV_X(rd, rs1, rs2)        fdiv.d
-#  define FMADD_X(rd, rs1, rs2, rs3)  fmadd.d
-#  define FNMSUB_X(rd, rs1, rs2, rs3) fnmsub.d
-#  define FSQRT_X(rd, rs1)            fsqrt.d
-#  define FL_X(rd, imm, rs1)          fld rd, imm(rs1)
-#  define FS_X(rs2, imm, rs1)         fsd rs2, imm(rs1)
+#  define FCVT_X_W                    fcvt.d.w
+#  define FADD_X                      fadd.d
+#  define FSUB_X                      fsub.d
+#  define FMUL_X                      fmul.d
+#  define FDIV_X                      fdiv.d
+#  define FMADD_X                     fmadd.d
+#  define FNMSUB_X                    fnmsub.d
+#  define FSQRT_X                     fsqrt.d
+#  define FL_X                        fld
+#  define FS_X                        fsd
 #elif defined (ARBITRARY)
-#include "apmacros.h"
 #  define DTSZ 40
 #  define FCVT_X_W(rd, rs1)           fcvt_p_l(rd, rs1, MPFR_RNDD)
 #  define FADD_X(rd, rs1, rs2)        fadd_p(rd, rs1, rs2, MPFR_RNDD)
@@ -122,6 +120,10 @@ main:	li	t0, MSTATUS_FS # Make fpu usable
 	li	a0, N
 	la	a1, A
 	jal	kernel_cholesky
+#if !defined(VISUAL_CHECK)
+	j	die
+#endif
+
 #if defined (SINGLE)
 	li	a0, N
 	la	a1, A
@@ -132,11 +134,12 @@ main:	li	t0, MSTATUS_FS # Make fpu usable
 	jal	print_array_cholesky_double
 #elif defined (ARBITRARY)
 	# Traverse result matrix and transform to double
-dump:	li	a0, N
+	li	a0, N
 	la	a1, A	# ap array
 	li	a3, DTSZ	# compute n * DTSZ before the loops
 	mul	a2, a3, a0	# suboptimal if DTSZ = 2^p
 	la	a7, C	# double array
+	li	s4, N*8	# needed to avoid constant overflow on addi
 
 1:	li	t0, 0	# i = 0
 	li	t2, 0	# AP row offset
@@ -162,7 +165,7 @@ dump:	li	a0, N
 	j	3b	# back to loop j check
 
 3:	add	t2, t2, a2	# update row offset
-	add	s2, s2, N*8	# update row column offset
+	add	s2, s2, s4	# update row column offset
 	addi	t0, t0, 1
 	j	2b	# back to loop i check
 1:
