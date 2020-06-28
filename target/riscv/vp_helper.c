@@ -23,7 +23,6 @@
 #include "exec/exec-all.h"
 #include "exec/helper-proto.h"
 #include <string.h>
-#include <math.h>
 #include <stdlib.h>
 
 /* 
@@ -96,12 +95,12 @@ void helper_fcvt_p_f(CPURISCVState *env, target_ulong dest, uint64_t src1, targe
 
 #if defined(TARGET_RISCV32)
     for (int i = 1; i < 24; i++) {
-        m += powf(2.0, -(float)i) * ((f->frac >> (23-i)) & 1);
+        m += ((f->frac >> (23-i)) & 1) / (1 << i);
     }
 #endif
 
     // Result
-    float res = f->sign * m * pow(2, f->exp);
+    float res = f->sign * m * (1 << f->exp);
 
     check_attributes(env, dest);
     mpfr_set_flt(env->apr[dest], res, rm == 7 ? env->frm : rm);
@@ -170,12 +169,12 @@ void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 #if defined(TARGET_RISCV64)
     for (int i = 1; i < 53; i++) {
-        m += powl(2.0, -(double)i) * ((f->frac >> (52-i)) & 1);
+        m += ((f->frac >> (52-i)) & 1) / (1LL << i);
     }
 #endif
 
     // Result
-    double res = f->sign * m * pow(2, f->exp);
+    double res = f->sign * m * (1 << f->exp);
 
     check_attributes(env, dest);
     mpfr_set_d(env->apr[dest], res, rm == 7 ? env->frm : rm);
@@ -500,7 +499,6 @@ void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uint64_t data)
 {
     uint64_t res;
-    uint64_t nb_limb;
     switch(idx)
     {
         case 0:
@@ -511,7 +509,7 @@ uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uin
             res = 1;
             break;
         case 1:
-            mpfr_init2(env->apr[dest], data);
+            mpfr_set_prec(env->apr[dest], data);
             res = 1;
             break;
         case 2:
@@ -524,9 +522,13 @@ uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uin
             break;
         case 4:
             // On doit calculer le nombre de limb
+            res = 1 + (mpfr_get_prec(env->apr[dest])-1)/GMP_NUMB_BITS;
+#if 0
             nb_limb = ceil((double)((env->apr[dest])->_mpfr_prec) / (double)mp_bits_per_limb);
+            /* Ce malloc ne sert à rien normalement, car mpfr a du allouer ce qu'il faut */
             (env->apr[dest])->_mpfr_d = (mp_limb_t *) malloc(sizeof(mp_limb_t) * nb_limb);
             res = nb_limb;
+#endif
             break;
         default:
             // On charge chaque limb
