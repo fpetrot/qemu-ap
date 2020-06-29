@@ -42,7 +42,7 @@ outerloop:
 #endif
 
 	li	t1, 1		# indice de boucle, i
-	li	t2, ITERATIONS		# borne de la boucle
+	li	t2, DEGREE		# borne de la boucle
 loop:	
 	fcvt.d.lu fa1,t1 # 1 => 1.0
 
