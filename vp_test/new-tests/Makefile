@@ -3,6 +3,8 @@ PRECISION ?= 200
 DEGREE    ?= 50
 % : %.S
 	riscv64-unknown-elf-gcc -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< -o $@
+e_prec.time : e_prec.S
+	riscv64-unknown-elf-gcc -D$(FLOATTYPE) -DPRECISION=$(PRECISION) -DPREC_STEP=$(PREC_STEP) -DDEGREE=$(DEGREE) -g -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< -o $@
 e.time : e.S
 	riscv64-unknown-elf-gcc -D$(FLOATTYPE) -DPRECISION=$(PRECISION) -DDEGREE=$(DEGREE) -g -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< -o $@
 
