@@ -18,7 +18,7 @@ c.time : c.S lib.o crt.o
 lib.o : lib.c
 	riscv64-unknown-elf-gcc -mcmodel=medany -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 crt.o : crt.s
-	riscv65-unknown-elf-gcc -mcmodel=medany -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
+	riscv64-unknown-elf-gcc -mcmodel=medany -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 
 
 ifeq ($(shell echo $$LOGNAME), petrot)
