@@ -7,6 +7,7 @@
  * types, for demonstration purposes only.
  */
 
+/* Be careful to remove this define when using the corresponding test script */
 #define MEDIUM_DATASET
 
 /* Default to LARGE_DATASET. */
@@ -111,7 +112,7 @@ main:	li	t0, MSTATUS_FS # Make fpu usable
 	csrs	mstatus, t0
 #if defined (ARBITRARY)
 	csrwi	2, MPFR_RNDD
-	li	x7, 100
+	li	x7, PRECISION
 	csrw	6, x7
 #endif
 	li	a0, N

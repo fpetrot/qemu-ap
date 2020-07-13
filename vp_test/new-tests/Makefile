@@ -2,6 +2,7 @@ FLOATTYPE ?= ARBITRARY
 PRECISION ?= 200
 DEGREE    ?= 50
 PREC_STEP ?= 1
+N ?= 40
 % : %.S
 	riscv64-unknown-elf-gcc -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< -o $@
 e_prec.time : e_prec.S
@@ -10,7 +11,7 @@ e.time : e.S
 	riscv64-unknown-elf-gcc -D$(FLOATTYPE) -DPRECISION=$(PRECISION) -DDEGREE=$(DEGREE) -g -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< -o $@
 
 c.time : c.S lib.o crt.o
-	riscv64-unknown-elf-gcc -D$(FLOATTYPE) -DPRECISION=$(PRECISION) -g -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< lib.o crt.o -o $@
+	riscv64-unknown-elf-gcc -D$(FLOATTYPE) -DPRECISION=$(PRECISION) -DN=$(N) -g -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< lib.o crt.o -o $@
 
 %.out : %.S lib.o crt.o
 	riscv64-unknown-elf-gcc -g -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< lib.o crt.o -o $@
