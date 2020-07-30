@@ -380,6 +380,8 @@ for opt do
   ;;
   --extra-ldflags=*) EXTRA_LDFLAGS="$EXTRA_LDFLAGS $optarg"
   ;;
+  --extra-libs=*) EXTRA_LIBS="$optarg"
+  ;;
   --enable-debug-info) debug_info="yes"
   ;;
   --disable-debug-info) debug_info="no"
@@ -761,7 +763,7 @@ for opt do
   ;;
   --extra-ldflags=*)
   ;;
-  --enable-debug-info)
+  --extra-libs=*)
   ;;
   --disable-debug-info)
   ;;
@@ -1185,6 +1187,7 @@ Advanced options (experts only):
   --extra-cxxflags=CXXFLAGS append extra C++ compiler flags CXXFLAGS
   --extra-objcflags=OBJCFLAGS append extra Objective C compiler flags OBJCFLAGS
   --extra-ldflags=LDFLAGS  append extra linker flags LDFLAGS
+  --extra-libs=LIBS        append extra libraries when linking
   --cross-cc-ARCH=CC       use compiler when building ARCH guest test cases
   --cross-cc-cflags-ARCH=  use compiler flags when building ARCH guest tests
   --make=MAKE              use specified make [$make]
@@ -2954,6 +2957,10 @@ echo "GLIB_VERSION=$(pkg-config --modversion glib-2.0)" >> $config_host_mak
 echo "QEMU_LDFLAGS=$QEMU_LDFLAGS" >> $config_host_mak
 echo "LD_I386_EMULATION=$ld_i386_emulation" >> $config_host_mak
 echo "STRIP=$strip" >> $config_host_mak
+echo "LIBS+=$LIBS" >> $config_host_mak
+echo "LIBS+=$EXTRA_LIBS" >> $config_host_mak
+echo "LIBS_TOOLS+=$libs_tools" >> $config_host_mak
+echo "PTHREAD_LIB=$PTHREAD_LIB" >> $config_host_mak
 echo "EXESUF=$EXESUF" >> $config_host_mak
 
 # use included Linux headers
