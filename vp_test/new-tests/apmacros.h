@@ -90,8 +90,8 @@
  * what registers are expected where.
  */
 
-#define flp(prd, imm, rs1)                  .insn i  0b0000111, 0b101, prd, imm(rs1)
-#define fsp(prs2, imm, rs1)                 .insn s  0b0100111, 0b101, prs2, imm(rs1)
+#define flp(prd, imm, rs1)                  .insn i  0b0000111, 0b001, prd, imm(rs1)
+#define fsp(prs2, imm, rs1)                 .insn s  0b0100111, 0b001, prs2, imm(rs1)
 #define fadd_p(prd, prs1, prs2, rm)         .insn r  0b0001011, rm, 0b0000011, prd, prs1, prs2
 #define fsub_p(prd, prs1, prs2, rm)         .insn r  0b0001011, rm, 0b0000111, prd, prs1, prs2
 #define fmul_p(prd, prs1, prs2, rm)         .insn r  0b0001011, rm, 0b0001011, prd, prs1, prs2
