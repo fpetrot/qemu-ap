@@ -1,3 +1,16 @@
+====
+Additionnal info for the vp-optim-if branch
+====
+Note: the `configure` script has been hacked so as to accept a new flag adding
+libraries to link with.
+
+Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
+.. code-block:: shell
+
+  MPRF_DIR=/home/petrot/Developpement/mpfr-4.0.2 # Choose your own!
+  ../configure --disable-git-update --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags='-I$MPRF_DIR/src/ -I$MPRF_DIR/build/src' --extra-ldflags=-L$MPRF_DIR/build/src/.libs/ --extra-libs=-lmpfr --enable-debug
+
+
 ===========
 QEMU README
 ===========
