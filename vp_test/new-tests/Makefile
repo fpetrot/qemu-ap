@@ -4,7 +4,7 @@ DEGREE    ?= 50
 PREC_STEP ?= 1
 N ?= 40
 % : %.S
-	riscv64-unknown-elf-gcc -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< -o $@
+	riscv64-unknown-elf-gcc -g -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< -o $@
 e_prec.time : e_prec.S
 	riscv64-unknown-elf-gcc -D$(FLOATTYPE) -DPRECISION=$(PRECISION) -DPREC_STEP=$(PREC_STEP) -DDEGREE=$(DEGREE) -g -march=rv64imfd -mabi=lp64d -T link.ld -ffreestanding -nostdlib $< -o $@
 e.time : e.S
