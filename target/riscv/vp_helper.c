@@ -24,6 +24,7 @@
 #include "exec/helper-proto.h"
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 /* 
  * Printing helper, cause we must unfortunately debug, as we are only
@@ -95,12 +96,20 @@ void helper_fcvt_p_f(CPURISCVState *env, target_ulong dest, uint64_t src1, targe
 
 #if defined(TARGET_RISCV32)
     for (int i = 1; i < 24; i++) {
-        m += ((f->frac >> (23-i)) & 1) / (1 << i);
+#if 0
+        m += (float)((f->frac >> (23-i)) & 1) / (1 << i);
+#else
+        m += powf(2.0, -(float)i) * ((f->frac >> (23-i)) & 1);
+#endif
     }
 #endif
 
     // Result
+#if 0
     float res = f->sign * m * (1 << f->exp);
+#else
+    float res = f->sign * m * pow(2, f->exp);
+#endif
 
     check_attributes(env, dest);
     mpfr_set_flt(env->apr[dest], res, rm == 7 ? env->frm : rm);
@@ -169,12 +178,20 @@ void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 
 #if defined(TARGET_RISCV64)
     for (int i = 1; i < 53; i++) {
-        m += ((f->frac >> (52-i)) & 1) / (1LL << i);
+#if 0
+        m += (double)((f->frac >> (52-i)) & 1) / (1LL << i);
+#else
+        m += pow(2.0, -(double)i) * ((f->frac >> (52-i)) & 1);
+#endif
     }
 #endif
 
     // Result
+#if 0
     double res = f->sign * m * (1 << f->exp);
+#else
+    double res = f->sign * m * pow(2, f->exp);
+#endif
 
     check_attributes(env, dest);
     mpfr_set_d(env->apr[dest], res, rm == 7 ? env->frm : rm);
