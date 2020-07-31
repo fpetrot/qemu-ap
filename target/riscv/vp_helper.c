@@ -29,7 +29,7 @@
  * Printing helper, cause we must unfortunately debug, as we are only
  * humans, ...
  */
-#define MPFR_DEBUG 0
+#define MPFR_DEBUG 1
 
 #define MPFR_OUT(x) \
     if (MPFR_DEBUG) mpfr_printf("%-10s %.128Rf\n", &__func__[sizeof("helper")], x);
