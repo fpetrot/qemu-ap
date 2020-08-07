@@ -1,7 +1,8 @@
 /*
  * Variable Precision Emulation Helpers for QEMU, RISCV Target
  *
- * Copyright (c) 2020-2020 Frédéric Pétrot 
+ * Copyright (c) 2020 Frédéric Pétrot <frederic.petrot@univ-grenoble-alpes.fr>
+ * Copyright (c) 2020 Marie Badaroux <marie.badaroux@univ-grenoble-alpes.fr>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -118,6 +119,7 @@ target_ulong helper_fcvt_wu_p(CPURISCVState *env, target_ulong src1, target_ulon
 /* 64-bit conversion helpers */
 void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
+#if defined (TARGET_RISCV64)
     union {
         target_ulong u;
         double       d;
@@ -128,11 +130,13 @@ void helper_fcvt_p_d(CPURISCVState *env, target_ulong dest, target_ulong src1, t
     mpfr_set_d(env->apr[dest], res.d, rm == 7 ? env->frm : rm);
 
     MPFR_OUT(env->apr[dest]);
+#endif
 }
 
 
 target_ulong helper_fcvt_d_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
+#if defined (TARGET_RISCV64)
     union {
         target_ulong u;
         double       d;
@@ -140,24 +144,33 @@ target_ulong helper_fcvt_d_p(CPURISCVState *env, target_ulong src1, target_ulong
     res.d = mpfr_get_d(env->apr[src1], rm == 7 ? env->frm : rm);
     OTHR_OUT(f, res.d);
     return res.u;
+#else
+    return 0xdeadbeef;
+#endif
 }
 
 
 void helper_fcvt_p_l(CPURISCVState *env, target_ulong dest, target_ulong src1, target_ulong rm)
 {
+#if defined(TARGET_RISCV64)
     if (mpfr_get_prec(env->apr[dest]) != env->fprec)
         mpfr_set_prec(env->apr[dest], env->fprec);
     mpfr_set_si(env->apr[dest], src1, rm == 7 ? env->frm : rm);
 
     MPFR_OUT(env->apr[dest]);
+#endif
 }
 
 
 target_ulong helper_fcvt_l_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
+#if defined (TARGET_RISCV64)
     target_ulong res = mpfr_get_si(env->apr[src1], rm == 7 ? env->frm : rm);
     OTHR_OUT(ld, res);
     return res;
+#else
+    return 0xdeadbeef;
+#endif
 }
 
 
