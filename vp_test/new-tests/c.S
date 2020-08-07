@@ -69,7 +69,9 @@
 #  define FL_X                        fld
 #  define FS_X                        fsd
 #elif defined (ARBITRARY)
-#  define DTSZ 40
+#  define VISUAL_CHECK
+/* DTSZ shall contain the 3 mpfr_t fields + the limbs */
+#  define DTSZ                        ((3+1+PRECISION/64)*8)
 #  define FCVT_X_W(rd, rs1)           fcvt_p_l(rd, rs1, MPFR_RNDD)
 #  define FADD_X(rd, rs1, rs2)        fadd_p(rd, rs1, rs2, MPFR_RNDD)
 #  define FSUB_X(rd, rs1, rs2)        fsub_p(rd, rs1, rs2, MPFR_RNDD)
@@ -135,7 +137,7 @@ main:	li	t0, MSTATUS_FS # Make fpu usable
 	jal	print_array_cholesky_double
 #elif defined (ARBITRARY)
 	# Traverse result matrix and transform to double
-	li	a0, N
+dumpa:	li	a0, N
 	la	a1, A	# ap array
 	li	a3, DTSZ	# compute n * DTSZ before the loops
 	mul	a2, a3, a0	# suboptimal if DTSZ = 2^p
@@ -179,7 +181,8 @@ main:	li	t0, MSTATUS_FS # Make fpu usable
 die:
 	li	t0, 0x100000
 	li	t1, 0x5555
-	sd	t1, 0(t0)
+	sw	t1, 0(t0)
+9:	j	9b
 	ret
 
 /*
