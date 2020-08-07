@@ -1,7 +1,8 @@
 /*
  * Translation routines for the RISC-V variable precision extensions
  *
- * Copyright (c) 2020 Frédéric Pétrot, frederic.petrot@univ-grenoble-alpes.fr
+ * Copyright (c) 2020 Frédéric Pétrot <frederic.petrot@univ-grenoble-alpes.fr>
+ * Copyright (c) 2020 Marie Badaroux <marie.badaroux@univ-grenoble-alpes.fr>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,

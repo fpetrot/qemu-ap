@@ -31,7 +31,7 @@
  * Printing helper, cause we must unfortunately debug, as we are only
  * humans, ...
  */
-#define MPFR_DEBUG 1
+#define MPFR_DEBUG 0
 
 #define MPFR_OUT(x) \
     if (MPFR_DEBUG) mpfr_printf("%-10s %.128Rf\n", &__func__[sizeof("helper")], x);
@@ -112,7 +112,7 @@ void helper_fcvt_p_wu(CPURISCVState *env, target_ulong dest, target_ulong src1, 
 target_ulong helper_fcvt_wu_p(CPURISCVState *env, target_ulong src1, target_ulong rm)
 {
     uint32_t res = mpfr_get_ui(env->apr[src1], rm == 7 ? env->frm : rm);
-    OTHR_OUT(d, res);
+    OTHR_OUT(u, res);
     return res;
 }
 
