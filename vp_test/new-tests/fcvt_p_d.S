@@ -120,6 +120,7 @@ fcvt_p_d:
 .L2:
 	fld	fa0,0(s0)
 	fcvt_p_d(p0, fa0, MPFR_RNDD);
+        fcvt_d_p(fa1, p0, MPFR_RNDD);
 	addi	s0,s0,8
 	bne	s0,s1,.L2
 	li t3, 0x100000
