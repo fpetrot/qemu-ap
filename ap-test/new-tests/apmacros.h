@@ -105,12 +105,19 @@
 #define fsgnj_p(prd, prs1, prs2)            .insn r  0b0001011, 0b000, 0b0010011, prd, prs1, prs2
 #define fsgnjn_p(prd, prs1, prs2)           .insn r  0b0001011, 0b001, 0b0010011, prd, prs1, prs2
 #define fsgnjx_p(prd, prs1, prs2)           .insn r  0b0001011, 0b010, 0b0010011, prd, prs1, prs2
+/* Cheat by using the last register as a part of the opcode, as constants are not allowed */
 #define fcvt_p_d(prd, frs1, rm)             .insn r  0b0001011, rm, 0b1100011, prd, frs1, x1
 #define fcvt_d_p(frd, prs1, rm)             .insn r  0b0001011, rm, 0b1100011, frd, prs1, x2
 #define fcvt_p_l(prd, rs1, rm)              .insn r  0b0001011, rm, 0b1100011, prd, rs1, x9
 #define fcvt_l_p(rd, prs1, rm)              .insn r  0b0001011, rm, 0b1100011, rd, prs1, x10
 #define fcvt_p_lu(prd, rs1, rm)             .insn r  0b0001011, rm, 0b1100011, prd, rs1, x11
 #define fcvt_lu_p(rd, prs1, rm)             .insn r  0b0001011, rm, 0b1100011, rd, prs1, x12
+#define fcvt_p_f(prd, frs1, rm)             .insn r  0b0001011, rm, 0b1100011, prd, frs1, x3
+#define fcvt_f_p(frd, prs1, rm)             .insn r  0b0001011, rm, 0b1100011, frd, prs1, x4
+#define fcvt_p_w(prd, rs1, rm)              .insn r  0b0001011, rm, 0b1100011, prd, rs1, x13
+#define fcvt_w_p(rd, prs1, rm)              .insn r  0b0001011, rm, 0b1100011, rd, prs1, x14
+#define fcvt_p_wu(prd, rs1, rm)             .insn r  0b0001011, rm, 0b1100011, prd, rs1, x15
+#define fcvt_wu_p(rd, prs1, rm)             .insn r  0b0001011, rm, 0b1100011, rd, prs1, x8
 #define fmadd_p(prd, prs1, prs2, prs3, rm)  .insn r4 0b1000011, rm, 0b10, prd, prs1, prs2, prs3
 #define fmsub_p(prd, prs1, prs2, prs3, rm)  .insn r4 0b1000111, rm, 0b10, prd, prs1, prs2, prs3
 #define fnmadd_p(prd, prs1, prs2, prs3, rm) .insn r4 0b1001111, rm, 0b10, prd, prs1, prs2, prs3

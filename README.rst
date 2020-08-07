@@ -1,15 +1,35 @@
 ====
-Additionnal info for the vp-optim-if branch
+Additionnal information for the ap-stable branch
 ====
-Note: the `configure` script has been hacked so as to accept a new flag adding
-libraries to link with.
+The *ap-stable* branch contains the current version of the arbitrary precision
+support for riscv64.
+
+Note that the `configure` script has been hacked so as to accept a new flag adding
+libraries to link with, which is necessary to smoothly handle mpfr integration.
 
 Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
+(assuming directory is `qemu-vp` and build directory `qemu-vp/build-ap`)
 .. code-block:: shell
+  git clone git@gricad-gitlab.univ-grenoble-alpes.fr:tima/sls/projects/qemu-vp.git
+  MPRF_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own!
+  mkdir build-ap
+  cd build-ap
+  ../configure --disable-git-update --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags='-I$MPRF_DIR/src/ -I$MPRF_DIR/build/src' --extra-ldflags=-Wl,-rpath,$MPRF_DIR/build/src/.libs/ --extra-libs=-lmpfr
 
-  MPRF_DIR=/home/petrot/Developpement/mpfr-4.0.2 # Choose your own!
-  ../configure --disable-git-update --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags='-I$MPRF_DIR/src/ -I$MPRF_DIR/build/src' --extra-ldflags=-L$MPRF_DIR/build/src/.libs/ --extra-libs=-lmpfr --enable-debug
+Should you be willing to launch `gdb` on QEMU, then add the `--enable-debug` flag at the end.
+This has been proven quite useful more than I'd expected.
 
+To debug what is happening while using our AP extensions, edit `target/riscv/ap_helper.c`, goto line 34, and change
+`#define MPFR_DEBUG 0` into `#define MPFR_DEBUG 1`, and recompile.
+Lots of stuff printed, though.
+
+To launch QEMU on reasonable examples (the ones using stacks), use the following command:
+.. code-block:: shell
+  $HOME/XXX/qemu-vp/build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 512M -kernel c.time
+
+Some examples are in the `vp-test/new-tests` directory.
+Of particular interest, some unit tests, computation of e in `e.S` and Cholesky decomposition in `c.S`.
+The `Makefile` is self understandable :)
 
 ===========
 QEMU README
