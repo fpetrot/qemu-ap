@@ -30,7 +30,7 @@
  * Printing helper, cause we must unfortunately debug, as we are only
  * humans, ...
  */
-#define MPFR_DEBUG 1
+#define MPFR_DEBUG 0
 
 #define MPFR_OUT(x) \
     if (MPFR_DEBUG) mpfr_printf("%-10s %.128Rf\n", &__func__[sizeof("helper")], x);
@@ -513,71 +513,62 @@ void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
 }
 
 
-uint64_t helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uint64_t data)
+target_ulong helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uint64_t data)
 {
-    uint64_t res;
-    switch(idx)
-    {
+    switch(idx) {
         case 0:
             // On regarde si la précision a changé
-            if (env->fprec != (env->apr[dest])->_mpfr_prec) {
+            if (env->fprec != mpfr_get_prec(env->apr[dest])) {
                 mpfr_prec_round(env->apr[dest], env->fprec, env->frm);
             }
-            res = 1;
-            break;
+            return 0;
         case 1:
             mpfr_set_prec(env->apr[dest], data);
-            res = 1;
-            break;
+            return idx + 1;
         case 2:
-            (env->apr[dest])->_mpfr_sign = data;
-            res = 1;
-            break;
+            env->apr[dest]->_mpfr_sign = data;
+            return idx + 1;
         case 3:
-            (env->apr[dest])->_mpfr_exp = data;
-            res = 1;
-            break;
+            /* Warning: do not use mpfr_set_exp(env->apr[dest], data), as
+             * it doesn't do what you naïvely expect! */
+            env->apr[dest]->_mpfr_exp = data;
+            return idx + 1;
         case 4:
             // On doit calculer le nombre de limb
-            res = 1 + (mpfr_get_prec(env->apr[dest])-1)/GMP_NUMB_BITS;
-#if 0
-            nb_limb = ceil((double)((env->apr[dest])->_mpfr_prec) / (double)mp_bits_per_limb);
-            /* Ce malloc ne sert à rien normalement, car mpfr a du allouer ce qu'il faut */
-            (env->apr[dest])->_mpfr_d = (mp_limb_t *) malloc(sizeof(mp_limb_t) * nb_limb);
-            res = nb_limb;
-#endif
-            break;
+            return MPFR_LIMB_SIZE(env->apr[dest]);
         default:
             // On charge chaque limb
-            ((env->apr[dest])->_mpfr_d)[idx - 5] = data;
-            res = 1;
-            break;
+            env->apr[dest]->_mpfr_d[idx - 5] = data;
+#ifdef MPFR_DEBUG
+            if (MPFR_LIMB_SIZE(env->apr[dest]) - 1 == idx - 5) {
+               MPFR_OUT(env->apr[dest]);
+            }
+#endif
+            return idx + 1;
     }
-    return res;
 }
 
 
-uint64_t helper_fsp(CPURISCVState *env, target_ulong src1, uint64_t idx)
+target_ulong helper_fsp(CPURISCVState *env, target_ulong src1, target_ulong idx)
 {
-    uint64_t res = 0;
-    switch(idx)
-    {
+    switch(idx) {
         case 1:
-            res = (env->apr[src1])->_mpfr_prec;
-            break;
+            return mpfr_get_prec(env->apr[src1]);
         case 2:
-            res = (env->apr[src1])->_mpfr_sign;
-            break;
+            return env->apr[src1]->_mpfr_sign;
         case 3:
-            res = (env->apr[src1])->_mpfr_exp;
-            break;
+            return mpfr_get_exp(env->apr[src1]);
         case 4:
-            res = MPFR_LIMB_SIZE(env->apr[src1]);
-            break;
+            return MPFR_LIMB_SIZE(env->apr[src1]);
         default:
+#ifdef MPFR_DEBUG
+            /* Not so useful, as what really matters is what is in memory,
+             * and I have no access to that */
+            if (MPFR_LIMB_SIZE(env->apr[src1]) - 1 == idx - 5) {
+               MPFR_OUT(env->apr[src1]);
+            }
+#endif
             // On store chaque limb
-            res = ((env->apr[src1])->_mpfr_d)[idx - 5];
-            break;
+            return env->apr[src1]->_mpfr_d[idx - 5];
     }
-    return res;
 }
