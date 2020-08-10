@@ -9,6 +9,7 @@ libraries to link with, which is necessary to smoothly handle mpfr integration.
 
 Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
 (assuming directory is `qemu-vp` and build directory `qemu-vp/build-ap`)
+
 .. code-block:: shell
 
    $ git clone git@gricad-gitlab.univ-grenoble-alpes.fr:tima/sls/projects/qemu-vp.git
@@ -25,6 +26,7 @@ To debug what is happening while using our AP extensions, edit `target/riscv/ap_
 Lots of stuff printed, though.
 
 To launch QEMU on reasonable examples (the ones using stacks), use the following command:
+
 .. code-block:: shell
 
    $ $HOME/XXX/qemu-vp/build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 512M -kernel c.time
