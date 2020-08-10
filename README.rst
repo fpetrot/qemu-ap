@@ -11,11 +11,11 @@ Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
 (assuming directory is `qemu-vp` and build directory `qemu-vp/build-ap`)
 .. code-block:: shell
 
-  $ git clone git@gricad-gitlab.univ-grenoble-alpes.fr:tima/sls/projects/qemu-vp.git
-  $ MPRF_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own!
-  $ mkdir build-ap
-  $ cd build-ap
-  $ ../configure --disable-git-update --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags='-I$MPRF_DIR/src/ -I$MPRF_DIR/build/src' --extra-ldflags=-Wl,-rpath,$MPRF_DIR/build/src/.libs/ --extra-libs=-lmpfr
+   $ git clone git@gricad-gitlab.univ-grenoble-alpes.fr:tima/sls/projects/qemu-vp.git
+   $ MPRF_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own!
+   $ mkdir build-ap
+   $ cd build-ap
+   $ ../configure --disable-git-update --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags='-I$MPRF_DIR/src/ -I$MPRF_DIR/build/src' --extra-ldflags=-Wl,-rpath,$MPRF_DIR/build/src/.libs/ --extra-libs=-lmpfr
 
 Should you be willing to launch `gdb` on QEMU, then add the `--enable-debug` flag at the end.
 This has been proven quite useful more than I'd expected.
@@ -27,7 +27,7 @@ Lots of stuff printed, though.
 To launch QEMU on reasonable examples (the ones using stacks), use the following command:
 .. code-block:: shell
 
-  $ $HOME/XXX/qemu-vp/build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 512M -kernel c.time
+   $ $HOME/XXX/qemu-vp/build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 512M -kernel c.time
 
 Some examples are in the `vp-test/new-tests` directory.
 Of particular interest, some unit tests, computation of e in `e.S` and Cholesky decomposition in `c.S`.
