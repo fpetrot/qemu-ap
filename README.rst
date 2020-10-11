@@ -4,37 +4,39 @@ Additionnal information for the ap-stable branch
 The *ap-stable* branch contains the current version of the arbitrary precision
 support for riscv64.
 
-Note that the `configure` script has been hacked so as to accept a new flag adding
-libraries to link with, which is necessary to smoothly handle mpfr integration.
-
 Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
 (assuming directory is `qemu-vp` and build directory `qemu-vp/build-ap`)
 
 .. code-block:: shell
 
    git clone git@gricad-gitlab.univ-grenoble-alpes.fr:tima/sls/projects/qemu-vp.git
-   export MPFR_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own!
+   export MPFR_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own
    mkdir build-ap
    cd build-ap
-   ../configure --disable-git-update --disable-capstone --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags="-I${MPFR_DIR}/src/ -I${MPFR_DIR}/build/src" --extra-ldflags="-Wl,-rpath,${MPFR_DIR}/build/src/.libs/ -lmpfr -lgmp"
+   ../configure --disable-capstone --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags="-I${MPFR_DIR}/src/ -I${MPFR_DIR}/build/src" --extra-ldflags="-Wl,-rpath,${MPFR_DIR}/build/src/.libs/ -lmpfr -lgmp"
+   make qemu-system-riscv64
 
+For some reason, ̀--disable-capstone` is required, but who cares, as we don't rely on it.
+Also the Make target `qemu-system-riscv64` is needed, as otherwise there may be a crash while building the documentation (depending on your local install).
 Should you be willing to launch `gdb` on QEMU, then add the `--enable-debug` flag at the end.
-This has been proven quite useful more than I'd expected.
+This has been proven quite useful, more than I'd expected, during the debug of these arbitrary precision extensions.
+Note that debugging something in QEMU is not the easiest thing in life, ...
 
-To debug what is happening while using our AP extensions, edit `target/riscv/ap_helper.c`, goto line 34, and change
+To display what is happening while executing our AP instructions, edit `target/riscv/ap_helper.c`, goto line 34, and change
 `#define MPFR_DEBUG 0` into `#define MPFR_DEBUG 1`, and recompile.
 Lots of stuff printed, though.
 
-To launch QEMU on reasonable examples (the ones using stacks), use the following command (note in particular `-bios none` and `-m 512M`):
+To launch QEMU on reasonable examples (the ones using stacks and such), use the following command (note in particular `-bios none` and `-m 512M`):
 
 
 .. code-block:: shell
 
     $HOME/XXX/qemu-vp/build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 512M -kernel c.time
 
-Some examples are in the `vp-test/new-tests` directory.
+Some examples are in the `ap-test/new-tests` directory (note that what is currenty in `ap-test` is obsolete).
 Of particular interest, some unit tests, computation of e in `e.S` and Cholesky decomposition in `c.S`.
-The `Makefile` is self understandable :)
+You should `#define MPFR_DEBUG 1` for `e.S` to see the result, it is unnecessary with Cholesky that printout the matrix on the terminal, the expected output is in the `c.dump` file.
+The `Makefile` is otherwise self understandable :)
 
 ===========
 QEMU README
