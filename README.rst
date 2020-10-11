@@ -16,7 +16,7 @@ Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
    export MPFR_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own!
    mkdir build-ap
    cd build-ap
-   ../configure --disable-git-update --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags='-I${MPFR_DIR}/src/ -I${MPFR_DIR}/build/src' --extra-ldflags=-Wl,-rpath,${MPFR_DIR}/build/src/.libs/ --extra-libs='-lmpfr -lgmp'
+   ../configure --disable-git-update --disable-capstone --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags="-I${MPFR_DIR}/src/ -I${MPFR_DIR}/build/src" --extra-ldflags="-Wl,-rpath,${MPFR_DIR}/build/src/.libs/ -lmpfr -lgmp"
 
 Should you be willing to launch `gdb` on QEMU, then add the `--enable-debug` flag at the end.
 This has been proven quite useful more than I'd expected.
