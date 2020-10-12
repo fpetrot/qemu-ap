@@ -11,7 +11,7 @@
 	.type	e_approx, @function
 
 e_approx:
-	# Indique que l'on veut utiliser la FPU
+	# Indicates that we want to use the FPU
 	li	t0, MSTATUS_FS
 	csrs	mstatus, t0
 
@@ -41,8 +41,8 @@ outerloop:
 # error "Define either ARBITRARY or DOUBLE please"
 #endif
 
-	li	t1, 1		# indice de boucle, i
-	li	t2, DEGREE		# borne de la boucle
+	li	t1, 1
+	li	t2, DEGREE
 loop:	
 	fcvt.d.lu fa1,t1 # 1 => 1.0
 
