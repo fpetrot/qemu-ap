@@ -441,12 +441,15 @@ void helper_fsgnjx_p(CPURISCVState *env, target_ulong dest, target_ulong src1, t
     MPFR_OUT(env->apr[dest]);
 }
 
-
+/*
+ * Load:
+ * retrieves one by one all the field of the mpfr data structure
+ * (precision, sign, exponent and then all the blocks of the limb)
+ */
 target_ulong helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx, uint64_t data)
 {
     switch(idx) {
         case 0:
-            // On regarde si la précision a changé
             if (env->fprec != mpfr_get_prec(env->apr[dest])) {
                 mpfr_prec_round(env->apr[dest], env->fprec, env->frm);
             }
@@ -463,10 +466,8 @@ target_ulong helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx,
             env->apr[dest]->_mpfr_exp = data;
             return idx + 1;
         case 4:
-            // On doit calculer le nombre de limb
             return MPFR_LIMB_SIZE(env->apr[dest]);
         default:
-            // On charge chaque limb
             env->apr[dest]->_mpfr_d[idx - 5] = data;
 #ifdef MPFR_DEBUG
             if (MPFR_LIMB_SIZE(env->apr[dest]) - 1 == idx - 5) {
@@ -477,7 +478,10 @@ target_ulong helper_flp(CPURISCVState *env, target_ulong dest, target_ulong idx,
     }
 }
 
-
+/*
+ * Store:
+ * stores one by one each field of the mpfr data structure
+ */
 target_ulong helper_fsp(CPURISCVState *env, target_ulong src1, target_ulong idx)
 {
     switch(idx) {
@@ -497,7 +501,6 @@ target_ulong helper_fsp(CPURISCVState *env, target_ulong src1, target_ulong idx)
                MPFR_OUT(env->apr[src1]);
             }
 #endif
-            // On store chaque limb
             return env->apr[src1]->_mpfr_d[idx - 5];
     }
 }
