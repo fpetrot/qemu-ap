@@ -46,10 +46,6 @@ a : a.o crt.o
 a.o : a.c
 	riscv64-unknown-elf-gcc -g -mcmodel=medany -Os -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -fverbose-asm -c $<
 
-cholesky-asm.out : cholesky-asm.o lib.o crt.o
-	riscv64-unknown-elf-ld -T link.ld $^ -o $@
-cholesky-asm.o : cholesky-asm.S
-	riscv64-unknown-elf-gcc -g -march=rv64imfd -c $<
 lib.o : lib.c
 	riscv64-unknown-elf-gcc -mcmodel=medany -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 
@@ -62,21 +58,4 @@ gadd.o : gadd.s
 tests.s : tests.c
 	riscv64-unknown-elf-gcc -S $<
 
-ifeq ($(shell echo $$LOGNAME), petrot) 
-MPFR=$(HOME)/Developpement/mpfr-4.0.2
-else # Marie
-MPFR=$(HOME)/Documents/Ensimag/MasterDI/Stage/Frederic_Petrot/qemu/variable_precision_floating_point/qemu-vp/mpfr-4.0.2
-endif
-
-# Tests to be executed in x86 machine
-CFLAGS=-I$(MPFR)/src/
-LDFLAGS=-L$(MPFR)/build/src/.libs/ $(MPFR)/build/src/.libs/libmpfr.so -lgmp -lm
-e_test_x86_mpfr : e_test_x86_mpfr.o
-	gcc -O2 -o $@ $< $(LDFLAGS)
-e_test_x86_mpfr.o : e_test_x86_mpfr.c
-
-e_test_x86 : e_test_x86.o
-	gcc -O2 -o $@ $<
-e_test_x86.o : e_test_x86.c
-
-clean : ; rm -f *.out *.time *.log test_all.o tests.s e_test_x86 e_test_x86.o e_test_x86_mpfr e_test_x86_mpfr.o e_test_insn.o cholesky.o e_test_double.o newton_double.o lib.o crt.o
+clean : ; rm -f *.out *.time *.log test_all.o tests.s e_test_insn.o cholesky.o e_test_double.o newton_double.o lib.o crt.o

@@ -256,7 +256,6 @@ nj1:	bge	t1, t0, 2f	# break if j >= i
 	add	t4, t2, t3
 	add	t4, a1, t4
 #if defined (ARBITRARY)
-	#.word 0x003ed027 
 	FS_X(p3, 0, t4)
 #else
 	FS_X	ft2, 0(t4)	# a[i][j]
@@ -268,7 +267,6 @@ nj1:	bge	t1, t0, 2f	# break if j >= i
 2:	add	t4, t2, t3
 	add	t4, a1, t4
 #if defined (ARBITRARY)
-	#.word 0x001ed027
 	FS_X(p1, 0, t4)
 #else
 	FS_X	ft1, 0(t4)	# a[i][j] = 1 when i == j
@@ -280,7 +278,6 @@ nj2:	bge	t1, a0, 3f	# break if j >= n
 	add	t4, t2, t3
 	add	t4, a1, t4
 #if defined (ARBITRARY)
-	#.word 0x000ed027
 	FS_X(p0, 0, t4)
 #else
 	FS_X	ft0, 0(t4)	# a[i][j] = 0
@@ -305,7 +302,6 @@ ns1:	bge	t1, a0, 3f	# break if s >= n
 	add	t4, t2, t3
 	add	t4, a7, t4
 #if defined (ARBITRARY)
-	# .word 0x000ed027
 	FS_X(p0, 0, t4)
 #else
 	FS_X	ft0, 0(t4)	# b[r][s] = 0
@@ -364,7 +360,6 @@ ns2:	bge	t4, a0, 3f	# break if s >= n
 #endif
 
 #if defined (ARBITRARY)
-	# .word 0x00175027
 	FS_X(p1, 0, a4)
 #else
 	FS_X	ft1, 0(a4)
@@ -400,7 +395,6 @@ ns3:	bge	t1, a0, 3f	# break if s >= n
 #endif
 	add	t6, a1, t4
 #if defined (ARBITRARY)
-	#.word 0x000fd027
 	FS_X(p0, 0, t6)
 #else
 	FS_X	ft0, 0(t6)	# a[r][s] = ft0
@@ -496,7 +490,6 @@ knk1:	bge	t6, t3, 3f	# break if k >= j
 #if defined (ARBITRARY)
 	FL_X(p1, 0, a5)
 	FDIV_X(p0, p0, p1)
-	#.word 0x00075027
 	FS_X(p0, 0, a4)
 #else
 	FL_X	ft1, 0(a5)	# ft1 = a[j][j]
@@ -542,7 +535,6 @@ knk2:	bge	t6, t0, 4f	# break if k >= i
 4:
 #if defined (ARBITRARY)
 	FSQRT_X(p0, p0)
-	# .word 0x00075027
 	FS_X(p0, 0, a4)
 #else
 	FSQRT_X	ft0, ft0
