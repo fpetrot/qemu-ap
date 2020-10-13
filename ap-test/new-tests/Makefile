@@ -22,15 +22,10 @@ crt.o : crt.s
 	riscv64-unknown-elf-gcc -mcmodel=medany -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 
 
-ifeq ($(shell echo $$LOGNAME), petrot)
-MPFR=$(HOME)/Developpement/mpfr-4.0.2
-else # Marie
-MPFR=$(HOME)/Documents/Ensimag/MasterDI/Stage/Frederic_Petrot/qemu/variable_precision_floating_point/qemu-vp/mpfr-4.0.2
-endif
-
-# Tests to be executed in x86 machine
-CFLAGS=-I$(MPFR)/src/
-LDFLAGS=-L$(MPFR)/build/src/.libs/ $(MPFR)/build/src/.libs/libmpfr.so -lgmp -lm
+# Tests to be executed on a x86 machine
+# Be careful to put an argument when you execute them
+CFLAGS=-I$(MPFR_DIR)/src/
+LDFLAGS=-L$(MPFR_DIR)/build/src/.libs/ $(MPFR_DIR)/build/src/.libs/libmpfr.so -lgmp -lm
 e_x86_mpfr : e_x86_mpfr.o
 	gcc -O2 -o $@ $< $(LDFLAGS)
 e_x86_mpfr.o : e_x86_mpfr.c
