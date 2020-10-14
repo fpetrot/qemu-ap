@@ -49,11 +49,6 @@ a.o : a.c
 lib.o : lib.c
 	riscv64-unknown-elf-gcc -mcmodel=medany -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 
-c.out : gadd.o
-	riscv64-unknown-elf-ld -T link.ld $< -o $@
-gadd.o : gadd.s
-	riscv64-unknown-elf-gcc -march=rv64ifd -mabi=lp64d -c $<
-
 # Small file to check conversions and fpreg/gpreg moves.
 tests.s : tests.c
 	riscv64-unknown-elf-gcc -S $<
