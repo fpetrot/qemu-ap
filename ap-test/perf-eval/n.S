@@ -8,7 +8,7 @@
 	.type   newton_raphson, @function
 
 newton_raphson:
-	# Indique que l'on veut utiliser la FPU
+	# We use the FPU
 	li  t0, MSTATUS_FS
 	csrs    mstatus, t0
 

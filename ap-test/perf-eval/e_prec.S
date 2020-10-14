@@ -27,7 +27,7 @@ e_approx:
 	li s0, 10
 outerloop:
 
-	# Met 1.0 dans fa0
+	# Put 1.0 in fa0
 	li	t0, 1
 	fcvt.d.lu fa0,t0 # 1 => 1.0
 

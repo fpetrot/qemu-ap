@@ -41,16 +41,8 @@ cholesky.o : cholesky.c
 	riscv64-unknown-elf-gcc -DRISCV -DDUMP_ARRAY -mcmodel=medany -Os -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 cholesky.s : cholesky.c
 	riscv64-unknown-elf-gcc -mcmodel=medany -Os -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -fverbose-asm -S -DRISCV cholesky.c
-a : a.o crt.o
-	riscv64-unknown-elf-ld -T link.ld $^ -o $@
-a.o : a.c
-	riscv64-unknown-elf-gcc -g -mcmodel=medany -Os -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -fverbose-asm -c $<
 
 lib.o : lib.c
 	riscv64-unknown-elf-gcc -mcmodel=medany -g -march=rv64imfd -mabi=lp64d -fno-math-errno -Wall -ffreestanding -c $<
 
-# Small file to check conversions and fpreg/gpreg moves.
-tests.s : tests.c
-	riscv64-unknown-elf-gcc -S $<
-
-clean : ; rm -f *.out *.time *.log test_all.o tests.s e_test_insn.o cholesky.o e_test_double.o newton_double.o lib.o crt.o
+clean : ; rm -f *.out *.time *.log *.o
