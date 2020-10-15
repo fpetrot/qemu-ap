@@ -14,10 +14,11 @@ Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
    mkdir build-ap
    cd build-ap
    ../configure --disable-capstone --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags="-I${MPFR_DIR}/src/ -I${MPFR_DIR}/build/src" --extra-ldflags="-Wl,-rpath,${MPFR_DIR}/build/src/.libs/ -lmpfr -lgmp"
-   make qemu-system-riscv64
+   make -j $(expr $(nproc) - 1) qemu-system-riscv64
 
 For some reason, ̀--disable-capstone` is required, but who cares, as we don't rely on it.
 Also the Make target `qemu-system-riscv64` is needed, as otherwise there may be a crash while building the documentation (depending on your local install).
+If you have `ninja` installed, you can simply replace `make` by `ninja` and it should compile a bit faster.
 Should you be willing to launch `gdb` on QEMU, then add the `--enable-debug` flag at the end.
 This has been proven quite useful, more than I'd expected, during the debug of these arbitrary precision extensions.
 Note that debugging something in QEMU is not the easiest thing in life, ...
