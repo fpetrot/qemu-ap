@@ -1,3 +1,8 @@
+.. role:: bash(code)
+   :language: bash
+.. role:: c(code)
+   :language: c
+
 ====
 Additionnal information for the ap-stable branch
 ====
@@ -16,15 +21,15 @@ Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
    ../configure --disable-capstone --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags="-I${MPFR_DIR}/src/ -I${MPFR_DIR}/build/src" --extra-ldflags="-Wl,-rpath,${MPFR_DIR}/build/src/.libs/ -lmpfr -lgmp"
    make -j $(expr $(nproc) - 1) qemu-system-riscv64
 
-For some reason, ̀--disable-capstone` is required, but who cares, as we don't rely on it.
-Also the Make target `qemu-system-riscv64` is needed, as otherwise there may be a crash while building the documentation (depending on your local install).
-If you have `ninja` installed, you can simply replace `make` by `ninja` and it should compile a bit faster.
-Should you be willing to launch `gdb` on QEMU, then add the `--enable-debug` flag at the end.
+For some reason, :bash: ̀--disable-capstone` is required, but who cares, as we don't rely on it.
+Also the Make target :bash:`qemu-system-riscv64` is needed, as otherwise there may be a crash while building the documentation (depending on your local install).
+If you have :bash:`ninja` installed, you can simply replace :bash:`make` by :bash:`ninja` and it should compile a bit faster.
+Should you be willing to launch :bash:`gdb` on QEMU, then add the :bash:`--enable-debug` flag at the end.
 This has been proven quite useful, more than I'd expected, during the debug of these arbitrary precision extensions.
 Note that debugging something in QEMU is not the easiest thing in life, ...
 
-To display what is happening while executing our AP instructions, edit `target/riscv/ap_helper.c`, goto line 34, and change
-`#define MPFR_DEBUG 0` into `#define MPFR_DEBUG 1`, and recompile.
+To display what is happening while executing our AP instructions, edit :bash:`target/riscv/ap_helper.c`, goto line 34, and change
+:c:`#define MPFR_DEBUG 0` into :c:`#define MPFR_DEBUG 1`, and recompile.
 Lots of stuff printed, though.
 
 To launch QEMU on reasonable examples (the ones using stacks and such), use the following command (note in particular `-bios none` and `-m 512M`):
@@ -34,10 +39,10 @@ To launch QEMU on reasonable examples (the ones using stacks and such), use the 
 
     $HOME/XXX/qemu-vp/build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 512M -kernel c.time
 
-Some examples are in the `ap-test/new-tests` directory (note that what is currenty in `ap-test` is obsolete).
-Of particular interest, some unit tests, computation of e in `e.S` and Cholesky decomposition in `c.S`.
-You should `#define MPFR_DEBUG 1` for `e.S` to see the result, it is unnecessary with Cholesky that printout the matrix on the terminal, the expected output is in the `c.dump` file.
-The `Makefile` is otherwise self understandable :)
+Some examples are in the :bash:`ap-test/new-tests` directory (note that what is currenty in :bash:`ap-test` is obsolete).
+Of particular interest, some unit tests, computation of e in :bash:`e.S` and Cholesky decomposition in :bash:`c.S`.
+You should :c:`#define MPFR_DEBUG 1` for :bash:`e.S` to see the result, it is unnecessary with Cholesky that printout the matrix on the terminal, the expected output is in the :bash:`c.dump` file.
+The :bash:`Makefile` is otherwise self understandable :)
 
 ===========
 QEMU README
