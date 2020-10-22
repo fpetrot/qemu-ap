@@ -14,8 +14,7 @@ if true ; then
 				touch e_prec.S
 				make FLOATTYPE=ARBITRARY PRECISION=53 PREC_STEP=$j DEGREE=$i e_prec.time
 				echo -n "ap degree $i prec 53 step $j " >> $out/ap-e_prec
-				# ATTENTION au nom du dossier build, a modifier
-				(time ../../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e_prec.time) 2>> $out/ap-e_prec
+				(time ../../build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e_prec.time) 2>> $out/ap-e_prec
 			done
 		done
 	done

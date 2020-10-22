@@ -13,7 +13,7 @@ if true ; then
 			touch e.S
 			make FLOATTYPE=DOUBLE PRECISION=1 DEGREE=$i e.time
 			echo -n "double iterations $i " >> $out/double-e_riscv
-			(time ../../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e.time) 2>> $out/double-e_riscv
+			(time ../../build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e.time) 2>> $out/double-e_riscv
 		done
 
 		for i in $(seq 10 10 100);
@@ -21,7 +21,7 @@ if true ; then
 			touch e.S
 			make FLOATTYPE=ARBITRARY PRECISION=200 DEGREE=$i e.time
 			echo -n "ap iterations $i prec 200 " >> $out/ap-e_riscv
-			(time ../../build/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e.time) 2>> $out/ap-e_riscv
+			(time ../../build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e.time) 2>> $out/ap-e_riscv
 		done
 
 		# x86

@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # Let's not do the computation again !
-if false ; then
+if true ; then
 
    for turn in $(seq 1 10); 
    do
@@ -14,7 +14,7 @@ if false ; then
          touch e.S
          make FLOATTYPE=DOUBLE PRECISION=1 DEGREE=$i e.time
          echo -n "double iterations $i " >> $out/double-e
-         (time ../../build_vp/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e.time) 2>> $out/double-e
+         (time ../../build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e.time) 2>> $out/double-e
       done
 
 
@@ -25,7 +25,7 @@ if false ; then
             touch e.S
             make FLOATTYPE=ARBITRARY PRECISION=$p DEGREE=$i e.time
             echo -n "ap iterations $i prec $p " >> $out/ap-e
-            (time ../../build_vp/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e.time) 2>> $out/ap-e
+            (time ../../build-ap/riscv64-softmmu/qemu-system-riscv64 -nographic -machine virt -bios none -m 256M -kernel e.time) 2>> $out/ap-e
          done
       done
    done
