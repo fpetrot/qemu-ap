@@ -23,7 +23,7 @@ Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
 
 For some reason, :bash:`--disable-capstone` is required, but who cares, as we don't rely on it.
 Also the Make target :bash:`qemu-system-riscv64` is needed, as otherwise there may be a crash while building the documentation (depending on your local install).
-If you have :bash:`ninja` installed, you can simply replace :bash:`make` by :bash:`ninja` and it should compile a bit faster.
+If you have :bash:`ninja` installed, you can simply replace :bash:`make` by :bash:`ninja` (and even omit the parallel build option as it is given for free keystrokes) and it should compile a bit faster.
 Should you be willing to launch :bash:`gdb` on QEMU, then add the :bash:`--enable-debug` flag at the end.
 This has been proven quite useful, more than I'd expected, during the debug of these arbitrary precision extensions.
 Note that debugging something in QEMU is not the easiest thing in life, ...
