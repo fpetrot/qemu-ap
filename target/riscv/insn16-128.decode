@@ -1,0 +1,6 @@
+## RV128C   "RV128C Standard Extension for Compressed Instructions (in addition to RV64C)"
+#
+#c.lq       crdq crs1q    cimmq 1..0=0 15..13=1                       cl·lq            rv128c
+#c.sq       crs1q crs2q   cimmq 1..0=0 15..13=5                       cs·sq            rv128c
+#c.lqsp     crd        cimmlqsp 1..0=2 15..13=1                       ci·lqsp          rv128c
+#c.sqsp     crs2       cimmsqsp 1..0=2 15..13=5                       css·sqsp         rv128c
