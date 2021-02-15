@@ -1,0 +1,26 @@
+## RV128I   "RV128I Base Integer Instruction Set (in addition to RV64I)"
+#
+#ldu        rd rs1 oimm12             14..12=7 6..2=0x00 1..0=3            i+l               rv128i
+#lq         rd rs1 oimm12             14..12=2 6..2=0x03 1..0=3            i+l               rv128i
+#sq         rs1 rs2 simm12            14..12=4 6..2=0x08 1..0=3            s                 rv128i
+#slli       rd rs1 shamt7   31..27=0  14..12=1 6..2=0x04 1..0=3            i·sh7             rv128i
+#srli       rd rs1 shamt7   31..27=0  14..12=5 6..2=0x04 1..0=3            i·sh7             rv128i
+#srai       rd rs1 shamt7   31..27=8  14..12=5 6..2=0x04 1..0=3            i·sh7             rv128i
+#addid      rd rs1 imm12              14..12=0 6..2=0x16 1..0=3            i                 rv128i
+#sllid      rd rs1 shamt6   31..26=0  14..12=1 6..2=0x16 1..0=3            i·sh6             rv128i
+#srlid      rd rs1 shamt6   31..26=0  14..12=5 6..2=0x16 1..0=3            i·sh6             rv128i
+#sraid      rd rs1 shamt6   31..26=16 14..12=5 6..2=0x16 1..0=3            i·sh6             rv128i
+#addd       rd rs1 rs2      31..25=0  14..12=0 6..2=0x1E 1..0=3            r                 rv128i
+#subd       rd rs1 rs2      31..25=32 14..12=0 6..2=0x1E 1..0=3            r                 rv128i
+#slld       rd rs1 rs2      31..25=0  14..12=1 6..2=0x1E 1..0=3            r                 rv128i
+#srld       rd rs1 rs2      31..25=0  14..12=5 6..2=0x1E 1..0=3            r                 rv128i
+#srad       rd rs1 rs2      31..25=32 14..12=5 6..2=0x1E 1..0=3            r                 rv128i
+
+
+## RV128M   "RV128M Standard Extension for Integer Multiply and Divide (in addition to RV64M)"O
+#
+#muld       rd rs1 rs2       31..25=1 14..12=0 6..2=0x1E 1..0=3            r                 rv128m
+#divd       rd rs1 rs2       31..25=1 14..12=4 6..2=0x1E 1..0=3            r                 rv128m
+#divud      rd rs1 rs2       31..25=1 14..12=5 6..2=0x1E 1..0=3            r                 rv128m
+#remd       rd rs1 rs2       31..25=1 14..12=6 6..2=0x1E 1..0=3            r                 rv128m
+#remud      rd rs1 rs2       31..25=1 14..12=7 6..2=0x1E 1..0=3            r                 rv128m
