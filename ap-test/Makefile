@@ -34,7 +34,7 @@ newton_float_double.o : newton_float_double.c
 cholesky : cholesky.log cholesky.time
 	cat $^
 %.log %.time : %.out
-	{ time ../build_vp/riscv64-softmmu/qemu-system-riscv64 -machine virt -bios none -nographic -kernel $< > $*.log ; } 2> $*.time
+	{ time ../build-ap/riscv64-softmmu/qemu-system-riscv64 -machine virt -bios none -nographic -kernel $< > $*.log ; } 2> $*.time
 cholesky.out : cholesky.o crt.o
 	riscv64-unknown-elf-ld -T link.ld $^ -o $@
 cholesky.o : cholesky.c
