@@ -1284,8 +1284,7 @@ DEF_HELPER_4(vsm4r_vs, void, ptr, ptr, env, i32)
 /* FIXME: What the hell is ldu in ap context ??? */
 DEF_HELPER_FLAGS_4(ldu,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 
-/* Variable Precision related 32-bit instructions */
-/* FIXME: check that later, let us concentrate on the double for now */
+/* Variable Arbitrary Precision related 32-bit instructions */
 DEF_HELPER_FLAGS_4(fcvt_p_f, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_3(fcvt_f_p, TCG_CALL_NO_RWG, tl, env, tl, tl)
 DEF_HELPER_FLAGS_4(fcvt_p_w, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
@@ -1293,7 +1292,7 @@ DEF_HELPER_FLAGS_3(fcvt_w_p, TCG_CALL_NO_RWG, tl, env, tl, tl)
 DEF_HELPER_FLAGS_4(fcvt_p_wu, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_3(fcvt_wu_p, TCG_CALL_NO_RWG, tl, env, tl, tl)
 
-/* Variable Precision related 64-bit instructions */
+/* Variable Arbitrary Precision related 64-bit instructions */
 DEF_HELPER_FLAGS_4(fcvt_p_d, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_3(fcvt_d_p, TCG_CALL_NO_RWG, tl, env, tl, tl)
 DEF_HELPER_FLAGS_4(fcvt_p_l, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
@@ -1318,7 +1317,9 @@ DEF_HELPER_FLAGS_4(fmax_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(fsgnj_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(fsgnjn_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_4(fsgnjx_p, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-/* Load and store helpers do access the global state, so they should not be
- * eliminated during optimization */
+/*
+ * Load and store helpers do access the global state, so they should not be
+ * discarded during optimization
+ */
 DEF_HELPER_4(flp, i64, env, tl, tl, i64)
 DEF_HELPER_3(fsp, i64, env, tl, tl)
