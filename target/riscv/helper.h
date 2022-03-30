@@ -106,7 +106,6 @@ DEF_HELPER_1(wfi, void, env)
 DEF_HELPER_1(tlb_flush, void, env)
 #endif
 
-<<<<<<< HEAD
 /* Hypervisor functions */
 #ifndef CONFIG_USER_ONLY
 DEF_HELPER_1(hyp_tlb_flush, void, env)
@@ -1112,15 +1111,7 @@ DEF_HELPER_5(divs_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(remu_i128, tl, env, tl, tl, tl, tl)
 DEF_HELPER_5(rems_i128, tl, env, tl, tl, tl, tl)
 
-/*
- * Variable precision related instructions 64-bit:
- * Since we are calling mpfr functions in which the result is generaly
- * the first argument, the helper does not return any meaningful value.
- */
-DEF_HELPER_FLAGS_4(ldu,     TCG_CALL_NO_RWG, void, env, tl, tl, tl)
-
-/* Variable Precision related 32-bit instructions */
-/* FIXME: check that later, let us concentrate on the double for now */
+/* Variable Arbitrary Precision related 32-bit instructions */
 DEF_HELPER_FLAGS_4(fcvt_p_f, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_3(fcvt_f_p, TCG_CALL_NO_RWG, tl, env, tl, tl)
 DEF_HELPER_FLAGS_4(fcvt_p_w, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
@@ -1128,7 +1119,7 @@ DEF_HELPER_FLAGS_3(fcvt_w_p, TCG_CALL_NO_RWG, tl, env, tl, tl)
 DEF_HELPER_FLAGS_4(fcvt_p_wu, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_3(fcvt_wu_p, TCG_CALL_NO_RWG, tl, env, tl, tl)
 
-/* Variable Precision related 64-bit instructions */
+/* Variable Arbitrary Precision related 64-bit instructions */
 DEF_HELPER_FLAGS_4(fcvt_p_d, TCG_CALL_NO_RWG, void, env, tl, tl, tl)
 DEF_HELPER_FLAGS_3(fcvt_d_p, TCG_CALL_NO_RWG, tl, env, tl, tl)
 DEF_HELPER_FLAGS_4(fcvt_p_l, TCG_CALL_NO_RWG, void, env, tl, tl, tl)

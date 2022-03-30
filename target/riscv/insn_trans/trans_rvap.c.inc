@@ -57,24 +57,22 @@ static bool trans_fcvt_f_p(DisasContext *ctx, arg_fcvt_f_p *a)
 static bool trans_fcvt_p_w(DisasContext *ctx, arg_fcvt_p_w *a)
 {
     TCGv dest = tcg_temp_new();
-    TCGv src1 = tcg_temp_new();
+    TCGv src1 = get_gpr(ctx, a->rs1, EXT_NONE);
     TCGv rm = tcg_temp_new();
 
     tcg_gen_movi_tl(dest, a->rd);
-    gen_get_gpr(src1, a->rs1);
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fcvt_p_w(cpu_env, dest, src1, rm);
 
     tcg_temp_free(dest);
-    tcg_temp_free(src1);
     tcg_temp_free(rm);
     return true;
 }
 
 static bool trans_fcvt_w_p(DisasContext *ctx, arg_fcvt_w_p *a)
 {
-    TCGv dest = tcg_temp_new();
+    TCGv dest = dest_gpr(ctx, a->rd);
     TCGv src1 = tcg_temp_new();
     TCGv rm = tcg_temp_new();
 
@@ -82,7 +80,7 @@ static bool trans_fcvt_w_p(DisasContext *ctx, arg_fcvt_w_p *a)
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fcvt_w_p(dest, cpu_env, src1, rm);
-    gen_set_gpr(a->rd, dest);
+    gen_set_gpr(ctx, a->rd, dest);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
@@ -93,24 +91,22 @@ static bool trans_fcvt_w_p(DisasContext *ctx, arg_fcvt_w_p *a)
 static bool trans_fcvt_p_wu(DisasContext *ctx, arg_fcvt_p_wu *a)
 {
     TCGv dest = tcg_temp_new();
-    TCGv src1 = tcg_temp_new();
+    TCGv src1 = get_gpr(ctx, a->rs1, EXT_NONE);
     TCGv rm = tcg_temp_new();
 
     tcg_gen_movi_tl(dest, a->rd);
-    gen_get_gpr(src1, a->rs1);
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fcvt_p_wu(cpu_env, dest, src1, rm);
 
     tcg_temp_free(dest);
-    tcg_temp_free(src1);
     tcg_temp_free(rm);
     return true;
 }
 
 static bool trans_fcvt_wu_p(DisasContext *ctx, arg_fcvt_wu_p *a)
 {
-    TCGv dest = tcg_temp_new();
+    TCGv dest = dest_gpr(ctx, a->rd);
     TCGv src1 = tcg_temp_new();
     TCGv rm = tcg_temp_new();
 
@@ -118,9 +114,8 @@ static bool trans_fcvt_wu_p(DisasContext *ctx, arg_fcvt_wu_p *a)
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fcvt_wu_p(dest, cpu_env, src1, rm);
-    gen_set_gpr(a->rd, dest);
+    gen_set_gpr(ctx, a->rd, dest);
 
-    tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(rm);
     return true;
@@ -132,25 +127,24 @@ static bool trans_flp(DisasContext *ctx, arg_flp *a)
 {
     TCGv     data  = tcg_temp_local_new();
     TCGv     dest  = tcg_temp_local_new();
-    TCGv     src1  = tcg_temp_local_new();
+    TCGv     src1  = get_gpr(ctx, a->rs1, EXT_NONE);
     TCGv     i     = tcg_temp_local_new();
     TCGv     nb    = tcg_temp_local_new();
     TCGv     limb  = tcg_temp_local_new();
     TCGLabel *loop = gen_new_label();
 
-    gen_get_gpr(src1, a->rs1);
     tcg_gen_addi_tl(src1, src1, a->imm);
 
     tcg_gen_movi_tl(dest, a->rd);
 
     tcg_gen_movi_tl(i, 1);
-    tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEQ);
+    tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEUQ);
     gen_helper_flp(i, cpu_env, dest, i, data);
     tcg_gen_addi_tl(src1, src1, 8);
-    tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEQ);
+    tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEUQ);
     gen_helper_flp(i, cpu_env, dest, i, data);
     tcg_gen_addi_tl(src1, src1, 8);
-    tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEQ);
+    tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEUQ);
     gen_helper_flp(i, cpu_env, dest, i, data);
     tcg_gen_addi_tl(src1, src1, 8);
 
@@ -159,7 +153,7 @@ static bool trans_flp(DisasContext *ctx, arg_flp *a)
     tcg_gen_addi_tl(nb, limb, 5);
 
     gen_set_label(loop);
-    tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEQ);
+    tcg_gen_qemu_ld_i64(data, src1, ctx->mem_idx, MO_TEUQ);
     gen_helper_flp(i, cpu_env, dest, i, data);
     tcg_gen_addi_tl(src1, src1, 8);
     tcg_gen_brcond_tl(TCG_COND_LT, i, nb, loop);
@@ -169,7 +163,6 @@ static bool trans_flp(DisasContext *ctx, arg_flp *a)
 
     tcg_temp_free(data);
     tcg_temp_free(dest);
-    tcg_temp_free(src1);
     tcg_temp_free(i);
     tcg_temp_free(nb);
     tcg_temp_free(limb);
@@ -178,29 +171,28 @@ static bool trans_flp(DisasContext *ctx, arg_flp *a)
 
 static bool trans_fsp(DisasContext *ctx, arg_fsp *a)
 {
-    TCGv src1 = tcg_temp_local_new();
-    TCGv src2 = tcg_temp_local_new();
-    TCGv res  = tcg_temp_local_new();
-    TCGv nb   = tcg_temp_local_new();
-    TCGv i    = tcg_temp_local_new();
+    TCGv src1  = get_gpr(ctx, a->rs1, EXT_NONE);
+    TCGv src2  = tcg_temp_local_new();
+    TCGv res   = tcg_temp_local_new();
+    TCGv nb    = tcg_temp_local_new();
+    TCGv i     = tcg_temp_local_new();
     TCGLabel *loop = gen_new_label();
 
-    gen_get_gpr(src1, a->rs1);
     tcg_gen_addi_tl(src1, src1, a->imm);
 
     tcg_gen_movi_tl(src2, a->rs2);
 
     tcg_gen_movi_tl(i, 1);
     gen_helper_fsp(res, cpu_env, src2, i);
-    tcg_gen_qemu_st_i64(res, src1, ctx->mem_idx, MO_TEQ);
+    tcg_gen_qemu_st_i64(res, src1, ctx->mem_idx, MO_TEUQ);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(src1, src1, 8);
     gen_helper_fsp(res, cpu_env, src2, i);
-    tcg_gen_qemu_st_i64(res, src1, ctx->mem_idx, MO_TEQ);
+    tcg_gen_qemu_st_i64(res, src1, ctx->mem_idx, MO_TEUQ);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(src1, src1, 8);
     gen_helper_fsp(res, cpu_env, src2, i);
-    tcg_gen_qemu_st_i64(res, src1, ctx->mem_idx, MO_TEQ);
+    tcg_gen_qemu_st_i64(res, src1, ctx->mem_idx, MO_TEUQ);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(src1, src1, 8);
 
@@ -212,12 +204,11 @@ static bool trans_fsp(DisasContext *ctx, arg_fsp *a)
 
     gen_set_label(loop);
     gen_helper_fsp(res, cpu_env, src2, i);
-    tcg_gen_qemu_st_i64(res, src1, ctx->mem_idx, MO_TEQ);
+    tcg_gen_qemu_st_i64(res, src1, ctx->mem_idx, MO_TEUQ);
     tcg_gen_addi_tl(i, i, 1);
     tcg_gen_addi_tl(src1, src1, 8);
     tcg_gen_brcond_tl(TCG_COND_LT, i, nb, loop);
 
-    tcg_temp_free(src1);
     tcg_temp_free(src2);
     tcg_temp_free(res);
     tcg_temp_free(i);
@@ -425,7 +416,7 @@ static bool trans_fsqrt_p(DisasContext *ctx, arg_fsqrt_p *a)
 
 static bool trans_feq_p(DisasContext *ctx, arg_feq_p *a)
 {
-    TCGv dest = tcg_temp_new();
+    TCGv dest = dest_gpr(ctx, a->rd);
     TCGv src1 = tcg_temp_new();
     TCGv src2 = tcg_temp_new();
 
@@ -433,9 +424,8 @@ static bool trans_feq_p(DisasContext *ctx, arg_feq_p *a)
     tcg_gen_movi_tl(src2, a->rs2);
 
     gen_helper_feq_p(dest, cpu_env, src1, src2);
-    gen_set_gpr(a->rd, dest);
+    gen_set_gpr(ctx, a->rd, dest);
 
-    tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(src2);
     return true;
@@ -443,7 +433,7 @@ static bool trans_feq_p(DisasContext *ctx, arg_feq_p *a)
 
 static bool trans_fle_p(DisasContext *ctx, arg_fle_p *a)
 {
-    TCGv dest = tcg_temp_new();
+    TCGv dest = dest_gpr(ctx, a->rd);
     TCGv src1 = tcg_temp_new();
     TCGv src2 = tcg_temp_new();
 
@@ -451,9 +441,8 @@ static bool trans_fle_p(DisasContext *ctx, arg_fle_p *a)
     tcg_gen_movi_tl(src2, a->rs2);
 
     gen_helper_fle_p(dest, cpu_env, src1, src2);
-    gen_set_gpr(a->rd, dest);
+    gen_set_gpr(ctx, a->rd, dest);
 
-    tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(src2);
     return true;
@@ -461,7 +450,7 @@ static bool trans_fle_p(DisasContext *ctx, arg_fle_p *a)
 
 static bool trans_flt_p(DisasContext *ctx, arg_flt_p *a)
 {
-    TCGv dest = tcg_temp_new();
+    TCGv dest = dest_gpr(ctx, a->rd);
     TCGv src1 = tcg_temp_new();
     TCGv src2 = tcg_temp_new();
 
@@ -469,7 +458,7 @@ static bool trans_flt_p(DisasContext *ctx, arg_flt_p *a)
     tcg_gen_movi_tl(src2, a->rs2);
 
     gen_helper_flt_p(dest, cpu_env, src1, src2);
-    gen_set_gpr(a->rd, dest);
+    gen_set_gpr(ctx, a->rd, dest);
 
     tcg_temp_free(dest);
     tcg_temp_free(src1);
@@ -546,24 +535,22 @@ static bool trans_fcvt_d_p(DisasContext *ctx, arg_fcvt_d_p *a)
 static bool trans_fcvt_p_l(DisasContext *ctx, arg_fcvt_p_l *a)
 {
     TCGv dest = tcg_temp_new();
-    TCGv src1 = tcg_temp_new();
+    TCGv src1 = get_gpr(ctx, a->rs1, EXT_NONE);
     TCGv rm = tcg_temp_new();
 
     tcg_gen_movi_tl(dest, a->rd);
-    gen_get_gpr(src1, a->rs1);
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fcvt_p_l(cpu_env, dest, src1, rm);
 
     tcg_temp_free(dest);
-    tcg_temp_free(src1);
     tcg_temp_free(rm);
     return true;
 }
 
 static bool trans_fcvt_l_p(DisasContext *ctx, arg_fcvt_l_p *a)
 {
-    TCGv dest = tcg_temp_new();
+    TCGv dest = dest_gpr(ctx, a->rd);
     TCGv src1 = tcg_temp_new();
     TCGv rm = tcg_temp_new();
 
@@ -571,9 +558,8 @@ static bool trans_fcvt_l_p(DisasContext *ctx, arg_fcvt_l_p *a)
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fcvt_l_p(dest, cpu_env, src1, rm);
-    gen_set_gpr(a->rd, dest);
+    gen_set_gpr(ctx, a->rd, dest);
 
-    tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(rm);
     return true;
@@ -582,24 +568,22 @@ static bool trans_fcvt_l_p(DisasContext *ctx, arg_fcvt_l_p *a)
 static bool trans_fcvt_p_lu(DisasContext *ctx, arg_fcvt_p_lu *a)
 {
     TCGv dest = tcg_temp_new();
-    TCGv src1 = tcg_temp_new();
+    TCGv src1 = get_gpr(ctx, a->rs1, EXT_NONE);
     TCGv rm = tcg_temp_new();
 
     tcg_gen_movi_tl(dest, a->rd);
-    gen_get_gpr(src1, a->rs1);
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fcvt_p_lu(cpu_env, dest, src1, rm);
 
     tcg_temp_free(dest);
-    tcg_temp_free(src1);
     tcg_temp_free(rm);
     return true;
 }
 
 static bool trans_fcvt_lu_p(DisasContext *ctx, arg_fcvt_lu_p *a)
 {
-    TCGv dest = tcg_temp_new();
+    TCGv dest = dest_gpr(ctx, a->rd);
     TCGv src1 = tcg_temp_new();
     TCGv rm = tcg_temp_new();
 
@@ -607,9 +591,8 @@ static bool trans_fcvt_lu_p(DisasContext *ctx, arg_fcvt_lu_p *a)
     tcg_gen_movi_tl(rm, a->rm);
 
     gen_helper_fcvt_lu_p(dest, cpu_env, src1, rm);
-    gen_set_gpr(a->rd, dest);
+    gen_set_gpr(ctx, a->rd, dest);
 
-    tcg_temp_free(dest);
     tcg_temp_free(src1);
     tcg_temp_free(rm);
     return true;
