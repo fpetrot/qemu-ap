@@ -458,25 +458,25 @@ static int write_vcsr(CPURISCVState *env, int csrno, target_ulong val)
 static int read_fprec(CPURISCVState *env, int csrno, target_ulong *val)
 {
     *val = env->fprec;
-    return 0;
+    return RISCV_EXCP_NONE;
 }
 
 static int write_fprec(CPURISCVState *env, int csrno, target_ulong val)
 {
     env->fprec = val;
-    return 0;
+    return RISCV_EXCP_NONE;
 }
 
 static int read_fexp(CPURISCVState *env, int csrno, target_ulong *val)
 {
     *val = env->fexp;
-    return 0;
+    return RISCV_EXCP_NONE;
 }
 
 static int write_fexp(CPURISCVState *env, int csrno, target_ulong val)
 {
     env->fexp = val;
-    return 0;
+    return RISCV_EXCP_NONE;
 }
 
 /* User Timers and Counters */
