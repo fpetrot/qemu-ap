@@ -1,8 +1,12 @@
 /* Kernel extracted from the polybench and adapted to bare metal */
-#ifdef x86
+#ifdef __x86_64__
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#define putstr(s) printf("%s", s)
+#define print_double(x) printf("%1.4f", x)
+#else
+typedef unsigned int size_t;
 #endif
 /* Something to start with */
 #define MINI_DATASET
@@ -37,7 +41,6 @@
 
 #define N_CHOLESKY N
 
-typedef unsigned int size_t;
 
 #ifdef RISCV
 /*
@@ -255,6 +258,8 @@ static void cholesky(void)
 int main(void)
 {
    cholesky();
+#ifndef __x86_64__
    *(volatile unsigned int *)0x100000 = 0x5555;
+#endif
    return 0;
 }
