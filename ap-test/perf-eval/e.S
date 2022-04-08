@@ -48,13 +48,9 @@ loop:
 
 #if defined (ARBITRARY)
 	fcvt_p_d(p3, fa1, MPFR_RNDD)
-
 	fmul_p(p0, p0, p3, MPFR_RNDD)
-
 	fcvt_p_d(p2, fa0, MPFR_RNDD)
-
 	fdiv_p(p2, p2, p0, MPFR_RNDD)
-
 	fadd_p(p1, p1, p2, MPFR_RNDD)
  #else
 	fmul.d fa5,fa5,fa1 # t *= i
