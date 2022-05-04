@@ -14,7 +14,7 @@ Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
 
 .. code-block:: shell
 
-   git clone git@github.com:fpetrot/qemu-ap.git
+   git clone git@github.com:fpetrot/qemu-ap.git && cd qemu-ap
    export MPFR_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own, this is mine
    mkdir build-ap
    cd build-ap
