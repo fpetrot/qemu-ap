@@ -10,12 +10,12 @@ The *ap-stable* branch contains the current version of the arbitrary precision
 support for riscv64.
 
 Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
-(assuming directory is `qemu-vp` and build directory `qemu-vp/build-ap`)
+(assuming directory is `qemu-ap` and build directory `qemu-ap/build-ap`)
 
 .. code-block:: shell
 
-   git clone git@gricad-gitlab.univ-grenoble-alpes.fr:tima/sls/projects/qemu-vp.git
-   export MPFR_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own
+   git clone git@github.com:fpetrot/qemu-ap.git
+   export MPFR_DIR=/home/petrot/Developpement/mpfr-4.1.0 # Choose your own, this is mine
    mkdir build-ap
    cd build-ap
    ../configure --disable-capstone --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags="-I${MPFR_DIR}/src/ -I${MPFR_DIR}/build/src" --extra-ldflags="-Wl,-rpath,${MPFR_DIR}/build/src/.libs/ -lmpfr -lgmp"
