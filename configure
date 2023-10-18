@@ -1710,8 +1710,6 @@ echo "PYTHON=$python" >> $config_host_mak
 echo "GENISOIMAGE=$genisoimage" >> $config_host_mak
 echo "MESON=$meson" >> $config_host_mak
 echo "NINJA=$ninja" >> $config_host_mak
-<<<<<<< HEAD
-=======
 echo "CC=$cc" >> $config_host_mak
 echo "HOST_CC=$host_cc" >> $config_host_mak
 echo "AR=$ar" >> $config_host_mak
@@ -1734,7 +1732,6 @@ echo "LIBS+=$LIBS" >> $config_host_mak
 echo "LIBS+=$EXTRA_LIBS" >> $config_host_mak
 echo "LIBS_TOOLS+=$libs_tools" >> $config_host_mak
 echo "PTHREAD_LIB=$PTHREAD_LIB" >> $config_host_mak
->>>>>>> 35defe7cde (Configuring with mpfr)
 echo "EXESUF=$EXESUF" >> $config_host_mak
 
 # use included Linux headers for KVM architectures

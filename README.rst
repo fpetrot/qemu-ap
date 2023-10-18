@@ -6,8 +6,9 @@
 ====
 Additionnal information for the ap-stable branch
 ====
-The *ap-stable* branch contains the current version of the arbitrary precision
-support for riscv64.
+The *ap-stable* branch contains the current version of the arbitrary precision support for riscv64 whose principle is described in our paper:
+
+Marie Badaroux and Frédéric Pétrot. "Arbitrary and Variable Precision Floating-Point Arithmetic Support in Dynamic Binary Translation." Proceedings of the 26th Asia and South Pacific Design Automation Conference, 2021, available [here](https://hal.science/hal-03117382/).
 
 Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
 (assuming directory is `qemu-ap` and build directory `qemu-ap/build-ap`)
@@ -19,11 +20,8 @@ Builing QEMU with arbitrary precision arithmetic support thank's to mpfr:
    mkdir build-ap
    cd build-ap
    ../configure --disable-capstone --prefix=/opt/riscv --target-list=riscv64-softmmu --extra-cflags="-I${MPFR_DIR}/src/ -I${MPFR_DIR}/build/src" --extra-ldflags="-Wl,-rpath,${MPFR_DIR}/build/src/.libs/ -lmpfr -lgmp"
-   make -j $(expr $(nproc) - 1) qemu-system-riscv64
+   ninja
 
-For some reason, :bash:`--disable-capstone` is required, but who cares, as we don't rely on it.
-Also the Make target :bash:`qemu-system-riscv64` is needed, as otherwise there may be a crash while building the documentation (depending on your local install).
-If you have :bash:`ninja` installed, you can simply replace :bash:`make` by :bash:`ninja` (and even omit the parallel build option as it is given for free keystrokes) and it should compile a bit faster.
 Should you be willing to launch :bash:`gdb` on QEMU, then add the :bash:`--enable-debug` flag at the end.
 This has been proven quite useful, more than I'd expected, during the debug of these arbitrary precision extensions.
 Note that debugging something in QEMU is not the easiest thing in life, ...

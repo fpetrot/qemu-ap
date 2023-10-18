@@ -35,6 +35,7 @@
 #include "sysemu/tcg.h"
 #include "kvm/kvm_riscv.h"
 #include "tcg/tcg.h"
+#include "mpfr.h"
 
 /* RISC-V CPU definitions */
 static const char riscv_single_letter_exts[] = "IEMAFDQCPVH";
@@ -425,6 +426,15 @@ static void rv64_base_cpu_init(Object *obj)
 #ifndef CONFIG_USER_ONLY
     set_satp_mode_max_supported(RISCV_CPU(obj), VM_1_10_SV57);
 #endif
+    /*
+     * Let us assume this is the right place for that:
+     * use mpfr_init as we have no idea of the precision yet.
+     */
+    for (int i = 0; i < 32; i++) {
+        mpfr_init(env->apr[i]);
+    }
+    /* FIXME: understand this magic and what to do with the exponent */
+    env->fexp = 0x8000000000000002;
 }
 
 static void rv64_sifive_u_cpu_init(Object *obj)
@@ -791,9 +801,11 @@ static void riscv_cpu_dump_state(CPUState *cs, FILE *f, int flags)
 
     /* Will probably print out good only on 4k line length terminals! */
     for (i = 0; i < 32; i++) {
-        qemu_fprintf(f, " %s ", riscv_vpr_regnames[i]);
+        char str[130]; /* assuming period plus eos */
+        qemu_fprintf(f, " %s ", riscv_apr_regnames[i]);
         for (j = 0; j < 32; j++) {
-            qemu_fprintf(f, TARGET_FMT_lx, env->vpr[i][j]);
+            mpfr_sprintf(str, "%.128Rf\n", env->apr[i]); 
+            qemu_fprintf(f, "%s", str);
         }
         qemu_fprintf(f, "\n");
     }
@@ -1192,14 +1204,6 @@ static void riscv_cpu_init(Object *obj)
     qdev_init_gpio_in(DEVICE(obj), riscv_cpu_set_irq,
                       IRQ_LOCAL_MAX + IRQ_LOCAL_GUEST_MAX);
 #endif /* CONFIG_USER_ONLY */
-
-    /* Let us assume this is the right place for that :
-     * use mpfr_init as we have no idea of the precision yet. */
-    for (int i = 0; i < 32; i++) {
-        mpfr_init(cpu->env.apr[i]);
-    }
-    /* FIXME: understand this magic and what to do with the exponent */
-    cpu->env.fexp = 0x8000000000000002;
 }
 
 typedef struct misa_ext_info {

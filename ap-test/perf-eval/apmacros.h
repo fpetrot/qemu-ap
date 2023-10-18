@@ -1,5 +1,4 @@
 /*
- * vim:list:ts=8:sw=8:noet:
  * Macros to simplify asm writing for arbitrary precision arithmetic
  * These macros use the .insn directive specific to the riscv target
  * of the gnu assembler
